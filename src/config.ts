@@ -5,7 +5,7 @@ class Config {
 	private workspaceConfiguration: vscode.WorkspaceConfiguration;
 
 	constructor() {
-		this.workspaceConfiguration = vscode.workspace.getConfiguration('git-graph');
+		this.workspaceConfiguration = vscode.workspace.getConfiguration('neo-git-graph');
 	}
 
 	public autoCenterCommitDetailsView() {

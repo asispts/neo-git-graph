@@ -7,9 +7,9 @@ export class StatusBarItem {
 
 	constructor(context: vscode.ExtensionContext) {
 		this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
-		this.statusBarItem.text = 'Git Graph';
+		this.statusBarItem.text = '(neo) Git Graph';
 		this.statusBarItem.tooltip = 'View Git Graph';
-		this.statusBarItem.command = 'git-graph.view';
+		this.statusBarItem.command = 'neo-git-graph.view';
 		context.subscriptions.push(this.statusBarItem);
 	}
 

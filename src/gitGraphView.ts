@@ -33,7 +33,7 @@ export class GitGraphView {
 			return;
 		}
 
-		const panel = vscode.window.createWebviewPanel('git-graph', 'Git Graph', column || vscode.ViewColumn.One, {
+		const panel = vscode.window.createWebviewPanel('neo-git-graph', '(neo) Git Graph', column || vscode.ViewColumn.One, {
 			enableScripts: true,
 			localResourceRoots: [
 				vscode.Uri.file(path.join(extensionPath, 'media'))
@@ -305,7 +305,7 @@ export class GitGraphView {
 				<meta name="viewport" content="width=device-width, initial-scale=1.0">
 				<link rel="stylesheet" type="text/css" href="${this.getMediaUri('main.css')}">
 				<link rel="stylesheet" type="text/css" href="${this.getMediaUri('dropdown.css')}">
-				<title>Git Graph</title>
+				<title>(neo) Git Graph</title>
 				<style>${colorParams}"</style>
 			</head>
 			${body}

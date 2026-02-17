@@ -135,7 +135,7 @@ export class AvatarManager {
 		let commitIndex = avatarRequest.commits.length < 5 ? avatarRequest.commits.length - 1 - avatarRequest.attempts : Math.round((4 - avatarRequest.attempts) * 0.25 * (avatarRequest.commits.length - 1));
 		https.get({
 			hostname: 'api.github.com', path: '/repos/' + owner + '/' + repo + '/commits/' + avatarRequest.commits[commitIndex],
-			headers: { 'User-Agent': 'vscode-git-graph' },
+			headers: { 'User-Agent': 'neo-git-graph' },
 			agent: false, timeout: 15000
 		}, (res: http.IncomingMessage) => {
 			let respBody = '';
@@ -186,7 +186,7 @@ export class AvatarManager {
 		}
 		https.get({
 			hostname: 'gitlab.com', path: '/api/v4/users?search=' + avatarRequest.email,
-			headers: { 'User-Agent': 'vscode-git-graph', 'Private-Token': 'w87U_3gAxWWaPtFgCcus' }, // Token only has read access
+			headers: { 'User-Agent': 'neo-git-graph', 'Private-Token': 'w87U_3gAxWWaPtFgCcus' }, // Token only has read access
 			agent: false, timeout: 15000,
 		}, (res: http.IncomingMessage) => {
 			let respBody = '';
@@ -238,7 +238,7 @@ export class AvatarManager {
 		return new Promise((resolve) => {
 			https.get({
 				hostname: imgUrl.hostname, path: imgUrl.path,
-				headers: { 'User-Agent': 'vscode-git-graph' },
+				headers: { 'User-Agent': 'neo-git-graph' },
 				agent: false, timeout: 15000
 			}, (res: http.IncomingMessage) => {
 				let imageBufferArray: Buffer[] = [];

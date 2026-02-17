@@ -1,12 +1,14 @@
 {
-	"name": "git-graph",
-	"displayName": "Git Graph",
-	"version": "1.4.6",
-	"publisher": "mhutchie",
-	"author": {
-		"name": "Michael Hutchison",
-		"email": "mhutchie@16right.com"
-	},
+	"name": "neo-git-graph",
+	"displayName": "(neo) Git Graph",
+	"version": "0.0.0",
+	"publisher": "asispts",
+	"contributors": [
+		{
+			"name": "Michael Hutchison",
+			"url": "https://github.com/mhutchie"
+		}
+	],
 	"description": "View a Git Graph of your repository, and perform Git actions from the graph.",
 	"keywords": [
 		"git",
@@ -18,13 +20,13 @@
 	"categories": [
 		"Other"
 	],
-	"homepage": "https://github.com/mhutchie/vscode-git-graph",
+	"homepage": "https://github.com/asispts/neo-git-graph",
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/mhutchie/vscode-git-graph.git"
+		"url": "https://github.com/asispts/neo-git-graph.git"
 	},
 	"bugs": {
-		"url": "https://github.com/mhutchie/vscode-git-graph/issues"
+		"url": "https://github.com/asispts/neo-git-graph/issues"
 	},
 	"license": "MIT",
 	"icon": "resources/icon.png",
@@ -38,26 +40,26 @@
 	"contributes": {
 		"commands": [
 			{
-				"category": "Git Graph",
-				"command": "git-graph.view",
+				"category": "(neo) Git Graph",
+				"command": "neo-git-graph.view",
 				"title": "View Git Graph (git log)"
 			},
 			{
-				"category": "Git Graph",
-				"command": "git-graph.clearAvatarCache",
+				"category": "(neo) Git Graph",
+				"command": "neo-git-graph.clearAvatarCache",
 				"title": "Clear Avatar Cache"
 			}
 		],
 		"configuration": {
 			"type": "object",
-			"title": "Git Graph",
+			"title": "(neo) Git Graph",
 			"properties": {
-				"git-graph.autoCenterCommitDetailsView": {
+				"neo-git-graph.autoCenterCommitDetailsView": {
 					"type": "boolean",
 					"default": true,
 					"description": "Automatically center the commit details view when it is opened."
 				},
-				"git-graph.dateFormat": {
+				"neo-git-graph.dateFormat": {
 					"type": "string",
 					"enum": [
 						"Date & Time",
@@ -72,7 +74,7 @@
 					"default": "Date & Time",
 					"description": "Specifies the date format to be used in the date column of Git Graph."
 				},
-				"git-graph.dateType": {
+				"neo-git-graph.dateType": {
 					"type": "string",
 					"enum": [
 						"Author Date",
@@ -85,12 +87,12 @@
 					"default": "Author Date",
 					"description": "Specifies the date type to be displayed throughout Git Graph."
 				},
-				"git-graph.fetchAvatars": {
+				"neo-git-graph.fetchAvatars": {
 					"type": "boolean",
 					"default": false,
 					"description": "Fetch avatars of commit authors and committers. By enabling this setting, you consent to commit author and committer email addresses being sent GitHub, GitLab or Gravatar, depending on the repositories remote origin."
 				},
-				"git-graph.graphColours": {
+				"neo-git-graph.graphColours": {
 					"type": "array",
 					"items": {
 						"type": "string",
@@ -113,7 +115,7 @@
 					],
 					"description": "Specifies the colours used on the graph."
 				},
-				"git-graph.graphStyle": {
+				"neo-git-graph.graphStyle": {
 					"type": "string",
 					"enum": [
 						"rounded",
@@ -126,37 +128,37 @@
 					"default": "rounded",
 					"description": "Specifies the style of the graph."
 				},
-				"git-graph.initialLoadCommits": {
+				"neo-git-graph.initialLoadCommits": {
 					"type": "number",
 					"default": 300,
 					"description": "Specifies the number of commits to initially load."
 				},
-				"git-graph.loadMoreCommits": {
+				"neo-git-graph.loadMoreCommits": {
 					"type": "number",
 					"default": 100,
 					"description": "Specifies the number of commits to load when the \"Load More Commits\" button is pressed (only shown when more commits are available)."
 				},
-				"git-graph.maxDepthOfRepoSearch": {
+				"neo-git-graph.maxDepthOfRepoSearch": {
 					"type": "number",
 					"default": 0,
 					"description": "Specifies the maximum depth of subfolders to search when discovering repositories in the workspace."
 				},
-				"git-graph.showCurrentBranchByDefault": {
+				"neo-git-graph.showCurrentBranchByDefault": {
 					"type": "boolean",
 					"default": false,
 					"description": "Show the current branch by default when Git Graph is opened. Default: false (show all branches)"
 				},
-				"git-graph.showStatusBarItem": {
+				"neo-git-graph.showStatusBarItem": {
 					"type": "boolean",
 					"default": true,
 					"description": "Show a Status Bar item which opens Git Graph when clicked."
 				},
-				"git-graph.showUncommittedChanges": {
+				"neo-git-graph.showUncommittedChanges": {
 					"type": "boolean",
 					"default": true,
 					"description": "Show uncommitted changes (set to false to decrease load time on large repositories)."
 				},
-				"git-graph.tabIconColourTheme": {
+				"neo-git-graph.tabIconColourTheme": {
 					"type": "string",
 					"enum": [
 						"colour",

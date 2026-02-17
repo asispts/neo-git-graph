@@ -15,19 +15,19 @@ export function activate(context: vscode.ExtensionContext) {
 	const repoManager = new RepoManager(dataSource, extensionState, statusBarItem);
 
 	context.subscriptions.push(
-		vscode.commands.registerCommand('git-graph.view', () => {
+		vscode.commands.registerCommand('neo-git-graph.view', () => {
 			GitGraphView.createOrShow(context.extensionPath, dataSource, extensionState, avatarManager, repoManager);
 		}),
-		vscode.commands.registerCommand('git-graph.clearAvatarCache', () => {
+		vscode.commands.registerCommand('neo-git-graph.clearAvatarCache', () => {
 			avatarManager.clearCache();
 		}),
 		vscode.workspace.registerTextDocumentContentProvider(DiffDocProvider.scheme, new DiffDocProvider(dataSource)),
 		vscode.workspace.onDidChangeConfiguration(e => {
-			if (e.affectsConfiguration('git-graph.showStatusBarItem')) {
+			if (e.affectsConfiguration('neo-git-graph.showStatusBarItem')) {
 				statusBarItem.refresh();
-			} else if (e.affectsConfiguration('git-graph.dateType')) {
+			} else if (e.affectsConfiguration('neo-git-graph.dateType')) {
 				dataSource.generateGitCommandFormats();
-			} else if (e.affectsConfiguration('git-graph.maxDepthOfRepoSearch')) {
+			} else if (e.affectsConfiguration('neo-git-graph.maxDepthOfRepoSearch')) {
 				repoManager.maxDepthOfRepoSearchChanged();
 			} else if (e.affectsConfiguration('git.path')) {
 				dataSource.registerGitPath();
