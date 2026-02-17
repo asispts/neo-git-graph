@@ -3,6 +3,10 @@
 	"displayName": "(neo) Git Graph",
 	"version": "0.0.0",
 	"publisher": "asispts",
+	"author": {
+		"name": "Asis Pattisahusiwa",
+		"email": "asispts@gmail.com"
+	},
 	"contributors": [
 		{
 			"name": "Michael Hutchison",
