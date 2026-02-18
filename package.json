@@ -180,6 +180,7 @@
 		}
 	},
 	"scripts": {
+		"typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit",
 		"vscode:prepublish": "pnpm run compile",
 		"clean": "node ./.vscode/clean.js",
 		"compile": "pnpm run clean && pnpm run compile-src && pnpm run compile-web",
