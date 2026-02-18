@@ -1,0 +1,28 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "env": {
+    "node": true
+  },
+  "ignorePatterns": [".idea/**", "out/**", "node_modules/**", "*.config.js"],
+  "plugins": ["import", "typescript"],
+  "rules": {
+    "no-console": "warn",
+    "no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "typescript/no-explicit-any": "warn"
+  },
+  "overrides": [
+    {
+      "files": ["web/**/*.ts"],
+      "env": {
+        "node": false,
+        "browser": true
+      }
+    }
+  ]
+}

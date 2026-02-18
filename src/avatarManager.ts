@@ -166,7 +166,7 @@ export class AvatarManager {
 
             if (res.statusCode === 200) {
               // Sucess
-              let commit: any = JSON.parse(respBody);
+              let commit = JSON.parse(respBody) as { author?: { avatar_url?: string } };
               if (commit.author && commit.author.avatar_url) {
                 // Avatar url found
                 let img = await this.downloadAvatarImage(
@@ -235,7 +235,7 @@ export class AvatarManager {
 
             if (res.statusCode === 200) {
               // Sucess
-              let users: any = JSON.parse(respBody);
+              let users = JSON.parse(respBody) as { avatar_url?: string }[];
               if (users.length > 0 && users[0].avatar_url) {
                 // Avatar url found
                 let img = await this.downloadAvatarImage(avatarRequest.email, users[0].avatar_url);

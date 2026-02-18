@@ -506,9 +506,9 @@ class GitGraphView {
               showFormDialog(
                 "Add tag to commit <b><i>" + abbrevCommit(hash) + "</i></b>:",
                 [
-                  { type: "text-ref" as "text-ref", name: "Name: ", default: "" },
+                  { type: "text-ref" as const, name: "Name: ", default: "" },
                   {
-                    type: "select" as "select",
+                    type: "select" as const,
                     name: "Type: ",
                     default: "annotated",
                     options: [
@@ -517,7 +517,7 @@ class GitGraphView {
                     ]
                   },
                   {
-                    type: "text" as "text",
+                    type: "text" as const,
                     name: "Message: ",
                     default: "",
                     placeholder: "Optional"
@@ -933,8 +933,32 @@ class GitGraphView {
       cols = <HTMLCollectionOf<HTMLElement>>document.getElementsByClassName("tableColHeader");
     let columnWidths = this.gitRepos[this.currentRepo].columnWidths,
       mouseX = -1,
-      col = -1,
-      that = this;
+      col = -1;
+
+    const makeTableFixedLayout = () => {
+      if (columnWidths !== null) {
+        cols[0].style.width = columnWidths[0] + "px";
+        cols[0].style.padding = "";
+        cols[2].style.width = columnWidths[1] + "px";
+        cols[3].style.width = columnWidths[2] + "px";
+        cols[4].style.width = columnWidths[3] + "px";
+        this.tableElem.className = "fixedLayout";
+        this.graph.limitMaxWidth(columnWidths[0] + 16);
+      }
+    };
+    const stopResizing = () => {
+      if (col > -1 && columnWidths !== null) {
+        col = -1;
+        mouseX = -1;
+        colHeadersElem.classList.remove("resizing");
+        this.gitRepos[this.currentRepo].columnWidths = columnWidths;
+        sendMessage({
+          command: "saveRepoState",
+          repo: this.currentRepo,
+          state: this.gitRepos[this.currentRepo]
+        });
+      }
+    };
 
     for (let i = 0; i < cols.length; i++) {
       cols[i].innerHTML +=
@@ -997,30 +1021,6 @@ class GitGraphView {
     });
     colHeadersElem.addEventListener("mouseup", stopResizing);
     colHeadersElem.addEventListener("mouseleave", stopResizing);
-    function stopResizing() {
-      if (col > -1 && columnWidths !== null) {
-        col = -1;
-        mouseX = -1;
-        colHeadersElem.classList.remove("resizing");
-        that.gitRepos[that.currentRepo].columnWidths = columnWidths;
-        sendMessage({
-          command: "saveRepoState",
-          repo: that.currentRepo,
-          state: that.gitRepos[that.currentRepo]
-        });
-      }
-    }
-    function makeTableFixedLayout() {
-      if (columnWidths !== null) {
-        cols[0].style.width = columnWidths[0] + "px";
-        cols[0].style.padding = "";
-        cols[2].style.width = columnWidths[1] + "px";
-        cols[3].style.width = columnWidths[2] + "px";
-        cols[4].style.width = columnWidths[3] + "px";
-        that.tableElem.className = "fixedLayout";
-        that.graph.limitMaxWidth(columnWidths[0] + 16);
-      }
-    }
   }
 
   /* Observers */

@@ -50,9 +50,9 @@ const htmlUnescapes: { [key: string]: string } = {
   "&#x27;": "'",
   "&#x2F;": "/"
 };
-const htmlEscaper = /[&<>"'\/]/g;
+const htmlEscaper = /[&<>"'/]/g;
 const htmlUnescaper = /&lt;|&gt;|&amp;|&quot;|&#x27;|&#x2F;/g;
-export const refInvalid = /^[-\/].*|[\\" ><~^:?*[]|\.\.|\/\/|\/\.|@{|[.\/]$|\.lock$|^@$/g;
+export const refInvalid = /^[-/].*|[\\" ><~^:?*[]|\.\.|\/\/|\/\.|@{|[./]$|\.lock$|^@$/g;
 export const ELLIPSIS = "&#8230;";
 
 export function arraysEqual<T>(a: T[], b: T[], equalElements: (a: T, b: T) => boolean) {

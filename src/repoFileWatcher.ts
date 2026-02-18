@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 import { getPathFromUri } from "./utils";
 
 const fileChangeRegex =
-  /(^\.git\/(config|index|HEAD|refs\/stash|refs\/heads\/.*|refs\/remotes\/.*|refs\/tags\/.*)$)|(^(?!\.git).*$)|(^\.git[^\/]+$)/;
+  /(^\.git\/(config|index|HEAD|refs\/stash|refs\/heads\/.*|refs\/remotes\/.*|refs\/tags\/.*)$)|(^(?!\.git).*$)|(^\.git[^/]+$)/;
 
 export class RepoFileWatcher {
   private repo: string | null = null;

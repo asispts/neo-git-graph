@@ -44,13 +44,16 @@
     "package": "pnpm run clean && vsce package",
     "package-and-install": "pnpm run clean && vsce package && node ./.vscode/install-package.js",
     "format": "oxfmt --check",
-    "format:fix": "oxfmt ."
+    "format:fix": "oxfmt .",
+    "lint": "oxlint",
+    "lint:fix": "oxlint --fix"
   },
   "devDependencies": {
     "@types/node": "^18.19.130",
     "@types/vscode": "~1.74.0",
     "esbuild": "^0.27.3",
     "oxfmt": "^0.33.0",
+    "oxlint": "^1.48.0",
     "typescript": "^5.9.3"
   },
   "contributes": {
