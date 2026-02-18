@@ -36,5 +36,9 @@ jobs:
       - name: Type check
         run: pnpm run typecheck
 
+      - run: rm -f neo-git-graph-0.1.0.vsix
+
       - name: Test package
         uses: HaaLeo/publish-vscode-extension@v2
+        with:
+          pat: "test-pat"
