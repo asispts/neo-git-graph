@@ -1,15 +1,13 @@
 # Ignore everything
 *
 */**
-resources/demo.gif
 
 # Whitelist files
 !LICENSE
-!resources/
 !out/
 !media/
-# !out/extension.js
-# !CHANGELOG.md
-# !icon.png
-# !language/*
-# !out/*
+
+!resources/icon.png
+!resources/webview-icon.svg
+!resources/webview-icon-dark.svg
+!resources/webview-icon-light.svg
