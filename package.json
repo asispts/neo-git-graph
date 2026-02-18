@@ -181,7 +181,6 @@
 	},
 	"scripts": {
 		"typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit",
-		"lint": "tslint -c tslint.json src/**/*.ts web/**/*.ts",
 		"vscode:prepublish": "pnpm run compile",
 		"clean": "node ./.vscode/clean.js",
 		"compile": "pnpm run clean && pnpm run compile-src && pnpm run compile-web",
@@ -192,7 +191,6 @@
 		"package-and-install": "pnpm run clean && vsce package && node ./.vscode/install-package.js"
 	},
 	"devDependencies": {
-		"tslint": "^5.12.1",
 		"uglify-js": "^3.4.9",
 		"typescript": "^4.9.5",
 		"@types/vscode": "^1.39.0",
