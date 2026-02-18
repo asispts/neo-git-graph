@@ -5,8 +5,9 @@
     "node": true
   },
   "ignorePatterns": [".pnpm-store/**", ".idea/**", "out/**", "node_modules/**", "*.config.js"],
-  "plugins": ["import", "typescript"],
+  "plugins": ["import", "typescript", "unicorn"],
   "rules": {
+    "unicorn/prefer-node-protocol": "error",
     "no-console": "warn",
     "no-unused-vars": [
       "warn",

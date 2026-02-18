@@ -37,7 +37,7 @@ export function evalPromises<X, Y>(
     } else if (data.length === 0) {
       resolve([]);
     } else {
-      let results: Y[] = new Array(data.length),
+      let results: Y[] = Array.from({ length: data.length }),
         nextPromise = 0,
         rejected = false,
         completed = 0;

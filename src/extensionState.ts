@@ -1,4 +1,5 @@
-import * as fs from "fs";
+import * as fs from "node:fs";
+
 import { ExtensionContext, Memento } from "vscode";
 
 import { Avatar, AvatarCache, GitRepoSet } from "./types";
