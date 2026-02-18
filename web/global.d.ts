@@ -1,4 +1,4 @@
-import * as GG from "../out/types";
+import * as GG from "../src/types";
 
 declare global {
 	function acquireVsCodeApi(): {
@@ -97,12 +97,6 @@ declare global {
 		isCommitted: boolean;
 		lockedFirst: boolean; // TRUE => The line is locked to p1, FALSE => The line is locked to p2
 	}
-
-	interface UnavailablePoint {
-		connectsTo: VertexOrNull;
-		onBranch: Branch;
-	}
-	type VertexOrNull = Vertex | null;
 
 	type AvatarImageCollection = { [email: string]: string };
 

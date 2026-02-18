@@ -1,3 +1,7 @@
+import { vscode, arraysEqual, sendMessage, escapeHtml, unescapeHtml, svgIcons, months, ELLIPSIS, refInvalid, addListenerToClass, insertAfter, getVSCodeStyle, pad2 } from './utils';
+import { Graph } from './graph';
+import { Dropdown } from './dropdown';
+
 class GitGraphView {
 	private gitRepos: GG.GitRepoSet;
 	private gitBranches: string[] = [];

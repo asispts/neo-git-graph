@@ -36,7 +36,8 @@ export class GitGraphView {
 		const panel = vscode.window.createWebviewPanel('neo-git-graph', '(neo) Git Graph', column || vscode.ViewColumn.One, {
 			enableScripts: true,
 			localResourceRoots: [
-				vscode.Uri.file(path.join(extensionPath, 'media'))
+				vscode.Uri.file(path.join(extensionPath, 'media')),
+				vscode.Uri.file(path.join(extensionPath, 'out'))
 			]
 		});
 
@@ -286,7 +287,7 @@ export class GitGraphView {
 			<div id="dialog"></div>
 			<div id="scrollShadow"></div>
 			<script nonce="${nonce}">var viewState = ${JSON.stringify(viewState)};</script>
-			<script src="${this.getMediaUri('out.min.js')}"></script>
+			<script src="${this.getCompiledOutputUri('web.min.js')}"></script>
 			</body>`;
 		} else {
 			body = `<body class="unableToLoad" style="${colorVars}">
@@ -314,6 +315,10 @@ export class GitGraphView {
 
 	private getMediaUri(file: string) {
 		return this.panel.webview.asWebviewUri(this.getUri('media', file));
+	}
+
+	private getCompiledOutputUri(file: string) {
+		return this.panel.webview.asWebviewUri(this.getUri('out', file));
 	}
 
 	private getUri(...pathComps: string[]) {

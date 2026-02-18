@@ -184,8 +184,8 @@
 		"vscode:prepublish": "pnpm run compile",
 		"clean": "rm -rf out",
 		"compile": "pnpm run clean && pnpm run compile-src && pnpm run compile-web",
-		"compile-src": "tsc -p ./src",
-		"compile-web": "esbuild --bundle web/main.ts --outfile=media/out.min.js --minify --target=es6 --format=iife",
+		"compile-src": "esbuild --bundle src/extension.ts --outfile=out/extension.js --platform=node --format=cjs --target=es6 --external:vscode --minify",
+		"compile-web": "esbuild --bundle web/main.ts --outfile=out/web.min.js --minify --target=es6 --format=iife",
 		"package": "pnpm run clean && vsce package",
 		"package-and-install": "pnpm run clean && vsce package && node ./.vscode/install-package.js"
 	},

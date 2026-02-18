@@ -1,4 +1,11 @@
-class Dropdown {
+import { svgIcons, escapeHtml } from './utils';
+
+interface DropdownOption {
+	name: string;
+	value: string;
+}
+
+export class Dropdown {
 	private options: DropdownOption[] = [];
 	private selectedOption: number = 0;
 	private dropdownVisible: boolean = false;
@@ -123,9 +130,4 @@ class Dropdown {
 		this.elem.classList.remove('dropdownOpen');
 		this.dropdownVisible = false;
 	}
-}
-
-interface DropdownOption {
-	name: string;
-	value: string;
 }

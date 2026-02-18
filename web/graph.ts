@@ -1,3 +1,9 @@
+interface UnavailablePoint {
+	connectsTo: VertexOrNull;
+	onBranch: Branch;
+}
+type VertexOrNull = Vertex | null;
+
 class Branch {
 	private lines: Line[] = [];
 	private colour: number;
@@ -47,7 +53,7 @@ class Branch {
 						continue;
 					} else { // If the line is locked to the second point, the transition moves to after the expansion
 						lines.push({ p1: { x: x1, y: y1 }, p2: { x: x1, y: y2 - config.grid.y + config.grid.expandY }, isCommitted: i >= this.numUncommitted, lockedFirst: this.lines[i].lockedFirst }); // Extend the line over the expansion to the new transition start point
-						y1 += config.grid.expandY; y2 += config.grid.expandY;
+					y1 += config.grid.expandY; y2 += config.grid.expandY;
 					}
 				}
 			}
@@ -211,7 +217,7 @@ class Vertex {
 	}
 }
 
-class Graph {
+export class Graph {
 	private config: Config;
 
 	private svg: SVGElement;
