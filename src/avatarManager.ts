@@ -260,7 +260,7 @@ export class AvatarManager {
 	}
 
 	private saveAvatar(email: string, image: string, identicon: boolean) {
-		if (typeof this.avatars[email] === 'string') {
+		if (typeof this.avatars[email] !== 'undefined') {
 			if (!identicon || this.avatars[email].identicon) {
 				this.avatars[email].image = image;
 				this.avatars[email].identicon = identicon;
