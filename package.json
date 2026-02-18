@@ -52,6 +52,7 @@
     "@types/node": "^18.19.130",
     "@types/vscode": "~1.74.0",
     "esbuild": "^0.27.3",
+    "eslint-plugin-simple-import-sort": "^12.1.1",
     "oxfmt": "^0.33.0",
     "oxlint": "^1.48.0",
     "typescript": "^5.9.3"

@@ -1,4 +1,5 @@
 import * as cp from "child_process";
+
 import { getConfig } from "./config";
 import {
   GitCommandStatus,

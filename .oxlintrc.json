@@ -1,9 +1,10 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": ["eslint-plugin-simple-import-sort"],
   "env": {
     "node": true
   },
-  "ignorePatterns": [".idea/**", "out/**", "node_modules/**", "*.config.js"],
+  "ignorePatterns": [".pnpm-store/**", ".idea/**", "out/**", "node_modules/**", "*.config.js"],
   "plugins": ["import", "typescript"],
   "rules": {
     "no-console": "warn",
@@ -14,6 +15,8 @@
         "varsIgnorePattern": "^_"
       }
     ],
+    "simple-import-sort/imports": "error",
+    "simple-import-sort/exports": "error",
     "typescript/no-explicit-any": "warn"
   },
   "overrides": [

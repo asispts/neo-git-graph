@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+
 import { DateFormat, DateType, GraphStyle, TabIconColourTheme } from "./types";
 
 class Config {

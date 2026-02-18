@@ -1,20 +1,20 @@
-import {
-  vscode,
-  arraysEqual,
-  sendMessage,
-  escapeHtml,
-  unescapeHtml,
-  svgIcons,
-  months,
-  ELLIPSIS,
-  refInvalid,
-  addListenerToClass,
-  insertAfter,
-  getVSCodeStyle,
-  pad2
-} from "./utils";
-import { Graph } from "./graph";
 import { Dropdown } from "./dropdown";
+import { Graph } from "./graph";
+import {
+  addListenerToClass,
+  arraysEqual,
+  ELLIPSIS,
+  escapeHtml,
+  getVSCodeStyle,
+  insertAfter,
+  months,
+  pad2,
+  refInvalid,
+  sendMessage,
+  svgIcons,
+  unescapeHtml,
+  vscode
+} from "./utils";
 
 class GitGraphView {
   private gitRepos: GG.GitRepoSet;

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+
 import { getPathFromUri } from "./utils";
 
 const fileChangeRegex =

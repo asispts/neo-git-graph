@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+
 import { getConfig } from "./config";
 
 export class StatusBarItem {

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+
 import { AvatarManager } from "./avatarManager";
 import { DataSource } from "./dataSource";
 import { DiffDocProvider } from "./diffDocProvider";

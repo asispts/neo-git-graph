@@ -3,6 +3,7 @@ import * as fs from "fs";
 import * as http from "http";
 import * as https from "https";
 import * as url from "url";
+
 import { DataSource } from "./dataSource";
 import { ExtensionState } from "./extensionState";
 import { GitGraphView } from "./gitGraphView";

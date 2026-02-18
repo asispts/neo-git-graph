@@ -1,5 +1,6 @@
 import * as fs from "fs";
 import * as vscode from "vscode";
+
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { ExtensionState } from "./extensionState";

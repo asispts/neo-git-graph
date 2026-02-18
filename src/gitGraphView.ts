@@ -1,5 +1,6 @@
 import * as path from "path";
 import * as vscode from "vscode";
+
 import { AvatarManager } from "./avatarManager";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
