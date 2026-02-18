@@ -1,0 +1,37 @@
+name: publish
+
+permissions:
+  contents: read
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    name: Deploy to ${{ matrix.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - name: VS Marketplace
+            pat: VS_MARKETPLACE_TOKEN
+            registryUrl: https://marketplace.visualstudio.com
+          - name: Open VSX
+            pat: OPEN_VSX_TOKEN
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: corepack enable
+
+      - name: Publish to ${{ matrix.name }}
+        uses: HaaLeo/publish-vscode-extension@v2
+        with:
+          pat: ${{ secrets[matrix.pat] }}
+          registryUrl: ${{ matrix.registryUrl || '' }}
