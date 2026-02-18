@@ -28,7 +28,7 @@ jobs:
         with:
           node-version: 24
 
-      - run: corepack enable && pnpm install
+      - run: corepack enable && pnpm install --frozen-lockfile
 
 
       - name: Publish to ${{ matrix.name }}
