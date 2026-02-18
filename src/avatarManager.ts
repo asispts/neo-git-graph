@@ -16,7 +16,7 @@ export class AvatarManager {
 	private avatars: AvatarCache;
 	private queue: AvatarRequestQueue;
 	private remoteSourceCache: { [repo: string]: RemoteSource } = {};
-	private interval: NodeJS.Timer | null = null;
+	private interval: NodeJS.Timeout | null = null;
 
 	private githubTimeout: number = 0;
 	private gitLabTimeout: number = 0;

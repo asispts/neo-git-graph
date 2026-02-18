@@ -19,8 +19,8 @@ export class RepoManager {
 
 	private createEventPaths: string[] = [];
 	private changeEventPaths: string[] = [];
-	private processCreateEventsTimeout: NodeJS.Timer | null = null;
-	private processChangeEventsTimeout: NodeJS.Timer | null = null;
+private processCreateEventsTimeout: NodeJS.Timeout | null = null;
+	private processChangeEventsTimeout: NodeJS.Timeout | null = null;
 
 	constructor(dataSource: DataSource, extensionState: ExtensionState, statusBarItem: StatusBarItem) {
 		this.dataSource = dataSource;
