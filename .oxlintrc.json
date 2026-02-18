@@ -18,7 +18,33 @@
     ],
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    "typescript/no-explicit-any": "warn"
+    "typescript/no-explicit-any": "warn",
+    "no-constant-condition": "error",
+    "no-self-compare": "error",
+    "no-template-curly-in-string": "error",
+    "no-unsafe-negation": "error",
+    "no-loss-of-precision": "error",
+    "no-constant-binary-expression": "error",
+    "no-constructor-return": "error",
+    "typescript/no-unnecessary-type-assertion": "warn",
+    "typescript/prefer-ts-expect-error": "error",
+    "import/no-duplicates": "error",
+    "import/no-self-import": "error",
+    // "typescript/no-non-null-assertion": "warn",
+    // Should have
+    "no-var": "error",
+    // "prefer-const": "warn",
+    "eqeqeq": "error",
+    "no-throw-literal": "error",
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "unicorn/prefer-string-starts-ends-with": "warn",
+    "unicorn/prefer-array-flat-map": "warn",
+    "unicorn/no-unnecessary-await": "warn"
+    // Nice to have
+    // "typescript/consistent-type-imports": "warn"
+    // "no-nested-ternary": "warn",
+    // "max-params": ["warn", { "max": 4 }]
   },
   "overrides": [
     {

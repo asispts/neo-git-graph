@@ -413,7 +413,7 @@ class AvatarRequestQueue {
 
   // Binary insertion of avatar request item, ordered by checkAfter
   private insertItem(item: AvatarRequestItem) {
-    var l = 0,
+    let l = 0,
       r = this.queue.length - 1,
       c,
       prevLength = this.queue.length;
