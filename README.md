@@ -11,9 +11,8 @@
 [![](https://img.shields.io/visual-studio-marketplace/i/asispts.neo-git-graph)](https://marketplace.visualstudio.com/items?itemName=asispts.neo-git-graph)
 [![open-vsx](https://img.shields.io/open-vsx/v/asispts/neo-git-graph)](https://open-vsx.org/extension/asispts/neo-git-graph)
 
-
-
 A fork of [Git Graph](https://github.com/mhutchie/vscode-git-graph) by mhutchie, based on commit [4af8583](https://github.com/mhutchie/vscode-git-graph/commit/4af8583a42082b2c230d2c0187d4eaff4b69c665) (May 9, 2019) — the last version released under the MIT license.
+
 <p>&nbsp;</p>
 
 ![demo](resources/demo.gif)

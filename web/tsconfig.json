@@ -1,18 +1,15 @@
 {
-	"compilerOptions": {
-		"lib": [
-			"es2020",
-			"dom"
-		],
-		"module": "commonjs",
-		"moduleResolution": "node",
-		"noFallthroughCasesInSwitch": true,
-		"noImplicitAny": true,
-		"noUnusedLocals": true,
-		"noUnusedParameters": true,
-		"outDir": "../media",
-		"removeComments": true,
-		"strict": true,
-		"target": "es5"
-	}
+  "compilerOptions": {
+    "lib": ["es2020", "dom"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "outDir": "../media",
+    "removeComments": true,
+    "strict": true,
+    "target": "es5"
+  }
 }

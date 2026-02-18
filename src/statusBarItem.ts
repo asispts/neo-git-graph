@@ -1,28 +1,28 @@
-import * as vscode from 'vscode';
-import { getConfig } from './config';
+import * as vscode from "vscode";
+import { getConfig } from "./config";
 
 export class StatusBarItem {
-	private statusBarItem: vscode.StatusBarItem;
-	private numRepos: number = 0;
+  private statusBarItem: vscode.StatusBarItem;
+  private numRepos: number = 0;
 
-	constructor(context: vscode.ExtensionContext) {
-		this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
-		this.statusBarItem.text = '(neo) Git Graph';
-		this.statusBarItem.tooltip = 'View Git Graph';
-		this.statusBarItem.command = 'neo-git-graph.view';
-		context.subscriptions.push(this.statusBarItem);
-	}
+  constructor(context: vscode.ExtensionContext) {
+    this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    this.statusBarItem.text = "(neo) Git Graph";
+    this.statusBarItem.tooltip = "View Git Graph";
+    this.statusBarItem.command = "neo-git-graph.view";
+    context.subscriptions.push(this.statusBarItem);
+  }
 
-	public setNumRepos(numRepos: number) {
-		this.numRepos = numRepos;
-		this.refresh();
-	}
+  public setNumRepos(numRepos: number) {
+    this.numRepos = numRepos;
+    this.refresh();
+  }
 
-	public refresh() {
-		if (getConfig().showStatusBarItem() && this.numRepos > 0) {
-			this.statusBarItem.show();
-		} else {
-			this.statusBarItem.hide();
-		}
-	}
+  public refresh() {
+    if (getConfig().showStatusBarItem() && this.numRepos > 0) {
+      this.statusBarItem.show();
+    } else {
+      this.statusBarItem.hide();
+    }
+  }
 }

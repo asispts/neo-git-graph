@@ -1,0 +1,5 @@
+{
+  "printWidth": 100,
+  "ignorePatterns": ["out/**", "node_modules/**", ".idea/**"],
+  "trailingComma": "none"
+}
