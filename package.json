@@ -182,18 +182,17 @@
 	"scripts": {
 		"typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit",
 		"vscode:prepublish": "pnpm run compile",
-		"clean": "node ./.vscode/clean.js",
+		"clean": "rm -rf out",
 		"compile": "pnpm run clean && pnpm run compile-src && pnpm run compile-web",
 		"compile-src": "tsc -p ./src",
-		"compile-web": "tsc -p ./web && node ./.vscode/package-web.js",
-		"compile-web-debug": "tsc -p ./web && node ./.vscode/package-web.js debug",
+		"compile-web": "esbuild --bundle web/main.ts --outfile=media/out.min.js --minify --target=es6 --format=iife",
 		"package": "pnpm run clean && vsce package",
 		"package-and-install": "pnpm run clean && vsce package && node ./.vscode/install-package.js"
 	},
 	"devDependencies": {
-		"uglify-js": "^3.4.9",
-		"typescript": "^4.9.5",
+		"@types/node": "^8.10.25",
 		"@types/vscode": "^1.39.0",
-		"@types/node": "^8.10.25"
+		"esbuild": "^0.27.3",
+		"typescript": "^4.9.5"
 	}
 }
