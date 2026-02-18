@@ -36,9 +36,20 @@ jobs:
       - name: Type check
         run: pnpm run typecheck
 
-      - run: rm -f neo-git-graph-0.1.0.vsix
+  deploy:
+    runs-on: ubuntu-latest
 
-      - name: Test package
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - run: corepack enable
+
+      - name: Publish
         uses: HaaLeo/publish-vscode-extension@v2
         with:
           pat: "test-pat"
