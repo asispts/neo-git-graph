@@ -28,7 +28,8 @@ jobs:
         with:
           node-version: 24
 
-      - run: corepack enable
+      - run: corepack enable && pnpm install
+
 
       - name: Publish to ${{ matrix.name }}
         uses: HaaLeo/publish-vscode-extension@v2
