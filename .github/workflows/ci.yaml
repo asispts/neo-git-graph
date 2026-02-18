@@ -29,8 +29,8 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Test build
-        run: pnpm run vscode:prepublish
+      - name: Format check
+        run: pnpm run format
 
-      - name: Type check
+      - name: Run typecheck
         run: pnpm run typecheck
