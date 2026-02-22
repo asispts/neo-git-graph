@@ -8,8 +8,8 @@
 
 ![](https://img.shields.io/github/license/asispts/neo-git-graph)
 ![GitHub Release](https://img.shields.io/github/v/release/asispts/neo-git-graph)
-![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/asispts.neo-git-graph?label=vscode%20download)
-![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/asispts.neo-git-graph?label=vscode%20install)
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/asispts.neo-git-graph?label=download)
+![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/asispts.neo-git-graph?label=install)
 ![Open VSX Downloads](https://img.shields.io/open-vsx/dt/asispts/neo-git-graph?label=open-vsx)
 
 ![demo](resources/demo.gif)
