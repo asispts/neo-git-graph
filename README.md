@@ -39,7 +39,7 @@ The original [Git Graph](https://github.com/mhutchie/vscode-git-graph) by mhutch
 All settings are under the `neo-git-graph` namespace.
 
 | Setting                       | Default         | Description                                                                                     |
-|-------------------------------|-----------------|-------------------------------------------------------------------------------------------------|
+| ----------------------------- | --------------- | ----------------------------------------------------------------------------------------------- |
 | `autoCenterCommitDetailsView` | `true`          | Auto-scroll to center the commit details panel when opened                                      |
 | `dateFormat`                  | `"Date & Time"` | Display format: `"Date & Time"`, `"Date Only"`, or `"Relative"`                                 |
 | `dateType`                    | `"Author Date"` | Which date to show: `"Author Date"` or `"Commit Date"`                                          |
@@ -61,11 +61,13 @@ Search for `neo-git-graph` in the Extensions panel, or install from the [VS Code
 ## Roadmap
 
 **Completed**
+
 - [x] Fix activation event (`*` → `onStartupFinished`)
 - [x] Fix extension not activating in devcontainers
 - [x] Upgrade dependencies and toolchain
 
 **Upcoming**
+
 - [ ] Add integration/functional test suite (extension, git backend, webview)
 - [ ] Modernize the codebase (refactor, type-safety improvements)
 
