@@ -49,12 +49,12 @@
     "lint:fix": "oxlint --fix"
   },
   "devDependencies": {
-    "@types/node": "^18.19.130",
-    "@types/vscode": "~1.74.0",
+    "@types/node": "^20.19.33",
+    "@types/vscode": "~1.98.0",
     "esbuild": "^0.27.3",
     "eslint-plugin-simple-import-sort": "^12.1.1",
-    "oxfmt": "^0.33.0",
-    "oxlint": "^1.48.0",
+    "oxfmt": "^0.34.0",
+    "oxlint": "^1.49.0",
     "typescript": "^5.9.3"
   },
   "contributes": {
@@ -199,7 +199,7 @@
   ],
   "icon": "resources/icon.png",
   "engines": {
-    "vscode": "^1.74.0"
+    "vscode": "^1.98.0"
   },
   "packageManager": "pnpm@10.29.3"
 }
