@@ -2,18 +2,18 @@
   <img src="./resources/icon.png" height="128"/>
   <samp>
     <h1>(neo) Git Graph for Visual Studio Code</h1>
-    <h3>VS Code extension to visualize git history graph, with git actions and devcontainer support</h3>
+    <h3>Visualize git history graph, with git actions and devcontainer support</h3>
   </samp>
 </div>
 
 ![](https://img.shields.io/github/license/asispts/neo-git-graph)
-[![](https://img.shields.io/visual-studio-marketplace/v/asispts.neo-git-graph?label=marketplace)](https://marketplace.visualstudio.com/items?itemName=asispts.neo-git-graph)
-[![](https://img.shields.io/visual-studio-marketplace/i/asispts.neo-git-graph)](https://marketplace.visualstudio.com/items?itemName=asispts.neo-git-graph)
-[![open-vsx](https://img.shields.io/open-vsx/v/asispts/neo-git-graph)](https://open-vsx.org/extension/asispts/neo-git-graph)
-
-<p>&nbsp;</p>
+![GitHub Release](https://img.shields.io/github/v/release/asispts/neo-git-graph)
+![Visual Studio Marketplace Downloads](https://img.shields.io/visual-studio-marketplace/d/asispts.neo-git-graph?label=vscode%20download)
+![Visual Studio Marketplace Installs](https://img.shields.io/visual-studio-marketplace/i/asispts.neo-git-graph?label=vscode%20install)
+![Open VSX Downloads](https://img.shields.io/open-vsx/dt/asispts/neo-git-graph?label=open-vsx)
 
 ![demo](resources/demo.gif)
+<p>&nbsp;</p>
 
 ## Why This Fork
 
