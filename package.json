@@ -4,14 +4,15 @@
   "version": "0.1.0",
   "description": "View your Git history as a graph with Git actions and devcontainer support. A VS Code extension based on the last MIT commit of Git Graph.",
   "categories": [
-    "Other"
+    "SCM Providers",
+    "Visualization"
   ],
   "keywords": [
-    "action",
-    "diff",
     "git",
-    "graph",
-    "visualise"
+    "git graph",
+    "git log",
+    "git history",
+    "branch"
   ],
   "homepage": "https://github.com/asispts/neo-git-graph",
   "bugs": {
