@@ -2,7 +2,7 @@
   "name": "neo-git-graph",
   "displayName": "(neo) Git Graph",
   "version": "0.1.0",
-  "description": "VS Code extension to visualize git history graph, with git actions and devcontainer support. Forked from Git Graph's last MIT commit.",
+  "description": "View your Git history as a graph with Git actions and devcontainer support. A VS Code extension based on the last MIT commit of Git Graph.",
   "categories": [
     "Other"
   ],
