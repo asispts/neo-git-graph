@@ -8,11 +8,11 @@
     "Visualization"
   ],
   "keywords": [
+    "branch",
     "git",
     "git graph",
-    "git log",
     "git history",
-    "branch"
+    "git log"
   ],
   "homepage": "https://github.com/asispts/neo-git-graph",
   "bugs": {
