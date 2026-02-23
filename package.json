@@ -1,7 +1,7 @@
 {
   "name": "neo-git-graph",
   "displayName": "(neo) Git Graph",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "View your Git history as a graph with Git actions and devcontainer support. A VS Code extension based on the last MIT commit of Git Graph.",
   "categories": [
     "SCM Providers",
