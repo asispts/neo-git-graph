@@ -1,6 +1,7 @@
 import { beforeAll, describe, expect, it, vi } from "vitest";
-import { createVscodeMock, receive, setupHtml } from "./setup";
+
 import type * as GG from "../../src/types";
+import { createVscodeMock, receive, setupHtml } from "./setup";
 
 const REPO = "/workspace/my-repo";
 
@@ -14,7 +15,7 @@ const defaultViewState: GG.GitGraphViewState = {
   lastActiveRepo: null,
   loadMoreCommits: 75,
   repos: { [REPO]: { columnWidths: null } },
-  showCurrentBranchByDefault: false,
+  showCurrentBranchByDefault: false
 };
 
 const twoCommits: GG.GitCommitNode[] = [
@@ -25,7 +26,7 @@ const twoCommits: GG.GitCommitNode[] = [
     email: "alice@example.com",
     date: 1700000000,
     message: "Add feature",
-    refs: [{ hash: "abc123", name: "main", type: "head" }],
+    refs: [{ hash: "abc123", name: "main", type: "head" }]
   },
   {
     hash: "def456",
@@ -34,8 +35,8 @@ const twoCommits: GG.GitCommitNode[] = [
     email: "bob@example.com",
     date: 1699000000,
     message: "Initial commit",
-    refs: [],
-  },
+    refs: []
+  }
 ];
 
 describe("webview rendering", () => {
@@ -44,13 +45,19 @@ describe("webview rendering", () => {
     createVscodeMock();
     setupHtml(defaultViewState);
     await import("../../web/main");
-    receive({ command: "loadBranches", branches: ["main"], head: "main", hard: true, isRepo: true });
+    receive({
+      command: "loadBranches",
+      branches: ["main"],
+      head: "main",
+      hard: true,
+      isRepo: true
+    });
     receive({
       command: "loadCommits",
       commits: twoCommits,
       head: "abc123",
       moreCommitsAvailable: true,
-      hard: true,
+      hard: true
     });
   });
 

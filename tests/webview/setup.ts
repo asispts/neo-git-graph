@@ -9,7 +9,7 @@ export function createVscodeMock() {
     getState: () => state,
     setState: (s: WebViewState) => {
       state = s;
-    },
+    }
   };
 
   global.acquireVsCodeApi = () => mock;
@@ -17,7 +17,7 @@ export function createVscodeMock() {
   return {
     sentMessages: sent,
     clearMessages: () => sent.splice(0),
-    getState: () => state,
+    getState: () => state
   };
 }
 

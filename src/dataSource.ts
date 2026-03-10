@@ -1,7 +1,7 @@
 import * as cp from "node:child_process";
 
 import { getConfig } from "./config";
-import { getBranches as _getBranches } from "./features/branches";
+import { getBranches as _getBranches } from "./features/branch";
 import {
   GitCommandStatus,
   GitCommit,

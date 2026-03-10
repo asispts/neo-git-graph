@@ -5,17 +5,17 @@ export default defineConfig({
       {
         test: {
           name: "features",
-          include: ["tests/features/**/*.test.ts"],
-        },
+          include: ["tests/features/**/*.test.ts"]
+        }
       },
       {
         test: {
           name: "webview",
           environment: "jsdom",
           include: ["tests/webview/**/*.test.ts"],
-          setupFiles: ["tests/webview/setup.ts"],
-        },
-      },
-    ],
-  },
+          setupFiles: ["tests/webview/setup.ts"]
+        }
+      }
+    ]
+  }
 });
