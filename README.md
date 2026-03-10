@@ -2,7 +2,7 @@
   <img src="./resources/icon.png" height="128"/>
   <samp>
     <h1>(neo) Git Graph for Visual Studio Code</h1>
-    <h3>View your Git history as a graph with Git actions and devcontainer support</h3>
+    <h3>A clean MIT fork of Git Graph. Visual history, branch actions, and devcontainer support.</h3>
   </samp>
 </div>
 
