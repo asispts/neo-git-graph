@@ -20,7 +20,10 @@ suite("GitGraphPanel", () => {
 
   test("view command opens the panel", async () => {
     await vscode.commands.executeCommand("neo-git-graph.view");
-    await new Promise((r) => setTimeout(r, 5));
+    const deadline = Date.now() + 2000;
+    while (!isPanelOpen() && Date.now() < deadline) {
+      await new Promise((r) => setTimeout(r, 50));
+    }
     assert.ok(isPanelOpen(), "Panel should be visible after executing view command");
   });
 });
