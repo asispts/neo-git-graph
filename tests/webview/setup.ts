@@ -43,7 +43,7 @@ export function setupHtml(viewState: GG.GitGraphViewState) {
     <div id="scrollShadow"></div>
   `;
 
-  (global as any).viewState = viewState;
+  (global as unknown as { viewState: GG.GitGraphViewState }).viewState = viewState;
 }
 
 export function receive(msg: GG.ResponseMessage) {
