@@ -1,4 +1,5 @@
-media/*.js
-node_modules
-out
+/.vscode-test/
+/media/*.js
+/node_modules/
+**/out/
 *.vsix

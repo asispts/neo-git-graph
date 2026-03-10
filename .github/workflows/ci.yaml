@@ -40,3 +40,26 @@ jobs:
 
       - name: Run typecheck
         run: pnpm run typecheck
+
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Compile
+        run: pnpm run compile
+
+      - name: Compile tests
+        run: pnpm run compile-tests
+
+      - name: Run tests
+        run: xvfb-run -a pnpm run test

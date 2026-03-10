@@ -36,12 +36,15 @@
   "publisher": "asispts",
   "main": "./out/extension.js",
   "scripts": {
-    "typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit",
+    "typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit && tsc -p ./tests/extension --noEmit",
     "vscode:prepublish": "pnpm run compile",
     "clean": "rm -rf out",
     "compile": "pnpm run clean && pnpm run compile-src && pnpm run compile-web",
     "compile-src": "esbuild --bundle src/extension.ts --outfile=out/extension.js --platform=node --format=cjs --target=es6 --external:vscode --minify",
     "compile-web": "esbuild --bundle web/main.ts --outfile=out/web.min.js --minify --target=es6 --format=iife",
+    "compile-tests": "tsc -p tests/extension/tsconfig.json",
+    "pretest": "pnpm run compile && pnpm run compile-tests",
+    "test": "vscode-test",
     "package": "pnpm run clean && vsce package",
     "package-and-install": "pnpm run clean && vsce package && node ./.vscode/install-package.js",
     "format": "oxfmt --check",
@@ -50,8 +53,11 @@
     "lint:fix": "oxlint --fix"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20.19.33",
     "@types/vscode": "~1.98.0",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.27.3",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "oxfmt": "^0.34.0",
