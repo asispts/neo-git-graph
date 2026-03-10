@@ -60,4 +60,7 @@ jobs:
         run: pnpm install
 
       - name: Run tests
-        run: xvfb-run -a pnpm run test
+        run: pnpm run test
+
+      - name: Run extension tests
+        run: xvfb-run -a pnpm run test:ext
