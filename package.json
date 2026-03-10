@@ -36,7 +36,8 @@
   "publisher": "asispts",
   "main": "./out/extension.js",
   "scripts": {
-    "typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit && tsc -p ./tests/extension --noEmit",
+    "typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit && tsc -p ./tests --noEmit",
+    "test:features": "vitest run",
     "vscode:prepublish": "pnpm run compile",
     "clean": "rm -rf out",
     "compile": "pnpm run clean && pnpm run compile-src && pnpm run compile-web",
@@ -62,7 +63,8 @@
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "oxfmt": "^0.34.0",
     "oxlint": "^1.49.0",
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^3.2.4"
   },
   "contributes": {
     "commands": [

@@ -1,6 +1,7 @@
 import * as cp from "node:child_process";
 
 import { getConfig } from "./config";
+import { getBranches as _getBranches } from "./features/branches";
 import {
   GitCommandStatus,
   GitCommit,
@@ -14,7 +15,6 @@ import {
 import { getPathFromStr } from "./utils";
 
 const eolRegex = /\r\n|\r|\n/g;
-const headRegex = /^\(HEAD detached at [0-9A-Za-z]+\)/g;
 const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
 
 export class DataSource {
@@ -41,33 +41,7 @@ export class DataSource {
   }
 
   public getBranches(repo: string, showRemoteBranches: boolean) {
-    return new Promise<{ branches: string[]; head: string | null; error: boolean }>((resolve) => {
-      this.execGit("branch" + (showRemoteBranches ? " -a" : ""), repo, (err, stdout) => {
-        let branchData = {
-          branches: <string[]>[],
-          head: <string | null>null,
-          error: false
-        };
-
-        if (err) {
-          branchData.error = true;
-        } else {
-          let lines = stdout.split(eolRegex);
-          for (let i = 0; i < lines.length - 1; i++) {
-            let name = lines[i].substring(2).split(" -> ")[0];
-            if (name.match(headRegex) !== null) continue;
-
-            if (lines[i][0] === "*") {
-              branchData.head = name;
-              branchData.branches.unshift(name);
-            } else {
-              branchData.branches.push(name);
-            }
-          }
-        }
-        resolve(branchData);
-      });
-    });
+    return _getBranches(repo, this.gitExecPath, showRemoteBranches);
   }
 
   public getCommits(repo: string, branch: string, maxCommits: number, showRemoteBranches: boolean) {
