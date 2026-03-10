@@ -55,11 +55,5 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Compile
-        run: pnpm run compile
-
-      - name: Compile tests
-        run: pnpm run compile-tests
-
       - name: Run tests
         run: xvfb-run -a pnpm run test
