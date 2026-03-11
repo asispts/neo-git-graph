@@ -2,7 +2,7 @@ import * as path from "node:path";
 
 import { describe, expect, it } from "vitest";
 
-import { getBranches } from "../../src/features/branch";
+import { getBranches } from "../../src/backend/features/branch";
 
 const REPO = path.resolve(__dirname, "../.."); // the project root is a git repo
 
