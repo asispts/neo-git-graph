@@ -45,7 +45,6 @@
     "compile-tests": "tsc -p tests/extension/tsconfig.json",
     "test": "vitest run --project features && vitest run --project webview",
     "test:ext": "pnpm run compile && pnpm run compile-tests && vscode-test",
-    "package": "pnpm run clean && vsce package",
     "format": "oxfmt --check",
     "format:fix": "oxfmt .",
     "lint": "oxlint",
