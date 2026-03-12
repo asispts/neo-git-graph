@@ -12,7 +12,7 @@ import {
   GitResetMode,
   GitUnsavedChanges
 } from "./types";
-import { getPathFromStr } from "./utils";
+import { getPathFromStr } from "./backend/utils";
 
 const eolRegex = /\r\n|\r|\n/g;
 const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";

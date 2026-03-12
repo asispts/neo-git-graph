@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { getPathFromUri } from "./utils";
+import { getPathFromUri } from "./backend/utils";
 
 const fileChangeRegex =
   /(^\.git\/(config|index|HEAD|refs\/stash|refs\/heads\/.*|refs\/remotes\/.*|refs\/tags\/.*)$)|(^(?!\.git).*$)|(^\.git[^/]+$)/;

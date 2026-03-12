@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import { DataSource } from "./dataSource";
-import { getPathFromStr } from "./utils";
+import { getPathFromStr } from "./backend/utils";
 
 export class DiffDocProvider implements vscode.TextDocumentContentProvider {
   public static scheme = "neo-git-graph";

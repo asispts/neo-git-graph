@@ -2,12 +2,14 @@ import * as fs from "node:fs";
 
 import * as vscode from "vscode";
 
+import { doesPathExist, isDirectory } from "./backend/utils/path.util";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { ExtensionState } from "./extensionState";
 import { StatusBarItem } from "./statusBarItem";
 import { GitRepoSet, GitRepoState } from "./types";
-import { evalPromises, getPathFromUri } from "./utils";
+import { evalPromises } from "./utils";
+import { getPathFromUri } from "./backend/utils";
 
 export class RepoManager {
   private readonly dataSource: DataSource;
@@ -313,18 +315,4 @@ export class RepoManager {
     this.processChangeEventsTimeout = null;
     if (changes) this.sendRepos();
   }
-}
-
-function isDirectory(path: string) {
-  return new Promise<boolean>((resolve) => {
-    fs.stat(path, (err, stats) => {
-      resolve(err ? false : stats.isDirectory());
-    });
-  });
-}
-
-function doesPathExist(path: string) {
-  return new Promise<boolean>((resolve) => {
-    fs.stat(path, (err) => resolve(!err));
-  });
 }
