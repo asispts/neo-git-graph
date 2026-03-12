@@ -1,6 +1,5 @@
 import * as cp from "node:child_process";
 
-import { getBranches as _getBranches } from "./backend/features/branch";
 import { escapeRefName, getPathFromStr } from "./backend/utils";
 import { getConfig } from "./config";
 import {
@@ -38,10 +37,6 @@ export class DataSource {
     this.gitLogFormat = ["%H", "%P", "%an", "%ae", dateType, "%s"].join(gitLogSeparator);
     this.gitCommitDetailsFormat =
       ["%H", "%P", "%an", "%ae", dateType, "%cn"].join(gitLogSeparator) + "%n%B";
-  }
-
-  public getBranches(repo: string, showRemoteBranches: boolean) {
-    return _getBranches(repo, this.gitExecPath, showRemoteBranches);
   }
 
   public getCommits(repo: string, branch: string, maxCommits: number, showRemoteBranches: boolean) {

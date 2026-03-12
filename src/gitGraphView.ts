@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
+import { createGitClient, GitClient } from "./backend/features/gitClient";
 import { abbrevCommit, buildExtensionUri, copyToClipboard, getNonce } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
@@ -30,13 +31,16 @@ export class GitGraphView {
   private isGraphViewLoaded: boolean = false;
   private isPanelVisible: boolean = true;
   private currentRepo: string | null = null;
+  private gitPath: string;
+  private gitClient: GitClient | null = null;
 
   public static createOrShow(
     extensionPath: string,
     dataSource: DataSource,
     extensionState: ExtensionState,
     avatarManager: AvatarManager,
-    repoManager: RepoManager
+    repoManager: RepoManager,
+    gitPath: string
   ) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
@@ -66,7 +70,8 @@ export class GitGraphView {
       dataSource,
       extensionState,
       avatarManager,
-      repoManager
+      repoManager,
+      gitPath
     );
   }
 
@@ -76,7 +81,8 @@ export class GitGraphView {
     dataSource: DataSource,
     extensionState: ExtensionState,
     avatarManager: AvatarManager,
-    repoManager: RepoManager
+    repoManager: RepoManager,
+    gitPath: string
   ) {
     this.panel = panel;
     this.extensionPath = extensionPath;
@@ -84,6 +90,7 @@ export class GitGraphView {
     this.dataSource = dataSource;
     this.extensionState = extensionState;
     this.repoManager = repoManager;
+    this.gitPath = gitPath;
     this.avatarManager.registerView(this);
 
     panel.iconPath =
@@ -204,7 +211,13 @@ export class GitGraphView {
             });
             break;
           case "loadBranches":
-            let branchData = await this.dataSource.getBranches(msg.repo, msg.showRemoteBranches),
+            if (msg.repo !== this.currentRepo) {
+              this.gitClient = createGitClient(msg.repo, this.gitPath);
+              this.currentRepo = msg.repo;
+              this.extensionState.setLastActiveRepo(msg.repo);
+              this.repoFileWatcher.start(msg.repo);
+            }
+            let branchData = await this.gitClient!.getBranches(msg.showRemoteBranches),
               isRepo = true;
             if (branchData.error) {
               // If an error occurred, check to make sure the repo still exists
@@ -217,11 +230,6 @@ export class GitGraphView {
               hard: msg.hard,
               isRepo: isRepo
             });
-            if (msg.repo !== this.currentRepo) {
-              this.currentRepo = msg.repo;
-              this.extensionState.setLastActiveRepo(msg.repo);
-              this.repoFileWatcher.start(msg.repo);
-            }
             break;
           case "loadCommits":
             this.sendMessage({

@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
+import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { DiffDocProvider } from "./diffDocProvider";
 import { ExtensionState } from "./extensionState";
@@ -15,6 +16,7 @@ export function activate(context: vscode.ExtensionContext) {
   const avatarManager = new AvatarManager(dataSource, extensionState);
   const statusBarItem = new StatusBarItem(context);
   const repoManager = new RepoManager(dataSource, extensionState, statusBarItem);
+  let gitPath = getConfig().gitPath();
 
   context.subscriptions.push(
     outputChannel,
@@ -24,7 +26,8 @@ export function activate(context: vscode.ExtensionContext) {
         dataSource,
         extensionState,
         avatarManager,
-        repoManager
+        repoManager,
+        gitPath
       );
     }),
     vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", () => {
@@ -43,6 +46,7 @@ export function activate(context: vscode.ExtensionContext) {
         repoManager.maxDepthOfRepoSearchChanged();
       } else if (e.affectsConfiguration("git.path")) {
         dataSource.registerGitPath();
+        gitPath = getConfig().gitPath();
       }
     }),
     repoManager
