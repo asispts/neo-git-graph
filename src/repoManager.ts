@@ -2,14 +2,13 @@ import * as fs from "node:fs";
 
 import * as vscode from "vscode";
 
+import { evalPromises, getPathFromUri, isPathWithinRepos, sortRepos } from "./backend/utils";
 import { doesPathExist, isDirectory } from "./backend/utils/path.util";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { ExtensionState } from "./extensionState";
 import { StatusBarItem } from "./statusBarItem";
 import { GitRepoSet, GitRepoState } from "./types";
-import { evalPromises } from "./utils";
-import { getPathFromUri } from "./backend/utils";
 
 export class RepoManager {
   private readonly dataSource: DataSource;
@@ -122,12 +121,7 @@ export class RepoManager {
 
   /* Repo Management */
   public getRepos() {
-    let repoPaths = Object.keys(this.repos).sort(),
-      repos: GitRepoSet = {};
-    for (let i = 0; i < repoPaths.length; i++) {
-      repos[repoPaths[i]] = this.repos[repoPaths[i]];
-    }
-    return repos;
+    return sortRepos(this.repos);
   }
   private addRepo(repo: string) {
     this.repos[repo] = { columnWidths: null };
@@ -150,11 +144,7 @@ export class RepoManager {
     return changes;
   }
   private isDirectoryWithinRepos(path: string) {
-    let repoPaths = Object.keys(this.repos);
-    for (let i = 0; i < repoPaths.length; i++) {
-      if (path === repoPaths[i] || path.startsWith(repoPaths[i] + "/")) return true;
-    }
-    return false;
+    return isPathWithinRepos(path, this.repos);
   }
   private sendRepos() {
     let repos = this.getRepos();

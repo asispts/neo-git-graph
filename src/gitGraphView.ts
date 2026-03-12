@@ -1,8 +1,7 @@
-import * as path from "node:path";
-
 import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
+import { abbrevCommit, buildExtensionUri, copyToClipboard, getNonce } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { encodeDiffDocUri } from "./diffDocProvider";
@@ -16,7 +15,6 @@ import {
   RequestMessage,
   ResponseMessage
 } from "./types";
-import { abbrevCommit, copyToClipboard } from "./utils";
 
 export class GitGraphView {
   public static currentPanel: GitGraphView | undefined;
@@ -56,8 +54,8 @@ export class GitGraphView {
       {
         enableScripts: true,
         localResourceRoots: [
-          vscode.Uri.file(path.join(extensionPath, "media")),
-          vscode.Uri.file(path.join(extensionPath, "out"))
+          buildExtensionUri(extensionPath, "media"),
+          buildExtensionUri(extensionPath, "out")
         ]
       }
     );
@@ -90,10 +88,10 @@ export class GitGraphView {
 
     panel.iconPath =
       getConfig().tabIconColourTheme() === "colour"
-        ? this.getUri("resources", "webview-icon.svg")
+        ? buildExtensionUri(this.extensionPath, "resources", "webview-icon.svg")
         : {
-            light: this.getUri("resources", "webview-icon-light.svg"),
-            dark: this.getUri("resources", "webview-icon-dark.svg")
+            light: buildExtensionUri(this.extensionPath, "resources", "webview-icon-light.svg"),
+            dark: buildExtensionUri(this.extensionPath, "resources", "webview-icon-dark.svg")
           };
 
     this.update();
@@ -400,15 +398,11 @@ export class GitGraphView {
   }
 
   private getMediaUri(file: string) {
-    return this.panel.webview.asWebviewUri(this.getUri("media", file));
+    return this.panel.webview.asWebviewUri(buildExtensionUri(this.extensionPath, "media", file));
   }
 
   private getCompiledOutputUri(file: string) {
-    return this.panel.webview.asWebviewUri(this.getUri("out", file));
-  }
-
-  private getUri(...pathComps: string[]) {
-    return vscode.Uri.file(path.join(this.extensionPath, ...pathComps));
+    return this.panel.webview.asWebviewUri(buildExtensionUri(this.extensionPath, "out", file));
   }
 
   private respondLoadRepos(repos: GitRepoSet) {
@@ -450,13 +444,4 @@ export class GitGraphView {
         .then(() => resolve(false));
     });
   }
-}
-
-function getNonce() {
-  let text = "";
-  const possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 32; i++) {
-    text += possible.charAt(Math.floor(Math.random() * possible.length));
-  }
-  return text;
 }

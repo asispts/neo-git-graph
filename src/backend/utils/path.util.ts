@@ -1,4 +1,5 @@
 import * as fs from "node:fs";
+import * as path from "node:path";
 
 import * as vscode from "vscode";
 
@@ -24,4 +25,8 @@ export function getPathFromUri(uri: vscode.Uri) {
 
 export function getPathFromStr(str: string) {
   return str.replace(FS_REGEX, "/");
+}
+
+export function buildExtensionUri(extensionPath: string, ...pathComps: string[]) {
+  return vscode.Uri.file(path.join(extensionPath, ...pathComps));
 }

@@ -1,18 +1,3 @@
-import * as vscode from "vscode";
-
-export function abbrevCommit(commitHash: string) {
-  return commitHash.substring(0, 8);
-}
-
-export function copyToClipboard(text: string) {
-  return new Promise<boolean>((resolve) => {
-    vscode.env.clipboard.writeText(text).then(
-      () => resolve(true),
-      () => resolve(false)
-    );
-  });
-}
-
 // Evaluate promises in parallel, with at most maxParallel running at any time
 export function evalPromises<X, Y>(
   data: X[],
