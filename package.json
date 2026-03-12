@@ -50,9 +50,6 @@
     "lint": "oxlint",
     "lint:fix": "oxlint --fix"
   },
-  "dependencies": {
-    "simple-git": "^3.33.0"
-  },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.19.37",
