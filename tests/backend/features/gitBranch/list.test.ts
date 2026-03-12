@@ -31,6 +31,7 @@ function makeRepo(): string {
 
 let simpleRepo: string;
 let detachedRepo: string;
+let repoWithRemote: string;
 
 beforeAll(() => {
   simpleRepo = makeRepo();
@@ -42,11 +43,17 @@ beforeAll(() => {
     .toString()
     .trim();
   git(["checkout", "--detach", hash], detachedRepo);
+
+  const remoteRepo = makeRepo();
+  repoWithRemote = makeRepo();
+  git(["remote", "add", "origin", remoteRepo], repoWithRemote);
+  git(["fetch", "origin"], repoWithRemote);
 });
 
 afterAll(() => {
   fs.rmSync(simpleRepo, { recursive: true, force: true });
   fs.rmSync(detachedRepo, { recursive: true, force: true });
+  fs.rmSync(repoWithRemote, { recursive: true, force: true });
 });
 
 describe("list", () => {
@@ -80,7 +87,7 @@ describe("list", () => {
   });
 
   it("includes remote-tracking branches when showRemoteBranches is true", async () => {
-    const client = gitClientFactory(PROJECT_ROOT, "git");
+    const client = gitClientFactory(repoWithRemote, "git");
     const result = await client.branch.list(true);
     expect(result.error).toBe(false);
     expect(result.branches.some((b) => b.startsWith("remotes/origin/"))).toBe(true);
