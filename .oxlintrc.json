@@ -8,7 +8,7 @@
   "plugins": ["import", "typescript", "unicorn"],
   "rules": {
     "unicorn/prefer-node-protocol": "error",
-    "no-console": "warn",
+    "no-console": "off",
     "no-unused-vars": [
       "warn",
       {

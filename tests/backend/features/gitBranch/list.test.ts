@@ -37,7 +37,10 @@ beforeAll(() => {
   git(["branch", "feature/foo"], simpleRepo);
 
   detachedRepo = makeRepo();
-  const hash = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: detachedRepo }).toString().trim();
+  const hash = cp
+    .execFileSync("git", ["rev-parse", "HEAD"], { cwd: detachedRepo })
+    .toString()
+    .trim();
   git(["checkout", "--detach", hash], detachedRepo);
 });
 
