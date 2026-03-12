@@ -208,5 +208,8 @@
   "engines": {
     "vscode": "^1.98.0"
   },
-  "packageManager": "pnpm@10.29.3"
+  "packageManager": "pnpm@10.29.3",
+  "dependencies": {
+    "simple-git": "^3.33.0"
+  }
 }
