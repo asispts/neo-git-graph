@@ -5,7 +5,7 @@ export default defineConfig({
       {
         test: {
           name: "features",
-          include: ["tests/features/**/*.test.ts"]
+          include: ["tests/backend/**/*.test.ts"]
         }
       },
       {
