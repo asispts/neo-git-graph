@@ -5,7 +5,7 @@ import * as path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { createGitClient } from "../../../../src/backend/features/gitClient";
+import { gitClientFactory } from "../../../../src/backend/features/gitClient";
 
 const PROJECT_ROOT = path.resolve(__dirname, "../../../..");
 
@@ -46,46 +46,46 @@ afterAll(() => {
   fs.rmSync(detachedRepo, { recursive: true, force: true });
 });
 
-describe("getBranches", () => {
+describe("list", () => {
   it("head branch is first in the returned array", async () => {
-    const client = createGitClient(simpleRepo, "git");
-    const result = await client.getBranches(false);
+    const client = gitClientFactory(simpleRepo, "git");
+    const result = await client.branch.list(false);
     expect(result.error).toBe(false);
     expect(result.head).not.toBeNull();
     expect(result.branches[0]).toBe(result.head);
   });
 
   it("non-head branches are present", async () => {
-    const client = createGitClient(simpleRepo, "git");
-    const result = await client.getBranches(false);
+    const client = gitClientFactory(simpleRepo, "git");
+    const result = await client.branch.list(false);
     expect(result.branches).toContain("feature/foo");
   });
 
   it("detached HEAD yields head: null with branches still listed", async () => {
-    const client = createGitClient(detachedRepo, "git");
-    const result = await client.getBranches(false);
+    const client = gitClientFactory(detachedRepo, "git");
+    const result = await client.branch.list(false);
     expect(result.error).toBe(false);
     expect(result.head).toBeNull();
     expect(result.branches.length).toBeGreaterThan(0);
   });
 
   it("excludes remote-tracking branches when showRemoteBranches is false", async () => {
-    const client = createGitClient(PROJECT_ROOT, "git");
-    const result = await client.getBranches(false);
+    const client = gitClientFactory(PROJECT_ROOT, "git");
+    const result = await client.branch.list(false);
     expect(result.error).toBe(false);
     expect(result.branches.some((b) => b.startsWith("remotes/"))).toBe(false);
   });
 
   it("includes remote-tracking branches when showRemoteBranches is true", async () => {
-    const client = createGitClient(PROJECT_ROOT, "git");
-    const result = await client.getBranches(true);
+    const client = gitClientFactory(PROJECT_ROOT, "git");
+    const result = await client.branch.list(true);
     expect(result.error).toBe(false);
     expect(result.branches.some((b) => b.startsWith("remotes/origin/"))).toBe(true);
   });
 
   it("returns error:true for a non-git directory", async () => {
-    const client = createGitClient(os.tmpdir(), "git");
-    const result = await client.getBranches(false);
+    const client = gitClientFactory(os.tmpdir(), "git");
+    const result = await client.branch.list(false);
     expect(result.error).toBe(true);
     expect(result.branches).toEqual([]);
     expect(result.head).toBeNull();

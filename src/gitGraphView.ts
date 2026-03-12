@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
-import { createGitClient, GitClient } from "./backend/features/gitClient";
+import { gitClientFactory, GitClient } from "./backend/features/gitClient";
 import { abbrevCommit, buildExtensionUri, copyToClipboard, getNonce } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
@@ -212,12 +212,16 @@ export class GitGraphView {
             break;
           case "loadBranches":
             if (msg.repo !== this.currentRepo) {
-              this.gitClient = createGitClient(msg.repo, this.gitPath);
+              this.gitClient = gitClientFactory(msg.repo, this.gitPath);
               this.currentRepo = msg.repo;
               this.extensionState.setLastActiveRepo(msg.repo);
               this.repoFileWatcher.start(msg.repo);
             }
-            let branchData = await this.gitClient!.getBranches(msg.showRemoteBranches),
+            if (this.gitClient === null) {
+              console.error("gitClient is null in loadBranches — gitGraphView should not exist without a repo");
+              break;
+            }
+            let branchData = await this.gitClient.branch.list(msg.showRemoteBranches),
               isRepo = true;
             if (branchData.error) {
               // If an error occurred, check to make sure the repo still exists
