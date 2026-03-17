@@ -49,7 +49,6 @@ export function activate(context: vscode.ExtensionContext) {
   );
 
   outputChannel.appendLine("Extension activated successfully");
-  vscode.window.showInformationMessage("(neo) Git Graph extension loaded");
 }
 
 export function deactivate() {}
