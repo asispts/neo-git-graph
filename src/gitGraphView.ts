@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
-import { GitClient, gitClientFactory } from "./backend/features/gitClient";
+import { GitClientManager } from "./backend/features/gitClient";
 import { abbrevCommit, buildExtensionUri, copyToClipboard, getNonce } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
@@ -31,8 +31,7 @@ export class GitGraphView {
   private isGraphViewLoaded: boolean = false;
   private isPanelVisible: boolean = true;
   private currentRepo: string | null = null;
-  private gitPath: string;
-  private gitClient: GitClient | null = null;
+  private readonly gitManager: GitClientManager;
 
   public static createOrShow(
     extensionPath: string,
@@ -40,7 +39,7 @@ export class GitGraphView {
     extensionState: ExtensionState,
     avatarManager: AvatarManager,
     repoManager: RepoManager,
-    gitPath: string
+    gitManager: GitClientManager
   ) {
     const column = vscode.window.activeTextEditor
       ? vscode.window.activeTextEditor.viewColumn
@@ -71,7 +70,7 @@ export class GitGraphView {
       extensionState,
       avatarManager,
       repoManager,
-      gitPath
+      gitManager
     );
   }
 
@@ -82,7 +81,7 @@ export class GitGraphView {
     extensionState: ExtensionState,
     avatarManager: AvatarManager,
     repoManager: RepoManager,
-    gitPath: string
+    gitManager: GitClientManager
   ) {
     this.panel = panel;
     this.extensionPath = extensionPath;
@@ -90,7 +89,7 @@ export class GitGraphView {
     this.dataSource = dataSource;
     this.extensionState = extensionState;
     this.repoManager = repoManager;
-    this.gitPath = gitPath;
+    this.gitManager = gitManager;
     this.avatarManager.registerView(this);
 
     panel.iconPath =
@@ -212,19 +211,13 @@ export class GitGraphView {
             break;
           case "selectRepo":
             if (msg.repo === this.currentRepo) break;
-            this.gitClient = gitClientFactory(msg.repo, this.gitPath);
+            this.gitManager.setRepo(msg.repo);
             this.currentRepo = msg.repo;
             this.extensionState.setLastActiveRepo(msg.repo);
             this.repoFileWatcher.start(msg.repo);
             break;
           case "loadBranches":
-            if (this.gitClient === null) {
-              console.error(
-                "gitClient is null in loadBranches — selectRepo must be sent before loadBranches"
-              );
-              break;
-            }
-            let branchData = await this.gitClient.branch.list(msg.showRemoteBranches),
+            let branchData = await this.gitManager.get().branch.list(msg.showRemoteBranches),
               isRepo = true;
             if (branchData.error) {
               isRepo = await this.dataSource.isGitRepository(this.currentRepo!);

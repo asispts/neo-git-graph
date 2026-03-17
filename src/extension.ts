@@ -1,6 +1,7 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
+import { createGitClientManager } from "./backend/features/gitClient";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { DiffDocProvider } from "./diffDocProvider";
@@ -16,7 +17,10 @@ export function activate(context: vscode.ExtensionContext) {
   const avatarManager = new AvatarManager(dataSource, extensionState);
   const statusBarItem = new StatusBarItem(context);
   const repoManager = new RepoManager(dataSource, extensionState, statusBarItem);
-  let gitPath = getConfig().gitPath();
+  const gitManager = createGitClientManager(
+    extensionState.getLastActiveRepo() ?? "",
+    getConfig().gitPath()
+  );
 
   context.subscriptions.push(
     outputChannel,
@@ -27,7 +31,7 @@ export function activate(context: vscode.ExtensionContext) {
         extensionState,
         avatarManager,
         repoManager,
-        gitPath
+        gitManager
       );
     }),
     vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", () => {
@@ -46,7 +50,7 @@ export function activate(context: vscode.ExtensionContext) {
         repoManager.maxDepthOfRepoSearchChanged();
       } else if (e.affectsConfiguration("git.path")) {
         dataSource.registerGitPath();
-        gitPath = getConfig().gitPath();
+        gitManager.setGitPath(getConfig().gitPath());
       }
     }),
     repoManager
