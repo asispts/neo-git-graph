@@ -6,14 +6,13 @@ import * as url from "node:url";
 
 import { DataSource } from "./dataSource";
 import { ExtensionState } from "./extensionState";
-import { GitGraphView } from "./gitGraphView";
-import { AvatarCache } from "./types";
+import { AvatarCache, ResponseMessage } from "./types";
 
 export class AvatarManager {
   private readonly dataSource: DataSource;
   private readonly extensionState: ExtensionState;
   private readonly avatarStorageFolder: string;
-  private view: GitGraphView | null = null;
+  private postToWebview: ((msg: ResponseMessage) => void) | null = null;
   private avatars: AvatarCache;
   private queue: AvatarRequestQueue;
   private remoteSourceCache: { [repo: string]: RemoteSource } = {};
@@ -62,12 +61,12 @@ export class AvatarManager {
     }
   }
 
-  public registerView(view: GitGraphView) {
-    this.view = view;
+  public registerBridge(post: (msg: ResponseMessage) => void) {
+    this.postToWebview = post;
   }
 
-  public deregisterView() {
-    this.view = null;
+  public deregisterBridge() {
+    this.postToWebview = null;
   }
 
   public removeAvatarFromCache(email: string) {
@@ -337,13 +336,13 @@ export class AvatarManager {
   }
 
   private sendAvatarToWebView(email: string, onError: () => void) {
-    if (this.view !== null) {
+    if (this.postToWebview !== null) {
       fs.readFile(this.avatarStorageFolder + "/" + this.avatars[email].image, (err, data) => {
         if (err) {
           onError();
-        } else if (this.view !== null) {
+        } else if (this.postToWebview !== null) {
           // Send avatar to the webview as a base64 encoded data uri
-          this.view.sendMessage({
+          this.postToWebview({
             command: "fetchAvatar",
             email: email,
             image:

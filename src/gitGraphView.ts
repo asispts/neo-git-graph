@@ -2,25 +2,21 @@ import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
 import { GitClientManager } from "./backend/features/gitClient";
-import { abbrevCommit, buildExtensionUri, copyToClipboard, getNonce } from "./backend/utils";
+import { buildExtensionUri, getNonce } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
-import { encodeDiffDocUri } from "./diffDocProvider";
+import { registerMessageHandlers } from "./extension/messageHandler";
+import { WebviewBridge } from "./extension/webviewBridge";
 import { ExtensionState } from "./extensionState";
 import { RepoFileWatcher } from "./repoFileWatcher";
 import { RepoManager } from "./repoManager";
-import {
-  GitFileChangeType,
-  GitGraphViewState,
-  GitRepoSet,
-  RequestMessage,
-  ResponseMessage
-} from "./types";
+import { GitGraphViewState, GitRepoSet } from "./types";
 
 export class GitGraphView {
   public static currentPanel: GitGraphView | undefined;
 
   private readonly panel: vscode.WebviewPanel;
+  private readonly bridge: WebviewBridge;
   private readonly extensionPath: string;
   private readonly avatarManager: AvatarManager;
   private readonly dataSource: DataSource;
@@ -33,49 +29,14 @@ export class GitGraphView {
   private currentRepo: string | null = null;
   private readonly gitManager: GitClientManager;
 
-  public static createOrShow(
-    extensionPath: string,
-    dataSource: DataSource,
-    extensionState: ExtensionState,
-    avatarManager: AvatarManager,
-    repoManager: RepoManager,
-    gitManager: GitClientManager
-  ) {
-    const column = vscode.window.activeTextEditor
-      ? vscode.window.activeTextEditor.viewColumn
-      : undefined;
-
-    if (GitGraphView.currentPanel) {
-      GitGraphView.currentPanel.panel.reveal(column);
-      return;
-    }
-
-    const panel = vscode.window.createWebviewPanel(
-      "neo-git-graph",
-      "(neo) Git Graph",
-      column || vscode.ViewColumn.One,
-      {
-        enableScripts: true,
-        localResourceRoots: [
-          buildExtensionUri(extensionPath, "media"),
-          buildExtensionUri(extensionPath, "out")
-        ]
-      }
-    );
-
-    GitGraphView.currentPanel = new GitGraphView(
-      panel,
-      extensionPath,
-      dataSource,
-      extensionState,
-      avatarManager,
-      repoManager,
-      gitManager
-    );
+  public reveal(column?: vscode.ViewColumn) {
+    this.panel.reveal(column);
   }
 
-  private constructor(
+  public constructor(
     panel: vscode.WebviewPanel,
+    bridge: WebviewBridge,
+    repoFileWatcher: RepoFileWatcher,
     extensionPath: string,
     dataSource: DataSource,
     extensionState: ExtensionState,
@@ -84,13 +45,15 @@ export class GitGraphView {
     gitManager: GitClientManager
   ) {
     this.panel = panel;
+    this.bridge = bridge;
+    this.repoFileWatcher = repoFileWatcher;
     this.extensionPath = extensionPath;
     this.avatarManager = avatarManager;
     this.dataSource = dataSource;
     this.extensionState = extensionState;
     this.repoManager = repoManager;
     this.gitManager = gitManager;
-    this.avatarManager.registerView(this);
+    GitGraphView.currentPanel = this;
 
     panel.iconPath =
       getConfig().tabIconColourTheme() === "colour"
@@ -118,211 +81,37 @@ export class GitGraphView {
       this.disposables
     );
 
-    this.repoFileWatcher = new RepoFileWatcher(() => {
-      if (this.panel.visible) {
-        this.sendMessage({ command: "refresh" });
-      }
-    });
     this.repoManager.registerViewCallback((repos: GitRepoSet, numRepos: number) => {
       if (!this.panel.visible) return;
       if ((numRepos === 0 && this.isGraphViewLoaded) || (numRepos > 0 && !this.isGraphViewLoaded)) {
         this.update();
       } else {
-        this.respondLoadRepos(repos);
+        this.bridge.post({
+          command: "loadRepos",
+          repos,
+          lastActiveRepo: this.extensionState.getLastActiveRepo()
+        });
       }
     });
 
-    this.panel.webview.onDidReceiveMessage(
-      async (msg: RequestMessage) => {
-        if (this.dataSource === null) return;
-        this.repoFileWatcher.mute();
-        switch (msg.command) {
-          case "addTag":
-            this.sendMessage({
-              command: "addTag",
-              status: await this.dataSource.addTag(
-                msg.repo,
-                msg.tagName,
-                msg.commitHash,
-                msg.lightweight,
-                msg.message
-              )
-            });
-            break;
-          case "fetchAvatar":
-            this.avatarManager.fetchAvatarImage(msg.email, msg.repo, msg.commits);
-            break;
-          case "checkoutBranch":
-            this.sendMessage({
-              command: "checkoutBranch",
-              status: await this.dataSource.checkoutBranch(
-                msg.repo,
-                msg.branchName,
-                msg.remoteBranch
-              )
-            });
-            break;
-          case "checkoutCommit":
-            this.sendMessage({
-              command: "checkoutCommit",
-              status: await this.dataSource.checkoutCommit(msg.repo, msg.commitHash)
-            });
-            break;
-          case "cherrypickCommit":
-            this.sendMessage({
-              command: "cherrypickCommit",
-              status: await this.dataSource.cherrypickCommit(
-                msg.repo,
-                msg.commitHash,
-                msg.parentIndex
-              )
-            });
-            break;
-          case "commitDetails":
-            this.sendMessage({
-              command: "commitDetails",
-              commitDetails: await this.dataSource.commitDetails(msg.repo, msg.commitHash)
-            });
-            break;
-          case "copyToClipboard":
-            this.sendMessage({
-              command: "copyToClipboard",
-              type: msg.type,
-              success: await copyToClipboard(msg.data)
-            });
-            break;
-          case "createBranch":
-            this.sendMessage({
-              command: "createBranch",
-              status: await this.dataSource.createBranch(msg.repo, msg.branchName, msg.commitHash)
-            });
-            break;
-          case "deleteBranch":
-            this.sendMessage({
-              command: "deleteBranch",
-              status: await this.dataSource.deleteBranch(msg.repo, msg.branchName, msg.forceDelete)
-            });
-            break;
-          case "deleteTag":
-            this.sendMessage({
-              command: "deleteTag",
-              status: await this.dataSource.deleteTag(msg.repo, msg.tagName)
-            });
-            break;
-          case "selectRepo":
-            if (msg.repo === this.currentRepo) break;
-            this.gitManager.setRepo(msg.repo);
-            this.currentRepo = msg.repo;
-            this.extensionState.setLastActiveRepo(msg.repo);
-            this.repoFileWatcher.start(msg.repo);
-            break;
-          case "loadBranches":
-            let branchData = await this.gitManager.get().branch.list(msg.showRemoteBranches),
-              isRepo = true;
-            if (branchData.error) {
-              isRepo = await this.dataSource.isGitRepository(this.currentRepo!);
-            }
-            this.sendMessage({
-              command: "loadBranches",
-              branches: branchData.branches,
-              head: branchData.head,
-              hard: msg.hard,
-              isRepo: isRepo
-            });
-            break;
-          case "loadCommits":
-            this.sendMessage({
-              command: "loadCommits",
-              ...(await this.dataSource.getCommits(
-                msg.repo,
-                msg.branchName,
-                msg.maxCommits,
-                msg.showRemoteBranches
-              )),
-              hard: msg.hard
-            });
-            break;
-          case "loadRepos":
-            if (!msg.check || !(await this.repoManager.checkReposExist())) {
-              // If not required to check repos, or no changes were found when checking, respond with repos
-              this.respondLoadRepos(this.repoManager.getRepos());
-            }
-            break;
-          case "mergeBranch":
-            this.sendMessage({
-              command: "mergeBranch",
-              status: await this.dataSource.mergeBranch(
-                msg.repo,
-                msg.branchName,
-                msg.createNewCommit
-              )
-            });
-            break;
-          case "mergeCommit":
-            this.sendMessage({
-              command: "mergeCommit",
-              status: await this.dataSource.mergeCommit(
-                msg.repo,
-                msg.commitHash,
-                msg.createNewCommit
-              )
-            });
-            break;
-          case "pushTag":
-            this.sendMessage({
-              command: "pushTag",
-              status: await this.dataSource.pushTag(msg.repo, msg.tagName)
-            });
-            break;
-          case "renameBranch":
-            this.sendMessage({
-              command: "renameBranch",
-              status: await this.dataSource.renameBranch(msg.repo, msg.oldName, msg.newName)
-            });
-            break;
-          case "resetToCommit":
-            this.sendMessage({
-              command: "resetToCommit",
-              status: await this.dataSource.resetToCommit(msg.repo, msg.commitHash, msg.resetMode)
-            });
-            break;
-          case "revertCommit":
-            this.sendMessage({
-              command: "revertCommit",
-              status: await this.dataSource.revertCommit(msg.repo, msg.commitHash, msg.parentIndex)
-            });
-            break;
-          case "saveRepoState":
-            this.repoManager.setRepoState(msg.repo, msg.state);
-            break;
-          case "viewDiff":
-            this.sendMessage({
-              command: "viewDiff",
-              success: await this.viewDiff(
-                msg.repo,
-                msg.commitHash,
-                msg.oldFilePath,
-                msg.newFilePath,
-                msg.type
-              )
-            });
-            break;
-        }
-        this.repoFileWatcher.unmute();
-      },
-      null,
-      this.disposables
-    );
-  }
-
-  public sendMessage(msg: ResponseMessage) {
-    this.panel.webview.postMessage(msg);
+    registerMessageHandlers(this.bridge, {
+      dataSource: this.dataSource,
+      gitManager: this.gitManager,
+      repoManager: this.repoManager,
+      extensionState: this.extensionState,
+      avatarManager: this.avatarManager,
+      repoFileWatcher: this.repoFileWatcher,
+      getCurrentRepo: () => this.currentRepo,
+      setCurrentRepo: (r) => {
+        this.currentRepo = r;
+      }
+    });
   }
 
   public dispose() {
     GitGraphView.currentPanel = undefined;
     this.panel.dispose();
-    this.avatarManager.deregisterView();
+    this.avatarManager.deregisterBridge();
     this.repoFileWatcher.stop();
     this.repoManager.deregisterViewCallback();
     while (this.disposables.length) {
@@ -410,45 +199,5 @@ export class GitGraphView {
 
   private getCompiledOutputUri(file: string) {
     return this.panel.webview.asWebviewUri(buildExtensionUri(this.extensionPath, "out", file));
-  }
-
-  private respondLoadRepos(repos: GitRepoSet) {
-    this.sendMessage({
-      command: "loadRepos",
-      repos: repos,
-      lastActiveRepo: this.extensionState.getLastActiveRepo()
-    });
-  }
-
-  private viewDiff(
-    repo: string,
-    commitHash: string,
-    oldFilePath: string,
-    newFilePath: string,
-    type: GitFileChangeType
-  ) {
-    let abbrevHash = abbrevCommit(commitHash);
-    let pathComponents = newFilePath.split("/");
-    let title =
-      pathComponents[pathComponents.length - 1] +
-      " (" +
-      (type === "A"
-        ? "Added in " + abbrevHash
-        : type === "D"
-          ? "Deleted in " + abbrevHash
-          : abbrevCommit(commitHash) + "^ ↔ " + abbrevCommit(commitHash)) +
-      ")";
-    return new Promise<boolean>((resolve) => {
-      vscode.commands
-        .executeCommand(
-          "vscode.diff",
-          encodeDiffDocUri(repo, oldFilePath, commitHash + "^"),
-          encodeDiffDocUri(repo, newFilePath, commitHash),
-          title,
-          { preview: true }
-        )
-        .then(() => resolve(true))
-        .then(() => resolve(false));
-    });
   }
 }
