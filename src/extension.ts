@@ -2,9 +2,11 @@ import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
 import { createGitClientManager } from "./backend/features/gitClient";
+import { buildExtensionUri } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { DiffDocProvider } from "./diffDocProvider";
+import { webviewBridgeFactory } from "./extension/webviewBridge";
 import { ExtensionState } from "./extensionState";
 import { GitGraphView } from "./gitGraphView";
 import { RepoManager } from "./repoManager";
@@ -25,7 +27,28 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     outputChannel,
     vscode.commands.registerCommand("neo-git-graph.view", () => {
-      GitGraphView.createOrShow(
+      const column = vscode.window.activeTextEditor?.viewColumn;
+      if (GitGraphView.currentPanel) {
+        GitGraphView.currentPanel.reveal(column);
+        return;
+      }
+      const panel = vscode.window.createWebviewPanel(
+        "neo-git-graph",
+        "(neo) Git Graph",
+        column ?? vscode.ViewColumn.One,
+        {
+          enableScripts: true,
+          localResourceRoots: [
+            buildExtensionUri(context.extensionPath, "media"),
+            buildExtensionUri(context.extensionPath, "out")
+          ]
+        }
+      );
+      const bridge = webviewBridgeFactory(panel.webview);
+      avatarManager.registerBridge(bridge.post.bind(bridge));
+      new GitGraphView(
+        panel,
+        bridge,
         context.extensionPath,
         dataSource,
         extensionState,
