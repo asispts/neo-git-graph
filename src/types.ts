@@ -199,9 +199,13 @@ export interface ResponseFetchAvatar {
   image: string;
 }
 
+export interface RequestSelectRepo {
+  command: "selectRepo";
+  repo: string;
+}
+
 export interface RequestLoadBranches {
   command: "loadBranches";
-  repo: string;
   showRemoteBranches: boolean;
   hard: boolean;
 }
@@ -338,6 +342,7 @@ export type RequestMessage =
   | RequestDeleteBranch
   | RequestDeleteTag
   | RequestFetchAvatar
+  | RequestSelectRepo
   | RequestLoadBranches
   | RequestLoadCommits
   | RequestLoadRepos

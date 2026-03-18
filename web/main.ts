@@ -62,6 +62,7 @@ class GitGraphView {
       this.expandedCommit = null;
       this.currentBranch = null;
       this.saveState();
+      sendMessage({ command: "selectRepo", repo: value });
       this.refresh(true);
     });
     this.branchDropdown = new Dropdown("branchSelect", false, "Branches", (value) => {
@@ -299,9 +300,9 @@ class GitGraphView {
   ) {
     if (this.loadBranchesCallback !== null) return;
     this.loadBranchesCallback = loadedCallback;
+    sendMessage({ command: "selectRepo", repo: this.currentRepo });
     sendMessage({
       command: "loadBranches",
-      repo: this.currentRepo!,
       showRemoteBranches: this.showRemoteBranches,
       hard: hard
     });
