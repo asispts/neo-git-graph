@@ -8,16 +8,8 @@ import { encodeDiffDocUri } from "../diffDocProvider";
 import { ExtensionState } from "../extensionState";
 import { RepoFileWatcher } from "../repoFileWatcher";
 import { RepoManager } from "../repoManager";
-import { GitFileChangeType, RequestMessage } from "../types";
+import { GitFileChangeType } from "../types";
 import { WebviewBridge } from "./webviewBridge";
-
-function respondLoadRepos(
-  repos: ReturnType<RepoManager["getRepos"]>,
-  lastActiveRepo: string | null,
-  bridge: WebviewBridge
-) {
-  bridge.post({ command: "loadRepos", repos, lastActiveRepo });
-}
 
 function viewDiff(
   repo: string,
@@ -51,17 +43,19 @@ function viewDiff(
   });
 }
 
-export function createMessageHandler(deps: {
-  dataSource: DataSource;
-  gitManager: GitClientManager;
-  repoManager: RepoManager;
-  extensionState: ExtensionState;
-  avatarManager: AvatarManager;
-  repoFileWatcher: RepoFileWatcher;
-  bridge: WebviewBridge;
-  getCurrentRepo: () => string | null;
-  setCurrentRepo: (repo: string) => void;
-}) {
+export function registerMessageHandlers(
+  bridge: WebviewBridge,
+  deps: {
+    dataSource: DataSource;
+    gitManager: GitClientManager;
+    repoManager: RepoManager;
+    extensionState: ExtensionState;
+    avatarManager: AvatarManager;
+    repoFileWatcher: RepoFileWatcher;
+    getCurrentRepo: () => string | null;
+    setCurrentRepo: (repo: string) => void;
+  }
+) {
   const {
     dataSource,
     gitManager,
@@ -69,170 +63,177 @@ export function createMessageHandler(deps: {
     extensionState,
     avatarManager,
     repoFileWatcher,
-    bridge,
     getCurrentRepo,
     setCurrentRepo
   } = deps;
 
-  return async function handleMessage(msg: RequestMessage) {
-    if (dataSource === null) return;
-    repoFileWatcher.mute();
-    switch (msg.command) {
-      case "addTag":
-        bridge.post({
-          command: "addTag",
-          status: await dataSource.addTag(
-            msg.repo,
-            msg.tagName,
-            msg.commitHash,
-            msg.lightweight,
-            msg.message
-          )
-        });
-        break;
-      case "fetchAvatar":
-        avatarManager.fetchAvatarImage(msg.email, msg.repo, msg.commits);
-        break;
-      case "checkoutBranch":
-        bridge.post({
-          command: "checkoutBranch",
-          status: await dataSource.checkoutBranch(msg.repo, msg.branchName, msg.remoteBranch)
-        });
-        break;
-      case "checkoutCommit":
-        bridge.post({
-          command: "checkoutCommit",
-          status: await dataSource.checkoutCommit(msg.repo, msg.commitHash)
-        });
-        break;
-      case "cherrypickCommit":
-        bridge.post({
-          command: "cherrypickCommit",
-          status: await dataSource.cherrypickCommit(msg.repo, msg.commitHash, msg.parentIndex)
-        });
-        break;
-      case "commitDetails":
-        bridge.post({
-          command: "commitDetails",
-          commitDetails: await dataSource.commitDetails(msg.repo, msg.commitHash)
-        });
-        break;
-      case "copyToClipboard":
-        bridge.post({
-          command: "copyToClipboard",
-          type: msg.type,
-          success: await copyToClipboard(msg.data)
-        });
-        break;
-      case "createBranch":
-        bridge.post({
-          command: "createBranch",
-          status: await dataSource.createBranch(msg.repo, msg.branchName, msg.commitHash)
-        });
-        break;
-      case "deleteBranch":
-        bridge.post({
-          command: "deleteBranch",
-          status: await dataSource.deleteBranch(msg.repo, msg.branchName, msg.forceDelete)
-        });
-        break;
-      case "deleteTag":
-        bridge.post({
-          command: "deleteTag",
-          status: await dataSource.deleteTag(msg.repo, msg.tagName)
-        });
-        break;
-      case "selectRepo":
-        if (msg.repo === getCurrentRepo()) break;
-        gitManager.setRepo(msg.repo);
-        setCurrentRepo(msg.repo);
-        extensionState.setLastActiveRepo(msg.repo);
-        repoFileWatcher.start(msg.repo);
-        break;
-      case "loadBranches": {
-        let branchData = await gitManager.get().branch.list(msg.showRemoteBranches),
-          isRepo = true;
-        if (branchData.error) {
-          isRepo = await dataSource.isGitRepository(getCurrentRepo()!);
-        }
-        bridge.post({
-          command: "loadBranches",
-          branches: branchData.branches,
-          head: branchData.head,
-          hard: msg.hard,
-          isRepo: isRepo
-        });
-        break;
-      }
-      case "loadCommits":
-        bridge.post({
-          command: "loadCommits",
-          ...(await dataSource.getCommits(
-            msg.repo,
-            msg.branchName,
-            msg.maxCommits,
-            msg.showRemoteBranches
-          )),
-          hard: msg.hard
-        });
-        break;
-      case "loadRepos":
-        if (!msg.check || !(await repoManager.checkReposExist())) {
-          respondLoadRepos(repoManager.getRepos(), extensionState.getLastActiveRepo(), bridge);
-        }
-        break;
-      case "mergeBranch":
-        bridge.post({
-          command: "mergeBranch",
-          status: await dataSource.mergeBranch(msg.repo, msg.branchName, msg.createNewCommit)
-        });
-        break;
-      case "mergeCommit":
-        bridge.post({
-          command: "mergeCommit",
-          status: await dataSource.mergeCommit(msg.repo, msg.commitHash, msg.createNewCommit)
-        });
-        break;
-      case "pushTag":
-        bridge.post({
-          command: "pushTag",
-          status: await dataSource.pushTag(msg.repo, msg.tagName)
-        });
-        break;
-      case "renameBranch":
-        bridge.post({
-          command: "renameBranch",
-          status: await dataSource.renameBranch(msg.repo, msg.oldName, msg.newName)
-        });
-        break;
-      case "resetToCommit":
-        bridge.post({
-          command: "resetToCommit",
-          status: await dataSource.resetToCommit(msg.repo, msg.commitHash, msg.resetMode)
-        });
-        break;
-      case "revertCommit":
-        bridge.post({
-          command: "revertCommit",
-          status: await dataSource.revertCommit(msg.repo, msg.commitHash, msg.parentIndex)
-        });
-        break;
-      case "saveRepoState":
-        repoManager.setRepoState(msg.repo, msg.state);
-        break;
-      case "viewDiff":
-        bridge.post({
-          command: "viewDiff",
-          success: await viewDiff(
-            msg.repo,
-            msg.commitHash,
-            msg.oldFilePath,
-            msg.newFilePath,
-            msg.type
-          )
-        });
-        break;
+  bridge.onMessage("addTag", async (msg) => {
+    bridge.post({
+      command: "addTag",
+      status: await dataSource.addTag(
+        msg.repo,
+        msg.tagName,
+        msg.commitHash,
+        msg.lightweight,
+        msg.message
+      )
+    });
+  });
+
+  bridge.onMessage("fetchAvatar", (msg) => {
+    avatarManager.fetchAvatarImage(msg.email, msg.repo, msg.commits);
+  });
+
+  bridge.onMessage("checkoutBranch", async (msg) => {
+    bridge.post({
+      command: "checkoutBranch",
+      status: await dataSource.checkoutBranch(msg.repo, msg.branchName, msg.remoteBranch)
+    });
+  });
+
+  bridge.onMessage("checkoutCommit", async (msg) => {
+    bridge.post({
+      command: "checkoutCommit",
+      status: await dataSource.checkoutCommit(msg.repo, msg.commitHash)
+    });
+  });
+
+  bridge.onMessage("cherrypickCommit", async (msg) => {
+    bridge.post({
+      command: "cherrypickCommit",
+      status: await dataSource.cherrypickCommit(msg.repo, msg.commitHash, msg.parentIndex)
+    });
+  });
+
+  bridge.onMessage("commitDetails", async (msg) => {
+    bridge.post({
+      command: "commitDetails",
+      commitDetails: await dataSource.commitDetails(msg.repo, msg.commitHash)
+    });
+  });
+
+  bridge.onMessage("copyToClipboard", async (msg) => {
+    bridge.post({
+      command: "copyToClipboard",
+      type: msg.type,
+      success: await copyToClipboard(msg.data)
+    });
+  });
+
+  bridge.onMessage("createBranch", async (msg) => {
+    bridge.post({
+      command: "createBranch",
+      status: await dataSource.createBranch(msg.repo, msg.branchName, msg.commitHash)
+    });
+  });
+
+  bridge.onMessage("deleteBranch", async (msg) => {
+    bridge.post({
+      command: "deleteBranch",
+      status: await dataSource.deleteBranch(msg.repo, msg.branchName, msg.forceDelete)
+    });
+  });
+
+  bridge.onMessage("deleteTag", async (msg) => {
+    bridge.post({
+      command: "deleteTag",
+      status: await dataSource.deleteTag(msg.repo, msg.tagName)
+    });
+  });
+
+  bridge.onMessage("selectRepo", (msg) => {
+    if (msg.repo === getCurrentRepo()) return;
+    gitManager.setRepo(msg.repo);
+    setCurrentRepo(msg.repo);
+    extensionState.setLastActiveRepo(msg.repo);
+    repoFileWatcher.start(msg.repo);
+  });
+
+  bridge.onMessage("loadBranches", async (msg) => {
+    const branchData = await gitManager.get().branch.list(msg.showRemoteBranches);
+    const isRepo = branchData.error ? await dataSource.isGitRepository(getCurrentRepo()!) : true;
+    bridge.post({
+      command: "loadBranches",
+      branches: branchData.branches,
+      head: branchData.head,
+      hard: msg.hard,
+      isRepo
+    });
+  });
+
+  bridge.onMessage("loadCommits", async (msg) => {
+    bridge.post({
+      command: "loadCommits",
+      ...(await dataSource.getCommits(
+        msg.repo,
+        msg.branchName,
+        msg.maxCommits,
+        msg.showRemoteBranches
+      )),
+      hard: msg.hard
+    });
+  });
+
+  bridge.onMessage("loadRepos", async (msg) => {
+    if (!msg.check || !(await repoManager.checkReposExist())) {
+      bridge.post({
+        command: "loadRepos",
+        repos: repoManager.getRepos(),
+        lastActiveRepo: extensionState.getLastActiveRepo()
+      });
     }
-    repoFileWatcher.unmute();
-  };
+  });
+
+  bridge.onMessage("mergeBranch", async (msg) => {
+    bridge.post({
+      command: "mergeBranch",
+      status: await dataSource.mergeBranch(msg.repo, msg.branchName, msg.createNewCommit)
+    });
+  });
+
+  bridge.onMessage("mergeCommit", async (msg) => {
+    bridge.post({
+      command: "mergeCommit",
+      status: await dataSource.mergeCommit(msg.repo, msg.commitHash, msg.createNewCommit)
+    });
+  });
+
+  bridge.onMessage("pushTag", async (msg) => {
+    bridge.post({
+      command: "pushTag",
+      status: await dataSource.pushTag(msg.repo, msg.tagName)
+    });
+  });
+
+  bridge.onMessage("renameBranch", async (msg) => {
+    bridge.post({
+      command: "renameBranch",
+      status: await dataSource.renameBranch(msg.repo, msg.oldName, msg.newName)
+    });
+  });
+
+  bridge.onMessage("resetToCommit", async (msg) => {
+    bridge.post({
+      command: "resetToCommit",
+      status: await dataSource.resetToCommit(msg.repo, msg.commitHash, msg.resetMode)
+    });
+  });
+
+  bridge.onMessage("revertCommit", async (msg) => {
+    bridge.post({
+      command: "revertCommit",
+      status: await dataSource.revertCommit(msg.repo, msg.commitHash, msg.parentIndex)
+    });
+  });
+
+  bridge.onMessage("saveRepoState", (msg) => {
+    repoManager.setRepoState(msg.repo, msg.state);
+  });
+
+  bridge.onMessage("viewDiff", async (msg) => {
+    bridge.post({
+      command: "viewDiff",
+      success: await viewDiff(msg.repo, msg.commitHash, msg.oldFilePath, msg.newFilePath, msg.type)
+    });
+  });
 }

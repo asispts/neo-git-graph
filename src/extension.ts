@@ -6,9 +6,10 @@ import { buildExtensionUri } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { DiffDocProvider } from "./diffDocProvider";
-import { webviewBridgeFactory } from "./extension/webviewBridge";
+import { WebviewBridge, webviewBridgeFactory } from "./extension/webviewBridge";
 import { ExtensionState } from "./extensionState";
 import { GitGraphView } from "./gitGraphView";
+import { RepoFileWatcher } from "./repoFileWatcher";
 import { RepoManager } from "./repoManager";
 import { StatusBarItem } from "./statusBarItem";
 
@@ -44,11 +45,16 @@ export function activate(context: vscode.ExtensionContext) {
           ]
         }
       );
-      const bridge = webviewBridgeFactory(panel.webview);
+      let bridge!: WebviewBridge;
+      const repoFileWatcher = new RepoFileWatcher(() => {
+        if (panel.visible) bridge.post({ command: "refresh" });
+      });
+      bridge = webviewBridgeFactory(panel.webview, repoFileWatcher);
       avatarManager.registerBridge(bridge.post.bind(bridge));
       new GitGraphView(
         panel,
         bridge,
+        repoFileWatcher,
         context.extensionPath,
         dataSource,
         extensionState,

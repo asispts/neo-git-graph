@@ -5,7 +5,7 @@ import { GitClientManager } from "./backend/features/gitClient";
 import { buildExtensionUri, getNonce } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
-import { createMessageHandler } from "./extension/messageHandler";
+import { registerMessageHandlers } from "./extension/messageHandler";
 import { WebviewBridge } from "./extension/webviewBridge";
 import { ExtensionState } from "./extensionState";
 import { RepoFileWatcher } from "./repoFileWatcher";
@@ -36,6 +36,7 @@ export class GitGraphView {
   public constructor(
     panel: vscode.WebviewPanel,
     bridge: WebviewBridge,
+    repoFileWatcher: RepoFileWatcher,
     extensionPath: string,
     dataSource: DataSource,
     extensionState: ExtensionState,
@@ -45,6 +46,7 @@ export class GitGraphView {
   ) {
     this.panel = panel;
     this.bridge = bridge;
+    this.repoFileWatcher = repoFileWatcher;
     this.extensionPath = extensionPath;
     this.avatarManager = avatarManager;
     this.dataSource = dataSource;
@@ -79,11 +81,6 @@ export class GitGraphView {
       this.disposables
     );
 
-    this.repoFileWatcher = new RepoFileWatcher(() => {
-      if (this.panel.visible) {
-        this.bridge.post({ command: "refresh" });
-      }
-    });
     this.repoManager.registerViewCallback((repos: GitRepoSet, numRepos: number) => {
       if (!this.panel.visible) return;
       if ((numRepos === 0 && this.isGraphViewLoaded) || (numRepos > 0 && !this.isGraphViewLoaded)) {
@@ -97,22 +94,18 @@ export class GitGraphView {
       }
     });
 
-    this.bridge.onMessage(
-      createMessageHandler({
-        dataSource: this.dataSource,
-        gitManager: this.gitManager,
-        repoManager: this.repoManager,
-        extensionState: this.extensionState,
-        avatarManager: this.avatarManager,
-        repoFileWatcher: this.repoFileWatcher,
-        bridge: this.bridge,
-        getCurrentRepo: () => this.currentRepo,
-        setCurrentRepo: (r) => {
-          this.currentRepo = r;
-        }
-      }),
-      this.disposables
-    );
+    registerMessageHandlers(this.bridge, {
+      dataSource: this.dataSource,
+      gitManager: this.gitManager,
+      repoManager: this.repoManager,
+      extensionState: this.extensionState,
+      avatarManager: this.avatarManager,
+      repoFileWatcher: this.repoFileWatcher,
+      getCurrentRepo: () => this.currentRepo,
+      setCurrentRepo: (r) => {
+        this.currentRepo = r;
+      }
+    });
   }
 
   public dispose() {
@@ -207,5 +200,4 @@ export class GitGraphView {
   private getCompiledOutputUri(file: string) {
     return this.panel.webview.asWebviewUri(buildExtensionUri(this.extensionPath, "out", file));
   }
-
 }
