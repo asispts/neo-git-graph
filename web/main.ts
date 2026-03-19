@@ -19,12 +19,14 @@ import {
 class GitGraphView {
   private gitRepos: GG.GitRepoSet;
   private gitBranches: string[] = [];
+  private gitAuthors: string[] = [];
   private gitBranchHead: string | null = null;
   private commits: GG.GitCommitNode[] = [];
   private commitHead: string | null = null;
   private commitLookup: { [hash: string]: number } = {};
   private avatars: AvatarImageCollection = {};
   private currentBranch: string | null = null;
+  private currentAuthor: string = "";
   private currentRepo!: string;
 
   private graph: Graph;
@@ -38,8 +40,10 @@ class GitGraphView {
   private footerElem: HTMLElement;
   private repoDropdown: Dropdown;
   private branchDropdown: Dropdown;
+  private authorDropdown: Dropdown;
   private showRemoteBranchesElem: HTMLInputElement;
   private scrollShadowElem: HTMLElement;
+  private authorFilterDebounce: number | null = null;
 
   private loadBranchesCallback: ((changes: boolean, isRepo: boolean) => void) | null = null;
   private loadCommitsCallback: ((changes: boolean) => void) | null = null;
@@ -71,8 +75,39 @@ class GitGraphView {
       this.expandedCommit = null;
       this.saveState();
       this.renderShowLoading();
+      this.requestLoadAuthors(true);
       this.requestLoadCommits(true, () => {});
     });
+    this.authorDropdown = new Dropdown(
+      "authorSelect",
+      false,
+      "Authors",
+      (value) => {
+        this.applyAuthorFilter(value);
+      },
+      {
+        onFilterChange: (value) => {
+          if (this.authorFilterDebounce !== null) {
+            window.clearTimeout(this.authorFilterDebounce);
+          }
+          this.authorFilterDebounce = window.setTimeout(() => {
+            this.applyAuthorFilter(value.trim());
+          }, 250);
+        }
+      }
+    );
+    document.addEventListener(
+      "click",
+      (e) => {
+        if (!(<HTMLElement>e.target).closest("#authorControl")) {
+          if (this.authorFilterDebounce !== null) {
+            window.clearTimeout(this.authorFilterDebounce);
+            this.authorFilterDebounce = null;
+          }
+        }
+      },
+      true
+    );
     this.showRemoteBranchesElem = <HTMLInputElement>(
       document.getElementById("showRemoteBranchesCheckbox")!
     );
@@ -92,6 +127,7 @@ class GitGraphView {
     this.renderShowLoading();
     if (prevState) {
       this.currentBranch = prevState.currentBranch;
+      this.currentAuthor = typeof prevState.currentAuthor === "string" ? prevState.currentAuthor : "";
       this.showRemoteBranches = prevState.showRemoteBranches;
       this.showRemoteBranchesElem.checked = this.showRemoteBranches;
       if (typeof this.gitRepos[prevState.currentRepo] !== "undefined") {
@@ -190,6 +226,16 @@ class GitGraphView {
 
     this.triggerLoadBranchesCallback(true, isRepo);
   }
+  public loadAuthors(authors: string[], hard: boolean) {
+    if (!hard && arraysEqual(this.gitAuthors, authors, (a, b) => a === b)) return;
+
+    this.gitAuthors = authors;
+    let options = [{ name: "Show All", value: "" }];
+    for (let i = 0; i < this.gitAuthors.length; i++) {
+      options.push({ name: this.gitAuthors[i], value: this.gitAuthors[i] });
+    }
+    this.authorDropdown.setOptions(options, this.currentAuthor);
+  }
   private triggerLoadBranchesCallback(changes: boolean, isRepo: boolean) {
     if (this.loadBranchesCallback !== null) {
       this.loadBranchesCallback(changes, isRepo);
@@ -262,13 +308,6 @@ class GitGraphView {
     this.triggerLoadCommitsCallback(true);
     this.fetchAvatars(avatarsNeeded);
   }
-  private triggerLoadCommitsCallback(changes: boolean) {
-    if (this.loadCommitsCallback !== null) {
-      this.loadCommitsCallback(changes);
-      this.loadCommitsCallback = null;
-    }
-  }
-
   public loadAvatar(email: string, image: string) {
     this.avatars[email] = image;
     this.saveState();
@@ -278,6 +317,21 @@ class GitGraphView {
       if (avatarsElems[i].dataset.email === escapedEmail) {
         avatarsElems[i].innerHTML = '<img class="avatarImg" src="' + image + '">';
       }
+    }
+  }
+  private applyAuthorFilter(author: string) {
+    if (author === this.currentAuthor) return;
+    this.currentAuthor = author;
+    this.maxCommits = this.config.initialLoadCommits;
+    this.expandedCommit = null;
+    this.saveState();
+    this.renderShowLoading();
+    this.requestLoadCommits(true, () => {});
+  }
+  private triggerLoadCommitsCallback(changes: boolean) {
+    if (this.loadCommitsCallback !== null) {
+      this.loadCommitsCallback(changes);
+      this.loadCommitsCallback = null;
     }
   }
 
@@ -307,6 +361,16 @@ class GitGraphView {
       hard: hard
     });
   }
+  private requestLoadAuthors(hard: boolean) {
+    sendMessage({
+      command: "loadAuthors",
+      repo: this.currentRepo!,
+      branchName: this.currentBranch !== null ? this.currentBranch : "",
+      maxCommits: this.maxCommits,
+      showRemoteBranches: this.showRemoteBranches,
+      hard: hard
+    });
+  }
   private requestLoadCommits(hard: boolean, loadedCallback: (changes: boolean) => void) {
     if (this.loadCommitsCallback !== null) return;
     this.loadCommitsCallback = loadedCallback;
@@ -314,6 +378,7 @@ class GitGraphView {
       command: "loadCommits",
       repo: this.currentRepo!,
       branchName: this.currentBranch !== null ? this.currentBranch : "",
+      author: this.currentAuthor,
       maxCommits: this.maxCommits,
       showRemoteBranches: this.showRemoteBranches,
       hard: hard
@@ -322,6 +387,7 @@ class GitGraphView {
   private requestLoadBranchesAndCommits(hard: boolean) {
     this.requestLoadBranches(hard, (branchChanges: boolean, isRepo: boolean) => {
       if (isRepo) {
+        this.requestLoadAuthors(hard);
         this.requestLoadCommits(hard, (commitChanges: boolean) => {
           if (!hard && (branchChanges || commitChanges)) {
             hideDialogAndContextMenu();
@@ -354,6 +420,7 @@ class GitGraphView {
       commitHead: this.commitHead,
       avatars: this.avatars,
       currentBranch: this.currentBranch,
+      currentAuthor: this.currentAuthor,
       currentRepo: this.currentRepo,
       moreCommitsAvailable: this.moreCommitsAvailable,
       maxCommits: this.maxCommits,
@@ -1257,6 +1324,9 @@ window.addEventListener("message", (event) => {
       break;
     case "loadBranches":
       gitGraph.loadBranches(msg.branches, msg.head, msg.hard, msg.isRepo);
+      break;
+    case "loadAuthors":
+      gitGraph.loadAuthors(msg.authors, msg.hard);
       break;
     case "loadCommits":
       gitGraph.loadCommits(msg.commits, msg.head, msg.moreCommitsAvailable, msg.hard);

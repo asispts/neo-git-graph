@@ -39,14 +39,20 @@ export class DataSource {
       ["%H", "%P", "%an", "%ae", dateType, "%cn"].join(gitLogSeparator) + "%n%B";
   }
 
-  public getCommits(repo: string, branch: string, maxCommits: number, showRemoteBranches: boolean) {
+  public getCommits(
+    repo: string,
+    branch: string,
+    author: string,
+    maxCommits: number,
+    showRemoteBranches: boolean
+  ) {
     return new Promise<{
       commits: GitCommitNode[];
       head: string | null;
       moreCommitsAvailable: boolean;
     }>((resolve) => {
       Promise.all([
-        this.getGitLog(repo, branch, maxCommits + 1, showRemoteBranches),
+        this.getGitLog(repo, branch, author, maxCommits + 1, showRemoteBranches),
         this.getRefs(repo, showRemoteBranches)
       ]).then(async (results) => {
         let commits = results[0],
@@ -189,6 +195,34 @@ export class DataSource {
         })
         .catch(() => resolve(null));
     });
+  }
+
+  public getAuthors(repo: string, branch: string, maxCommits: number, showRemoteBranches: boolean) {
+    let args = ["log", "--max-count=" + maxCommits, "--format=%an", "--date-order"];
+    if (branch !== "") {
+      args.push(escapeRefName(branch));
+    } else {
+      args.push("--branches", "--tags");
+      if (showRemoteBranches) args.push("--remotes");
+    }
+
+    return this.spawnGit(
+      args,
+      repo,
+      (stdout) => {
+        let lines = stdout.split(eolRegex),
+          authors: string[] = [],
+          seen: { [author: string]: boolean } = {};
+        for (let i = 0; i < lines.length - 1; i++) {
+          let author = lines[i];
+          if (author === "" || seen[author]) continue;
+          seen[author] = true;
+          authors.push(author);
+        }
+        return authors;
+      },
+      []
+    );
   }
 
   public getCommitFile(repo: string, commitHash: string, filePath: string) {
@@ -334,8 +368,17 @@ export class DataSource {
     });
   }
 
-  private getGitLog(repo: string, branch: string, num: number, showRemoteBranches: boolean) {
+  private getGitLog(
+    repo: string,
+    branch: string,
+    author: string,
+    num: number,
+    showRemoteBranches: boolean
+  ) {
     let args = ["log", "--max-count=" + num, "--format=" + this.gitLogFormat, "--date-order"];
+    if (author !== "") {
+      args.push("--author=" + author);
+    }
     if (branch !== "") {
       args.push(escapeRefName(branch));
     } else {

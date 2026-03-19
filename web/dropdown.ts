@@ -5,12 +5,18 @@ interface DropdownOption {
   value: string;
 }
 
+interface DropdownConfig {
+  onFilterChange?: (value: string) => void;
+}
+
 export class Dropdown {
   private options: DropdownOption[] = [];
   private selectedOption: number = 0;
   private dropdownVisible: boolean = false;
+  private customDisplayValue: string | null = null;
   private showInfo: boolean;
   private changeCallback: { (value: string): void };
+  private filterChangeCallback: ((value: string) => void) | null;
 
   private elem: HTMLElement;
   private currentValueElem: HTMLDivElement;
@@ -23,10 +29,12 @@ export class Dropdown {
     id: string,
     showInfo: boolean,
     dropdownType: string,
-    changeCallback: { (value: string): void }
+    changeCallback: { (value: string): void },
+    config?: DropdownConfig
   ) {
     this.showInfo = showInfo;
     this.changeCallback = changeCallback;
+    this.filterChangeCallback = config?.onFilterChange ?? null;
     this.elem = document.getElementById(id)!;
 
     let filter = document.createElement("div");
@@ -93,16 +101,25 @@ export class Dropdown {
       },
       true
     );
-    this.filterInput.addEventListener("keyup", () => this.filter());
+    this.filterInput.addEventListener("input", () => {
+      this.filter();
+      if (this.filterChangeCallback !== null) this.filterChangeCallback(this.filterInput.value);
+    });
   }
 
   public setOptions(options: DropdownOption[], selected: string) {
     this.options = options;
     let selectedOption = 0;
+    let matchedSelected = false;
+    this.customDisplayValue = null;
     for (let i = 0; i < options.length; i++) {
       if (options[i].value === selected) {
         selectedOption = i;
+        matchedSelected = true;
       }
+    }
+    if (!matchedSelected && selected !== "") {
+      this.customDisplayValue = selected;
     }
     this.selectedOption = selectedOption;
     if (options.length <= 1) this.close();
@@ -115,7 +132,11 @@ export class Dropdown {
 
   private render() {
     this.elem.classList.add("loaded");
-    this.currentValueElem.innerHTML = this.options[this.selectedOption].name;
+    this.currentValueElem.innerHTML = escapeHtml(
+      this.customDisplayValue !== null
+        ? this.customDisplayValue
+        : this.options[this.selectedOption].name
+    );
     let html = "";
     for (let i = 0; i < this.options.length; i++) {
       html +=

@@ -161,12 +161,26 @@ export function registerMessageHandlers(
     });
   });
 
+  bridge.onMessage("loadAuthors", async (msg) => {
+    bridge.post({
+      command: "loadAuthors",
+      authors: await dataSource.getAuthors(
+        msg.repo,
+        msg.branchName,
+        msg.maxCommits,
+        msg.showRemoteBranches
+      ),
+      hard: msg.hard
+    });
+  });
+
   bridge.onMessage("loadCommits", async (msg) => {
     bridge.post({
       command: "loadCommits",
       ...(await dataSource.getCommits(
         msg.repo,
         msg.branchName,
+        msg.author,
         msg.maxCommits,
         msg.showRemoteBranches
       )),

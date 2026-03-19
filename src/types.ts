@@ -217,10 +217,25 @@ export interface ResponseLoadBranches {
   isRepo: boolean;
 }
 
+export interface RequestLoadAuthors {
+  command: "loadAuthors";
+  repo: string;
+  branchName: string;
+  maxCommits: number;
+  showRemoteBranches: boolean;
+  hard: boolean;
+}
+export interface ResponseLoadAuthors {
+  command: "loadAuthors";
+  authors: string[];
+  hard: boolean;
+}
+
 export interface RequestLoadCommits {
   command: "loadCommits";
   repo: string;
   branchName: string;
+  author: string;
   maxCommits: number;
   showRemoteBranches: boolean;
   hard: boolean;
@@ -344,6 +359,7 @@ export type RequestMessage =
   | RequestFetchAvatar
   | RequestSelectRepo
   | RequestLoadBranches
+  | RequestLoadAuthors
   | RequestLoadCommits
   | RequestLoadRepos
   | RequestMergeBranch
@@ -367,6 +383,7 @@ export type ResponseMessage =
   | ResponseDeleteTag
   | ResponseFetchAvatar
   | ResponseLoadBranches
+  | ResponseLoadAuthors
   | ResponseLoadCommits
   | ResponseLoadRepos
   | ResponseMergeBranch

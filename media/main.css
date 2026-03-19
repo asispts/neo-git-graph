@@ -381,12 +381,14 @@ svg.fileIcon {
 }
 #repoControl,
 #branchControl,
+#authorControl,
 #showRemoteBranchesControl {
   white-space: nowrap;
   margin: 0 10px;
 }
 #repoSelect,
-#branchSelect {
+#branchSelect,
+#authorSelect {
   margin-left: 3px;
 }
 #showRemoteBranchesCheckbox {

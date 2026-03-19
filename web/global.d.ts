@@ -108,6 +108,7 @@ declare global {
     commitHead: string | null;
     avatars: AvatarImageCollection;
     currentBranch: string | null;
+    currentAuthor: string;
     currentRepo: string;
     moreCommitsAvailable: boolean;
     maxCommits: number;

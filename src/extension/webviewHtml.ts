@@ -47,6 +47,7 @@ export function buildWebviewHtml(opts: {
 		<div id="controls">
 			<span id="repoControl"><span class="unselectable">Repo: </span><div id="repoSelect" class="dropdown"></div></span>
 			<span id="branchControl"><span class="unselectable">Branch: </span><div id="branchSelect" class="dropdown"></div></span>
+      <span id="authorControl"><span class="unselectable">Author: </span><div id="authorSelect" class="dropdown"></div></span>
 			<label id="showRemoteBranchesControl"><input type="checkbox" id="showRemoteBranchesCheckbox" value="1" checked>Show Remote Branches</label>
 			<div id="refreshBtn" class="roundedBtn">Refresh</div>
 		</div>

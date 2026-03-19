@@ -26,6 +26,7 @@ export function setupHtml(viewState: GG.GitGraphViewState) {
     <div id="controls">
       <span id="repoControl"><div id="repoSelect" class="dropdown"></div></span>
       <span id="branchControl"><div id="branchSelect" class="dropdown"></div></span>
+      <span id="authorControl"><div id="authorSelect" class="dropdown"></div></span>
       <label id="showRemoteBranchesControl">
         <input type="checkbox" id="showRemoteBranchesCheckbox" checked>
         Show Remote Branches
