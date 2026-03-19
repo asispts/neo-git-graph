@@ -5,3 +5,4 @@
 *.vsix
 
 *.orig
+.vscode/*

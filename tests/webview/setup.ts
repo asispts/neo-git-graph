@@ -31,6 +31,7 @@ export function setupHtml(viewState: GG.GitGraphViewState) {
         Show Remote Branches
       </label>
       <div id="refreshBtn" class="roundedBtn">Refresh</div>
+      <div id="blinkHeadBtn" class="roundedBtn">Locate HEAD</div>
     </div>
     <div id="content">
       <div id="commitGraph"></div>

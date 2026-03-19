@@ -38,7 +38,7 @@
   "scripts": {
     "typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit && tsc -p ./tests --noEmit",
     "vscode:prepublish": "pnpm run compile",
-    "clean": "rm -rf out",
+    "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
     "compile": "pnpm run clean && pnpm run compile-src && pnpm run compile-web",
     "compile-src": "esbuild --bundle src/extension.ts --outfile=out/extension.js --platform=node --format=cjs --target=es6 --external:vscode --minify",
     "compile-web": "esbuild --bundle web/main.ts --outfile=out/web.min.js --minify --target=es6 --format=iife",

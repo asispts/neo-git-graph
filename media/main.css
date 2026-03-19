@@ -403,6 +403,18 @@ svg.fileIcon {
   border-radius: 11px;
   margin-top: -12px;
 }
+/* Make the Locate HEAD button match the refresh button style but smaller */
+#blinkHeadBtn {
+  position: absolute;
+  right: 96px;
+  top: 50%;
+  width: 120px;
+  height: 22px;
+  line-height: 22px;
+  border-radius: 11px;
+  margin-top: -12px;
+  text-align: center;
+}
 #loadMoreCommitsBtn {
   width: 180px;
   height: 28px;
@@ -557,6 +569,18 @@ svg.fileIcon {
 #actionRunning {
   margin: 0 16px;
   line-height: 24px;
+}
+
+/* Blink animation for highlighting the current HEAD commit row */
+.commit.blinking {
+  /* two short pulses */
+  animation: headPulse 320ms ease-in-out 2;
+}
+
+@keyframes headPulse {
+  0% { background-color: oklch(87.44% 0.2383 150 / 0.1); }
+  50% { background-color: oklch(87.44% 0.2383 150 / 0.5); }
+  100% { background-color: transparent; }
 }
 #actionRunning svg {
   display: inline-block;
