@@ -123,10 +123,6 @@ export class RepoManager {
   public getRepos() {
     return sortRepos(this.repos);
   }
-  private addRepo(repo: string) {
-    this.repos[repo] = { columnWidths: null };
-    this.extensionState.saveRepos(this.repos);
-  }
   private removeRepo(repo: string) {
     delete this.repos[repo];
     this.extensionState.saveRepos(this.repos);
@@ -142,6 +138,9 @@ export class RepoManager {
       }
     }
     return changes;
+  }
+  private isKnownRepo(path: string) {
+    return typeof this.repos[path] !== "undefined";
   }
   private isDirectoryWithinRepos(path: string) {
     return isPathWithinRepos(path, this.repos);
@@ -190,6 +189,7 @@ export class RepoManager {
           changes = true;
       }
     }
+    if (await this.checkReposForNewSubmodules()) changes = true;
     if (changes) this.sendRepos();
   }
   private searchDirectoryForRepos(directory: string, maxDepth: number) {
@@ -204,8 +204,7 @@ export class RepoManager {
         .isGitRepository(directory)
         .then((isRepo) => {
           if (isRepo) {
-            this.addRepo(directory);
-            resolve(true);
+            this.addRepo(directory).then(resolve).catch(() => resolve(false));
           } else if (maxDepth > 0) {
             fs.readdir(directory, async (err, dirContents) => {
               if (err) {
@@ -235,6 +234,34 @@ export class RepoManager {
         })
         .catch(() => resolve(false));
     });
+  }
+  private async checkReposForNewSubmodules() {
+    let repoPaths = Object.keys(this.repos),
+      changes = false;
+    for (let i = 0; i < repoPaths.length; i++) {
+      if (await this.searchRepoForSubmodules(repoPaths[i])) changes = true;
+    }
+    return changes;
+  }
+  private async searchRepoForSubmodules(repo: string) {
+    let submodules = await this.dataSource.getSubmodules(repo),
+      changes = false;
+    for (let i = 0; i < submodules.length; i++) {
+      if (!this.isKnownRepo(submodules[i]) && (await this.addRepo(submodules[i]))) {
+        changes = true;
+      }
+    }
+    return changes;
+  }
+  private async addRepo(repo: string) {
+    if (this.isKnownRepo(repo)) {
+      return this.searchRepoForSubmodules(repo);
+    }
+
+    this.repos[repo] = { columnWidths: null };
+    this.extensionState.saveRepos(this.repos);
+    await this.searchRepoForSubmodules(repo);
+    return true;
   }
 
   /* Workspace Folder Watching */
@@ -287,6 +314,10 @@ export class RepoManager {
     let path,
       changes = false;
     while ((path = this.createEventPaths.shift())) {
+      if (path.endsWith("/.gitmodules") && (await this.checkReposForNewSubmodules())) {
+        changes = true;
+        continue;
+      }
       if (await isDirectory(path)) {
         if (await this.searchDirectoryForRepos(path, this.maxDepthOfRepoSearch)) changes = true;
       }
@@ -298,7 +329,9 @@ export class RepoManager {
     let path,
       changes = false;
     while ((path = this.changeEventPaths.shift())) {
-      if (!(await doesPathExist(path))) {
+      if (path.endsWith("/.gitmodules") && (await doesPathExist(path))) {
+        if (await this.checkReposForNewSubmodules()) changes = true;
+      } else if (!(await doesPathExist(path))) {
         if (this.removeReposWithinFolder(path)) changes = true;
       }
     }

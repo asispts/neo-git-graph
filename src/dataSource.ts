@@ -1,3 +1,5 @@
+import * as fs from "node:fs";
+import * as path from "node:path";
 import * as cp from "node:child_process";
 
 import { escapeRefName, getPathFromStr } from "./backend/utils";
@@ -39,14 +41,20 @@ export class DataSource {
       ["%H", "%P", "%an", "%ae", dateType, "%cn"].join(gitLogSeparator) + "%n%B";
   }
 
-  public getCommits(repo: string, branch: string, maxCommits: number, showRemoteBranches: boolean) {
+  public getCommits(
+    repo: string,
+    branch: string,
+    author: string,
+    maxCommits: number,
+    showRemoteBranches: boolean
+  ) {
     return new Promise<{
       commits: GitCommitNode[];
       head: string | null;
       moreCommitsAvailable: boolean;
     }>((resolve) => {
       Promise.all([
-        this.getGitLog(repo, branch, maxCommits + 1, showRemoteBranches),
+        this.getGitLog(repo, branch, author, maxCommits + 1, showRemoteBranches),
         this.getRefs(repo, showRemoteBranches)
       ]).then(async (results) => {
         let commits = results[0],
@@ -191,6 +199,34 @@ export class DataSource {
     });
   }
 
+  public getAuthors(repo: string, branch: string, maxCommits: number, showRemoteBranches: boolean) {
+    let args = ["log", "--max-count=" + maxCommits, "--format=%an", "--date-order"];
+    if (branch !== "") {
+      args.push(escapeRefName(branch));
+    } else {
+      args.push("--branches", "--tags");
+      if (showRemoteBranches) args.push("--remotes");
+    }
+
+    return this.spawnGit(
+      args,
+      repo,
+      (stdout) => {
+        let lines = stdout.split(eolRegex),
+          authors: string[] = [],
+          seen: { [author: string]: boolean } = {};
+        for (let i = 0; i < lines.length - 1; i++) {
+          let author = lines[i];
+          if (author === "" || seen[author]) continue;
+          seen[author] = true;
+          authors.push(author);
+        }
+        return authors;
+      },
+      []
+    );
+  }
+
   public getCommitFile(repo: string, commitHash: string, filePath: string) {
     return this.spawnGit(["show", commitHash + ":" + filePath], repo, (stdout) => stdout, "");
   }
@@ -199,6 +235,46 @@ export class DataSource {
     return new Promise<string | null>((resolve) => {
       this.execGit("config --get remote.origin.url", repo, (err, stdout) => {
         resolve(!err ? stdout.split(eolRegex)[0] : null);
+      });
+    });
+  }
+
+  public getSubmodules(repo: string) {
+    return new Promise<string[]>((resolve) => {
+      fs.readFile(path.join(repo, ".gitmodules"), { encoding: "utf8" }, async (err, data) => {
+        const submodules: string[] = [];
+        if (err) {
+          resolve(submodules);
+          return;
+        }
+
+        const lines = data.split(eolRegex);
+        const sectionRegex = /^\s*\[.*\]\s*$/;
+        const submoduleSectionRegex = /^\s*\[submodule "([^"]+)"\]\s*$/;
+        const pathRegex = /^\s*path\s*=\s*(.*)$/;
+        let inSubmoduleSection = false;
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i];
+          if (sectionRegex.test(line)) {
+            inSubmoduleSection = submoduleSectionRegex.test(line);
+            continue;
+          }
+
+          if (!inSubmoduleSection) continue;
+
+          const match = line.match(pathRegex);
+          if (match === null) continue;
+
+          const submodulePath = getPathFromStr(path.resolve(repo, match[1].trim()));
+          if (submodules.includes(submodulePath)) continue;
+
+          if (await this.isGitRepository(submodulePath)) {
+            submodules.push(submodulePath);
+          }
+        }
+
+        resolve(submodules);
       });
     });
   }
@@ -334,8 +410,17 @@ export class DataSource {
     });
   }
 
-  private getGitLog(repo: string, branch: string, num: number, showRemoteBranches: boolean) {
+  private getGitLog(
+    repo: string,
+    branch: string,
+    author: string,
+    num: number,
+    showRemoteBranches: boolean
+  ) {
     let args = ["log", "--max-count=" + num, "--format=" + this.gitLogFormat, "--date-order"];
+    if (author !== "") {
+      args.push("--author=" + author);
+    }
     if (branch !== "") {
       args.push(escapeRefName(branch));
     } else {
