@@ -1,83 +1,83 @@
 // See https://go.microsoft.com/fwlink/?LinkId=733558
 // for the documentation about the tasks.json format
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"label": "watch",
-			"dependsOn": ["watch:esbuild", "watch:tsc"],
-			"group": "build",
-			"presentation": {
-				"reveal": "never"
-			},
-			"problemMatcher": []
-		},
-		{
-			"label": "watch:esbuild",
-			"type": "shell",
-			"command": "pnpm run watch:esbuild",
-			"group": "build",
-			"isBackground": true,
-			"problemMatcher": "$esbuild-watch",
-			"presentation": {
-				"group": "watch",
-				"reveal": "never"
-			}
-		},
-		{
-			"label": "watch:tsc",
-			"type": "shell",
-			"command": "pnpm run watch:tsc",
-			"group": "build",
-			"isBackground": true,
-			"problemMatcher": "$tsc-watch",
-			"presentation": {
-				"group": "watch",
-				"reveal": "never"
-			}
-		},
-		{
-			"label": "compile",
-			"type": "shell",
-			"command": "pnpm run compile",
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			},
-			"problemMatcher": "$esbuild-watch",
-			"presentation": {
-				"reveal": "silent"
-			}
-		},
-		{
-			"label": "compile-src",
-			"type": "shell",
-			"command": "pnpm run compile-src",
-			"group": "build",
-			"problemMatcher": "$esbuild-watch",
-			"presentation": {
-				"reveal": "silent"
-			}
-		},
-		{
-			"label": "compile-web",
-			"type": "shell",
-			"command": "pnpm run compile-web",
-			"group": "build",
-			"problemMatcher": "$esbuild-watch",
-			"presentation": {
-				"reveal": "silent"
-			}
-		},
-		{
-			"label": "typecheck",
-			"type": "shell",
-			"command": "pnpm run typecheck",
-			"group": "test",
-			"problemMatcher": "$tsc",
-			"presentation": {
-				"reveal": "silent"
-			}
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "watch",
+      "dependsOn": ["watch:esbuild", "watch:tsc"],
+      "group": "build",
+      "presentation": {
+        "reveal": "never"
+      },
+      "problemMatcher": []
+    },
+    {
+      "label": "watch:esbuild",
+      "type": "shell",
+      "command": "pnpm run watch:esbuild",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": "$esbuild-watch",
+      "presentation": {
+        "group": "watch",
+        "reveal": "never"
+      }
+    },
+    {
+      "label": "watch:tsc",
+      "type": "shell",
+      "command": "pnpm run watch:tsc",
+      "group": "build",
+      "isBackground": true,
+      "problemMatcher": "$tsc-watch",
+      "presentation": {
+        "group": "watch",
+        "reveal": "never"
+      }
+    },
+    {
+      "label": "compile",
+      "type": "shell",
+      "command": "pnpm run compile",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": "$esbuild-watch",
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "compile-src",
+      "type": "shell",
+      "command": "pnpm run compile-src",
+      "group": "build",
+      "problemMatcher": "$esbuild-watch",
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "compile-web",
+      "type": "shell",
+      "command": "pnpm run compile-web",
+      "group": "build",
+      "problemMatcher": "$esbuild-watch",
+      "presentation": {
+        "reveal": "silent"
+      }
+    },
+    {
+      "label": "typecheck",
+      "type": "shell",
+      "command": "pnpm run typecheck",
+      "group": "test",
+      "problemMatcher": "$tsc",
+      "presentation": {
+        "reveal": "silent"
+      }
+    }
+  ]
 }
