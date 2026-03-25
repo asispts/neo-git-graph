@@ -1,0 +1,50 @@
+// See https://go.microsoft.com/fwlink/?LinkId=733558
+// for the documentation about the tasks.json format
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "compile",
+			"type": "shell",
+			"command": "pnpm run compile",
+			"group": {
+				"kind": "build",
+				"isDefault": true
+			},
+			"problemMatcher": "$esbuild-watch",
+			"presentation": {
+				"reveal": "silent"
+			}
+		},
+		{
+			"label": "compile-src",
+			"type": "shell",
+			"command": "pnpm run compile-src",
+			"group": "build",
+			"problemMatcher": "$esbuild-watch",
+			"presentation": {
+				"reveal": "silent"
+			}
+		},
+		{
+			"label": "compile-web",
+			"type": "shell",
+			"command": "pnpm run compile-web",
+			"group": "build",
+			"problemMatcher": "$esbuild-watch",
+			"presentation": {
+				"reveal": "silent"
+			}
+		},
+		{
+			"label": "typecheck",
+			"type": "shell",
+			"command": "pnpm run typecheck",
+			"group": "test",
+			"problemMatcher": "$tsc",
+			"presentation": {
+				"reveal": "silent"
+			}
+		}
+	]
+}
