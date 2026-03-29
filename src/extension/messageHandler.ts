@@ -226,9 +226,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("resetToCommit", async (msg) => {
+    const result = await gitCommits.reset(msg.commitHash, msg.resetMode);
     bridge.post({
       command: "resetToCommit",
-      status: await dataSource.resetToCommit(msg.repo, msg.commitHash, msg.resetMode)
+      status: result.error ? result.message : null
     });
   });
 

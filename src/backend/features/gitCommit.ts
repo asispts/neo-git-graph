@@ -1,4 +1,4 @@
-import type { DateType, GitCommitDetails } from "../../types";
+import type { DateType, GitCommitDetails, GitResetMode } from "../../types";
 import type { GitInstance } from "./gitClient";
 import { getCommitDetails } from "./gitCommitDetails";
 import { listCommits } from "./gitCommitList";
@@ -30,6 +30,17 @@ export function gitCommitFactory(gitClient: GitInstance) {
       try {
         const git = gitClient();
         await git.checkout(commitHash);
+        return { error: false as const };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { error: true as const, message };
+      }
+    },
+
+    reset: async (commitHash: string, resetMode: GitResetMode) => {
+      try {
+        const git = gitClient();
+        await git.raw(["reset", "--" + resetMode, commitHash]);
         return { error: false as const };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);

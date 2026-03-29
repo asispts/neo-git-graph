@@ -2,7 +2,7 @@ import * as cp from "node:child_process";
 
 import { escapeRefName } from "./backend/utils";
 import { getConfig } from "./config";
-import { GitCommandStatus, GitResetMode } from "./types";
+import { GitCommandStatus } from "./types";
 
 const eolRegex = /\r\n|\r|\n/g;
 
@@ -57,10 +57,6 @@ export class DataSource {
       "revert --no-edit " + commitHash + (parentIndex > 0 ? " -m " + parentIndex : ""),
       repo
     );
-  }
-
-  public resetToCommit(repo: string, commitHash: string, resetMode: GitResetMode) {
-    return this.runGitCommand("reset --" + resetMode + " " + commitHash, repo);
   }
 
   private runGitCommand(command: string, repo: string) {
