@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { AvatarManager } from "./avatarManager";
 import { gitBranchFactory } from "./backend/features/gitBranch";
 import { gitClientFactory } from "./backend/features/gitClient";
+import { gitTagFactory } from "./backend/features/gitTag";
 import { buildExtensionUri } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
@@ -26,6 +27,7 @@ export function activate(context: vscode.ExtensionContext) {
     getConfig().gitPath()
   );
   const gitBranch = gitBranchFactory(gitClient.getInstance);
+  const gitTag = gitTagFactory(gitClient.getInstance);
 
   let currentPanel: WebviewPanel | undefined;
 
@@ -66,6 +68,7 @@ export function activate(context: vscode.ExtensionContext) {
         repoManager,
         gitClient,
         gitBranch,
+        gitTag,
         onDispose: () => {
           currentPanel = undefined;
         }

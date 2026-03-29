@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { AvatarManager } from "../avatarManager";
 import { GitBranch } from "../backend/features/gitBranch";
 import { GitClient } from "../backend/features/gitClient";
+import { GitTag } from "../backend/features/gitTag";
 import { abbrevCommit, copyToClipboard } from "../backend/utils";
 import { DataSource } from "../dataSource";
 import { encodeDiffDocUri } from "../diffDocProvider";
@@ -50,6 +51,7 @@ export function registerMessageHandlers(
     dataSource: DataSource;
     gitClient: GitClient;
     gitBranch: GitBranch;
+    gitTag: GitTag;
     repoManager: RepoManager;
     extensionState: ExtensionState;
     avatarManager: AvatarManager;
@@ -62,6 +64,7 @@ export function registerMessageHandlers(
     dataSource,
     gitClient,
     gitBranch,
+    gitTag,
     repoManager,
     extensionState,
     avatarManager,
@@ -71,15 +74,10 @@ export function registerMessageHandlers(
   } = deps;
 
   bridge.onMessage("addTag", async (msg) => {
+    const result = await gitTag.add(msg.tagName, msg.commitHash, msg.lightweight, msg.message);
     bridge.post({
       command: "addTag",
-      status: await dataSource.addTag(
-        msg.repo,
-        msg.tagName,
-        msg.commitHash,
-        msg.lightweight,
-        msg.message
-      )
+      status: result.error ? result.message : null
     });
   });
 
