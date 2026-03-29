@@ -132,9 +132,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("deleteBranch", async (msg) => {
+    const result = await gitBranch.delete(msg.branchName, msg.forceDelete);
     bridge.post({
       command: "deleteBranch",
-      status: await dataSource.deleteBranch(msg.repo, msg.branchName, msg.forceDelete)
+      status: result.error ? result.message : null
     });
   });
 

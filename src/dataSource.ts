@@ -250,13 +250,6 @@ export class DataSource {
     return this.runGitCommand("checkout " + commitHash, repo);
   }
 
-  public deleteBranch(repo: string, branchName: string, forceDelete: boolean) {
-    return this.runGitCommand(
-      "branch --delete" + (forceDelete ? " --force" : "") + " " + escapeRefName(branchName),
-      repo
-    );
-  }
-
   public mergeBranch(repo: string, branchName: string, createNewCommit: boolean) {
     return this.runGitCommand(
       "merge " + escapeRefName(branchName) + (createNewCommit ? " --no-ff" : ""),

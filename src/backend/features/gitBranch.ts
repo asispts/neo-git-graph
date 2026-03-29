@@ -36,6 +36,17 @@ export function gitBranchFactory(gitClient: GitInstance) {
         const message = e instanceof Error ? e.message : String(e);
         return { error: true as const, message };
       }
+    },
+
+    delete: async (branchName: string, forceDelete: boolean) => {
+      try {
+        const git = gitClient();
+        await git.deleteLocalBranch(branchName, forceDelete);
+        return { error: false as const };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { error: true as const, message };
+      }
     }
   };
 }
