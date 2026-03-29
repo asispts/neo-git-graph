@@ -4,6 +4,7 @@ import { AvatarManager } from "../avatarManager";
 import { GitBranch } from "../backend/features/gitBranch";
 import { GitClient } from "../backend/features/gitClient";
 import { GitCommit } from "../backend/features/gitCommit";
+import { GitCommitDetailsOps } from "../backend/features/gitCommitDetails";
 import { GitTag } from "../backend/features/gitTag";
 import { abbrevCommit, copyToClipboard } from "../backend/utils";
 import { getConfig } from "../config";
@@ -54,6 +55,7 @@ export function registerMessageHandlers(
     gitClient: GitClient;
     gitBranch: GitBranch;
     gitCommits: GitCommit;
+    gitCommitDetails: GitCommitDetailsOps;
     gitTag: GitTag;
     repoManager: RepoManager;
     extensionState: ExtensionState;
@@ -68,6 +70,7 @@ export function registerMessageHandlers(
     gitClient,
     gitBranch,
     gitCommits,
+    gitCommitDetails,
     gitTag,
     repoManager,
     extensionState,
@@ -114,7 +117,7 @@ export function registerMessageHandlers(
   bridge.onMessage("commitDetails", async (msg) => {
     bridge.post({
       command: "commitDetails",
-      commitDetails: await dataSource.commitDetails(msg.repo, msg.commitHash)
+      commitDetails: await gitCommitDetails.get(msg.commitHash, getConfig().dateType())
     });
   });
 

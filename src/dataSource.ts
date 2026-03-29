@@ -1,115 +1,22 @@
 import * as cp from "node:child_process";
 
-import { escapeRefName, getPathFromStr } from "./backend/utils";
+import { escapeRefName } from "./backend/utils";
 import { getConfig } from "./config";
-import { GitCommandStatus, GitCommitDetails, GitFileChangeType, GitResetMode } from "./types";
+import { GitCommandStatus, GitResetMode } from "./types";
 
 const eolRegex = /\r\n|\r|\n/g;
-const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
 
 export class DataSource {
   private gitPath!: string;
   private gitExecPath!: string;
-  private gitCommitDetailsFormat!: string;
 
   constructor() {
     this.registerGitPath();
-    this.generateGitCommandFormats();
   }
 
   public registerGitPath() {
     this.gitPath = getConfig().gitPath();
     this.gitExecPath = this.gitPath.indexOf(" ") > -1 ? '"' + this.gitPath + '"' : this.gitPath;
-  }
-
-  public generateGitCommandFormats() {
-    let dateType = getConfig().dateType() === "Author Date" ? "%at" : "%ct";
-    this.gitCommitDetailsFormat =
-      ["%H", "%P", "%an", "%ae", dateType, "%cn"].join(gitLogSeparator) + "%n%B";
-  }
-
-  public commitDetails(repo: string, commitHash: string) {
-    return new Promise<GitCommitDetails | null>((resolve) => {
-      Promise.all([
-        new Promise<GitCommitDetails>((resolve, reject) =>
-          this.execGit(
-            "show --quiet " + commitHash + ' --format="' + this.gitCommitDetailsFormat + '"',
-            repo,
-            (err, stdout) => {
-              if (err) {
-                reject();
-              } else {
-                let lines = stdout.split(eolRegex);
-                let lastLine = lines.length - 1;
-                while (lines.length > 0 && lines[lastLine] === "") lastLine--;
-                let commitInfo = lines[0].split(gitLogSeparator);
-                resolve({
-                  hash: commitInfo[0],
-                  parents: commitInfo[1].split(" "),
-                  author: commitInfo[2],
-                  email: commitInfo[3],
-                  date: parseInt(commitInfo[4]),
-                  committer: commitInfo[5],
-                  body: lines.slice(1, lastLine + 1).join("\n"),
-                  fileChanges: []
-                });
-              }
-            }
-          )
-        ),
-        new Promise<string[]>((resolve, reject) =>
-          this.execGit(
-            "diff-tree --name-status -r -m --root --find-renames --diff-filter=AMDR " + commitHash,
-            repo,
-            (err, stdout) => {
-              if (err) reject();
-              else resolve(stdout.split(eolRegex));
-            }
-          )
-        ),
-        new Promise<string[]>((resolve, reject) =>
-          this.execGit(
-            "diff-tree --numstat -r -m --root --find-renames --diff-filter=AMDR " + commitHash,
-            repo,
-            (err, stdout) => {
-              if (err) reject();
-              else resolve(stdout.split(eolRegex));
-            }
-          )
-        )
-      ])
-        .then((results) => {
-          let details = results[0],
-            fileLookup: { [file: string]: number } = {};
-
-          for (let i = 1; i < results[1].length - 1; i++) {
-            let line = results[1][i].split("\t");
-            if (line.length < 2) break;
-            let oldFilePath = getPathFromStr(line[1]),
-              newFilePath = getPathFromStr(line[line.length - 1]);
-            fileLookup[newFilePath] = details.fileChanges.length;
-            details.fileChanges.push({
-              oldFilePath: oldFilePath,
-              newFilePath: newFilePath,
-              type: <GitFileChangeType>line[0][0],
-              additions: null,
-              deletions: null
-            });
-          }
-
-          for (let i = 1; i < results[2].length - 1; i++) {
-            let line = results[2][i].split("\t");
-            if (line.length !== 3) break;
-            let fileName = line[2].replace(/(.*){.* => (.*)}/, "$1$2").replace(/.* => (.*)/, "$1");
-            if (typeof fileLookup[fileName] === "number") {
-              details.fileChanges[fileLookup[fileName]].additions = parseInt(line[0]);
-              details.fileChanges[fileLookup[fileName]].deletions = parseInt(line[1]);
-            }
-          }
-          resolve(details);
-        })
-        .catch(() => resolve(null));
-    });
   }
 
   public getCommitFile(repo: string, commitHash: string, filePath: string) {
