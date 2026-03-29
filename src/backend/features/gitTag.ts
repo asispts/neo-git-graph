@@ -7,7 +7,7 @@ export function gitTagFactory(gitClient: GitInstance) {
     add: async (tagName: string, commitHash: string, lightweight: boolean, message: string) => {
       try {
         const git = gitClient();
-        const args = ["tag"];
+        const args: string[] = [];
         if (lightweight) {
           args.push(tagName);
         } else {

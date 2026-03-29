@@ -28,8 +28,11 @@ describe("add", () => {
     const result = await tag.add("v1.0-lw", commitHash, true, "");
     expect(result.error).toBe(false);
 
-    const tags = cp.execFileSync("git", ["tag"], { cwd: repo }).toString().trim().split("\n");
-    expect(tags).toContain("v1.0-lw");
+    const tagName = cp
+      .execFileSync("git", ["tag", "-l", "v1.0-lw"], { cwd: repo })
+      .toString()
+      .trim();
+    expect(tagName).toBe("v1.0-lw");
   });
 
   it("creates an annotated tag at the given commit", async () => {
