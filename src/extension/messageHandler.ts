@@ -88,9 +88,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("checkoutBranch", async (msg) => {
+    const result = await gitBranch.checkout(msg.branchName, msg.remoteBranch);
     bridge.post({
       command: "checkoutBranch",
-      status: await dataSource.checkoutBranch(msg.repo, msg.branchName, msg.remoteBranch)
+      status: result.error ? result.message : null
     });
   });
 
