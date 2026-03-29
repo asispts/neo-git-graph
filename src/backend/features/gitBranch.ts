@@ -14,6 +14,17 @@ export function gitBranchFactory(gitClient: GitInstance) {
       } catch {
         return { branches: [], head: null, error: true };
       }
+    },
+
+    rename: async (oldName: string, newName: string) => {
+      try {
+        const git = gitClient();
+        await git.raw(["branch", "-m", oldName, newName]);
+        return { error: false as const };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { error: true as const, message };
+      }
     }
   };
 }

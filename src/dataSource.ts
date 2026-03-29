@@ -261,13 +261,6 @@ export class DataSource {
     );
   }
 
-  public renameBranch(repo: string, oldName: string, newName: string) {
-    return this.runGitCommand(
-      "branch -m " + escapeRefName(oldName) + " " + escapeRefName(newName),
-      repo
-    );
-  }
-
   public mergeBranch(repo: string, branchName: string, createNewCommit: boolean) {
     return this.runGitCommand(
       "merge " + escapeRefName(branchName) + (createNewCommit ? " --no-ff" : ""),

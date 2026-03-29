@@ -209,9 +209,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("renameBranch", async (msg) => {
+    const result = await gitBranch.rename(msg.oldName, msg.newName);
     bridge.post({
       command: "renameBranch",
-      status: await dataSource.renameBranch(msg.repo, msg.oldName, msg.newName)
+      status: result.error ? result.message : null
     });
   });
 
