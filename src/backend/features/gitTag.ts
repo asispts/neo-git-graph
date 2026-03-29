@@ -15,6 +15,17 @@ export function gitTagFactory(gitClient: GitInstance) {
       }
     },
 
+    push: async (tagName: string) => {
+      try {
+        const git = gitClient();
+        await git.push("origin", tagName);
+        return { error: false as const };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { error: true as const, message };
+      }
+    },
+
     add: async (tagName: string, commitHash: string, lightweight: boolean, message: string) => {
       try {
         const git = gitClient();

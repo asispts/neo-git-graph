@@ -204,9 +204,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("pushTag", async (msg) => {
+    const result = await gitTag.push(msg.tagName);
     bridge.post({
       command: "pushTag",
-      status: await dataSource.pushTag(msg.repo, msg.tagName)
+      status: result.error ? result.message : null
     });
   });
 

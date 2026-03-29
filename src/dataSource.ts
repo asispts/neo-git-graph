@@ -211,10 +211,6 @@ export class DataSource {
     });
   }
 
-  public pushTag(repo: string, tagName: string) {
-    return this.runGitCommand("push origin " + escapeRefName(tagName), repo);
-  }
-
   public checkoutCommit(repo: string, commitHash: string) {
     return this.runGitCommand("checkout " + commitHash, repo);
   }
