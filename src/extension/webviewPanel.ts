@@ -4,7 +4,6 @@ import { AvatarManager } from "../avatarManager";
 import { GitBranch } from "../backend/features/gitBranch";
 import { GitClient } from "../backend/features/gitClient";
 import { GitCommit } from "../backend/features/gitCommit";
-import { GitCommitDetailsOps } from "../backend/features/gitCommitDetails";
 import { GitTag } from "../backend/features/gitTag";
 import { buildExtensionUri } from "../backend/utils";
 import { getConfig } from "../config";
@@ -29,7 +28,6 @@ export function createWebviewPanel(opts: {
   gitClient: GitClient;
   gitBranch: GitBranch;
   gitCommits: GitCommit;
-  gitCommitDetails: GitCommitDetailsOps;
   gitTag: GitTag;
   onDispose: () => void;
 }) {
@@ -45,7 +43,6 @@ export function createWebviewPanel(opts: {
     gitClient,
     gitBranch,
     gitCommits,
-    gitCommitDetails,
     gitTag,
     onDispose
   } = opts;
@@ -122,7 +119,6 @@ export function createWebviewPanel(opts: {
     gitClient,
     gitBranch,
     gitCommits,
-    gitCommitDetails,
     gitTag,
     repoManager,
     extensionState,

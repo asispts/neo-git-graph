@@ -93,5 +93,4 @@ export class DataSource {
   ) {
     cp.exec(this.gitExecPath + " " + command, { cwd: repo }, callback);
   }
-
 }

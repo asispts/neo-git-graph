@@ -62,49 +62,47 @@ async function fetchNumStat(git: SimpleGit, commitHash: string): Promise<string[
   return stdout.split(eolRegex);
 }
 
-export type GitCommitDetailsOps = ReturnType<typeof gitCommitDetailsFactory>;
+export async function getCommitDetails(
+  gitClient: GitInstance,
+  commitHash: string,
+  dateType: DateType
+): Promise<GitCommitDetails | null> {
+  try {
+    const git = gitClient();
+    const [details, nameStatusLines, numStatLines] = await Promise.all([
+      fetchCommitInfo(git, commitHash, dateType),
+      fetchNameStatus(git, commitHash),
+      fetchNumStat(git, commitHash)
+    ]);
 
-export function gitCommitDetailsFactory(gitClient: GitInstance) {
-  return {
-    get: async (commitHash: string, dateType: DateType): Promise<GitCommitDetails | null> => {
-      try {
-        const git = gitClient();
-        const [details, nameStatusLines, numStatLines] = await Promise.all([
-          fetchCommitInfo(git, commitHash, dateType),
-          fetchNameStatus(git, commitHash),
-          fetchNumStat(git, commitHash)
-        ]);
+    const fileLookup: { [file: string]: number } = {};
+    for (let i = 1; i < nameStatusLines.length - 1; i++) {
+      const line = nameStatusLines[i].split("\t");
+      if (line.length < 2) break;
+      const oldFilePath = toPath(line[1]);
+      const newFilePath = toPath(line[line.length - 1]);
+      fileLookup[newFilePath] = details.fileChanges.length;
+      details.fileChanges.push({
+        oldFilePath,
+        newFilePath,
+        type: line[0][0] as GitFileChangeType,
+        additions: null,
+        deletions: null
+      });
+    }
 
-        const fileLookup: { [file: string]: number } = {};
-        for (let i = 1; i < nameStatusLines.length - 1; i++) {
-          const line = nameStatusLines[i].split("\t");
-          if (line.length < 2) break;
-          const oldFilePath = toPath(line[1]);
-          const newFilePath = toPath(line[line.length - 1]);
-          fileLookup[newFilePath] = details.fileChanges.length;
-          details.fileChanges.push({
-            oldFilePath,
-            newFilePath,
-            type: line[0][0] as GitFileChangeType,
-            additions: null,
-            deletions: null
-          });
-        }
-
-        for (let i = 1; i < numStatLines.length - 1; i++) {
-          const line = numStatLines[i].split("\t");
-          if (line.length !== 3) break;
-          const fileName = line[2].replace(/(.*){.* => (.*)}/, "$1$2").replace(/.* => (.*)/, "$1");
-          if (typeof fileLookup[fileName] === "number") {
-            details.fileChanges[fileLookup[fileName]].additions = parseInt(line[0]);
-            details.fileChanges[fileLookup[fileName]].deletions = parseInt(line[1]);
-          }
-        }
-
-        return details;
-      } catch {
-        return null;
+    for (let i = 1; i < numStatLines.length - 1; i++) {
+      const line = numStatLines[i].split("\t");
+      if (line.length !== 3) break;
+      const fileName = line[2].replace(/(.*){.* => (.*)}/, "$1$2").replace(/.* => (.*)/, "$1");
+      if (typeof fileLookup[fileName] === "number") {
+        details.fileChanges[fileLookup[fileName]].additions = parseInt(line[0]);
+        details.fileChanges[fileLookup[fileName]].deletions = parseInt(line[1]);
       }
     }
-  };
+
+    return details;
+  } catch {
+    return null;
+  }
 }

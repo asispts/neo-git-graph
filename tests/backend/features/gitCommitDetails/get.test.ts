@@ -5,7 +5,7 @@ import * as path from "node:path";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { gitClientFactory } from "../../../../src/backend/features/gitClient";
-import { gitCommitDetailsFactory } from "../../../../src/backend/features/gitCommitDetails";
+import { gitCommitFactory } from "../../../../src/backend/features/gitCommit";
 import { git, makeRepo } from "../helpers";
 
 let repo: string;
@@ -23,8 +23,8 @@ afterAll(() => {
 describe("get", () => {
   it("returns commit details with expected fields", async () => {
     const client = gitClientFactory(repo, "git");
-    const commitDetails = gitCommitDetailsFactory(client.getInstance);
-    const result = await commitDetails.get(commitHash, "Author Date");
+    const gitCommits = gitCommitFactory(client.getInstance);
+    const result = await gitCommits.details(commitHash, "Author Date");
     expect(result).not.toBeNull();
     expect(result!.hash).toBe(commitHash);
     expect(typeof result!.author).toBe("string");
@@ -39,16 +39,16 @@ describe("get", () => {
 
   it("returns file changes for the initial commit", async () => {
     const client = gitClientFactory(repo, "git");
-    const commitDetails = gitCommitDetailsFactory(client.getInstance);
-    const result = await commitDetails.get(commitHash, "Author Date");
+    const gitCommits = gitCommitFactory(client.getInstance);
+    const result = await gitCommits.details(commitHash, "Author Date");
     expect(result).not.toBeNull();
     expect(result!.fileChanges.length).toBeGreaterThan(0);
   });
 
   it("returns null for an invalid commit hash", async () => {
     const client = gitClientFactory(repo, "git");
-    const commitDetails = gitCommitDetailsFactory(client.getInstance);
-    const result = await commitDetails.get("deadbeef1234", "Author Date");
+    const gitCommits = gitCommitFactory(client.getInstance);
+    const result = await gitCommits.details("deadbeef1234", "Author Date");
     expect(result).toBeNull();
   });
 
@@ -60,8 +60,8 @@ describe("get", () => {
       git(["-c", "commit.gpgsign=false", "commit", "-m", "mod"], repo2);
       const hash = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo2 }).toString().trim();
       const client = gitClientFactory(repo2, "git");
-      const commitDetails = gitCommitDetailsFactory(client.getInstance);
-      const result = await commitDetails.get(hash, "Author Date");
+      const gitCommits = gitCommitFactory(client.getInstance);
+      const result = await gitCommits.details(hash, "Author Date");
       expect(result).not.toBeNull();
       const changed = result!.fileChanges.find((f) => f.newFilePath === "f");
       expect(changed).toBeDefined();
@@ -74,16 +74,16 @@ describe("get", () => {
 
   it("uses commit date when dateType is Commit Date", async () => {
     const client = gitClientFactory(repo, "git");
-    const commitDetails = gitCommitDetailsFactory(client.getInstance);
-    const result = await commitDetails.get(commitHash, "Commit Date");
+    const gitCommits = gitCommitFactory(client.getInstance);
+    const result = await gitCommits.details(commitHash, "Commit Date");
     expect(result).not.toBeNull();
     expect(result!.date).toBeGreaterThan(0);
   });
 
   it("body contains the commit message", async () => {
     const client = gitClientFactory(repo, "git");
-    const commitDetails = gitCommitDetailsFactory(client.getInstance);
-    const result = await commitDetails.get(commitHash, "Author Date");
+    const gitCommits = gitCommitFactory(client.getInstance);
+    const result = await gitCommits.details(commitHash, "Author Date");
     expect(result).not.toBeNull();
     expect(result!.body).toContain("init");
   });
@@ -93,15 +93,15 @@ describe("get", () => {
     try {
       const hash2 = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo2 }).toString().trim();
       const client = gitClientFactory(repo, "git");
-      const commitDetails = gitCommitDetailsFactory(client.getInstance);
+      const gitCommits = gitCommitFactory(client.getInstance);
 
-      const result1 = await commitDetails.get(commitHash, "Author Date");
+      const result1 = await gitCommits.details(commitHash, "Author Date");
       expect(result1).not.toBeNull();
       expect(result1!.hash).toBe(commitHash);
 
       client.setRepo(repo2);
 
-      const result2 = await commitDetails.get(hash2, "Author Date");
+      const result2 = await gitCommits.details(hash2, "Author Date");
       expect(result2).not.toBeNull();
       expect(result2!.hash).toBe(hash2);
     } finally {
