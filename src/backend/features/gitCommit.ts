@@ -24,6 +24,17 @@ export function gitCommitFactory(gitClient: GitInstance) {
       ),
 
     details: (commitHash: string, dateType: DateType): Promise<GitCommitDetails | null> =>
-      getCommitDetails(gitClient, commitHash, dateType)
+      getCommitDetails(gitClient, commitHash, dateType),
+
+    checkout: async (commitHash: string) => {
+      try {
+        const git = gitClient();
+        await git.checkout(commitHash);
+        return { error: false as const };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { error: true as const, message };
+      }
+    }
   };
 }

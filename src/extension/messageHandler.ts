@@ -98,9 +98,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("checkoutCommit", async (msg) => {
+    const result = await gitCommits.checkout(msg.commitHash);
     bridge.post({
       command: "checkoutCommit",
-      status: await dataSource.checkoutCommit(msg.repo, msg.commitHash)
+      status: result.error ? result.message : null
     });
   });
 

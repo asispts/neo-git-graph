@@ -34,10 +34,6 @@ export class DataSource {
     });
   }
 
-  public checkoutCommit(repo: string, commitHash: string) {
-    return this.runGitCommand("checkout " + commitHash, repo);
-  }
-
   public mergeBranch(repo: string, branchName: string, createNewCommit: boolean) {
     return this.runGitCommand(
       "merge " + escapeRefName(branchName) + (createNewCommit ? " --no-ff" : ""),
