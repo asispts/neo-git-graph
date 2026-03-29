@@ -1,32 +1,10 @@
-import * as cp from "node:child_process";
 import * as fs from "node:fs";
-import * as os from "node:os";
-import * as path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { gitBranchFactory } from "../../../../src/backend/features/gitBranch";
 import { gitClientFactory } from "../../../../src/backend/features/gitClient";
-
-function git(args: string[], cwd: string) {
-  cp.execFileSync("git", args, { cwd, stdio: "pipe" });
-}
-
-function makeRepo(): string {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ngg-test-"));
-  try {
-    git(["init", "-b", "main"], dir);
-  } catch {
-    git(["init"], dir);
-    git(["checkout", "-b", "main"], dir);
-  }
-  git(["config", "user.email", "t@t.com"], dir);
-  git(["config", "user.name", "T"], dir);
-  fs.writeFileSync(path.join(dir, "f"), "x");
-  git(["add", "."], dir);
-  git(["-c", "commit.gpgsign=false", "commit", "-m", "init"], dir);
-  return dir;
-}
+import { git, makeRepo } from "../helpers";
 
 let repo: string;
 
@@ -68,7 +46,6 @@ describe("rename", () => {
     const client = gitClientFactory(repo, "git");
     const branch = gitBranchFactory(client.getInstance);
 
-    // "main" already exists; trying to rename "new-name" to "main" should fail
     const result = await branch.rename("new-name", "main");
     expect(result.error).toBe(true);
   });
