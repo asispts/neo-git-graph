@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import * as cp from "node:child_process";
 
 import { escapeRefName, getPathFromStr } from "./backend/utils";
@@ -203,9 +204,9 @@ export class DataSource {
     });
   }
 
-  public isGitRepository(path: string) {
+  public isGitRepository(repoPath: string) {
     return new Promise<boolean>((resolve) => {
-      this.execGit("rev-parse --git-dir", path, (err) => {
+      this.execGit("rev-parse --git-dir", repoPath, (err) => {
         resolve(!err);
       });
     });
@@ -432,6 +433,51 @@ export class DataSource {
         if (err) return;
         resolve(code === 0 ? successValue(stdout) : errorValue);
       });
+    });
+  }
+
+  public getSubmodules(repo: string) {
+    return new Promise<string[]>((resolve) => {
+      cp.execFile(
+        this.gitPath,
+        ["config", "-f", ".gitmodules", "--get-regexp", "^submodule\\..*\\.path$"],
+        { cwd: repo },
+        async (err, stdout) => {
+          const submodules: string[] = [];
+          if (err) {
+            // Missing .gitmodules or no submodule.path entries.
+            resolve(submodules);
+            return;
+          }
+
+          const lines = stdout.split(eolRegex);
+
+          for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (line.trim() === "") continue;
+
+            const separatorPos = line.search(/\s/);
+            if (separatorPos === -1) continue;
+
+            const rawPath = line.slice(separatorPos + 1).trim();
+            if (rawPath === "") continue;
+
+            const resolvedPath = path.resolve(repo, rawPath);
+            const relativeToRepo = path.relative(repo, resolvedPath);
+            // Ignore entries that escape the repository root.
+            if (relativeToRepo.startsWith("..") || path.isAbsolute(relativeToRepo)) continue;
+
+            const submodulePath = getPathFromStr(resolvedPath);
+            if (submodules.includes(submodulePath)) continue;
+
+            if (await this.isGitRepository(submodulePath)) {
+              submodules.push(submodulePath);
+            }
+          }
+
+          resolve(submodules);
+        }
+      );
     });
   }
 }

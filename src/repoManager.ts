@@ -95,6 +95,7 @@ export class RepoManager {
     if (!(await this.checkReposExist())) this.sendRepos();
     await this.searchWorkspaceForRepos();
     this.startWatchingFolders();
+    if (await this.checkReposForNewSubmodules()) this.sendRepos();
   }
 
   private removeReposNotInWorkspace() {
@@ -123,9 +124,12 @@ export class RepoManager {
   public getRepos() {
     return sortRepos(this.repos);
   }
-  private addRepo(repo: string) {
+  private async addRepo(repo: string) {
+    if (typeof this.repos[repo] !== "undefined") return false;
     this.repos[repo] = { columnWidths: null };
+    await this.searchRepoForSubmodules(repo);
     this.extensionState.saveRepos(this.repos);
+    return true;
   }
   private removeRepo(repo: string) {
     delete this.repos[repo];
@@ -174,6 +178,39 @@ export class RepoManager {
     this.repos[repo] = state;
     this.extensionState.saveRepos(this.repos);
   }
+  private async searchRepoForSubmodules(repo: string) {
+    let changes = false;
+    const submodules = await this.dataSource.getSubmodules(repo);
+
+    for (let i = 0; i < submodules.length; i++) {
+      if (typeof this.repos[submodules[i]] !== "undefined") continue;
+
+      this.repos[submodules[i]] = { columnWidths: null };
+      changes = true;
+      if (await this.searchRepoForSubmodules(submodules[i])) changes = true;
+    }
+
+    return changes;
+  }
+  private async checkReposForNewSubmodules() {
+    const repoPaths = Object.keys(this.repos);
+    if (repoPaths.length === 0) return false;
+
+    const results = await evalPromises(repoPaths, 2, (repoPath) =>
+      this.searchRepoForSubmodules(repoPath)
+    );
+    const changes = results.indexOf(true) > -1;
+
+    if (changes) this.extensionState.saveRepos(this.repos);
+    return changes;
+  }
+  private async checkRepoForNewSubmodules(repo: string) {
+    if (typeof this.repos[repo] === "undefined") return false;
+
+    const changes = await this.searchRepoForSubmodules(repo);
+    if (changes) this.extensionState.saveRepos(this.repos);
+    return changes;
+  }
 
   /* Repo Searching */
   private async searchWorkspaceForRepos() {
@@ -204,8 +241,7 @@ export class RepoManager {
         .isGitRepository(directory)
         .then((isRepo) => {
           if (isRepo) {
-            this.addRepo(directory);
-            resolve(true);
+            this.addRepo(directory).then(resolve);
           } else if (maxDepth > 0) {
             fs.readdir(directory, async (err, dirContents) => {
               if (err) {
@@ -289,6 +325,9 @@ export class RepoManager {
     while ((path = this.createEventPaths.shift())) {
       if (await isDirectory(path)) {
         if (await this.searchDirectoryForRepos(path, this.maxDepthOfRepoSearch)) changes = true;
+      } else if (path.endsWith("/.gitmodules")) {
+        const repo = path.slice(0, -"/.gitmodules".length);
+        if (await this.checkRepoForNewSubmodules(repo)) changes = true;
       }
     }
     this.processCreateEventsTimeout = null;
@@ -298,7 +337,10 @@ export class RepoManager {
     let path,
       changes = false;
     while ((path = this.changeEventPaths.shift())) {
-      if (!(await doesPathExist(path))) {
+      if (path.endsWith("/.gitmodules")) {
+        const repo = path.slice(0, -"/.gitmodules".length);
+        if (await this.checkRepoForNewSubmodules(repo)) changes = true;
+      } else if (!(await doesPathExist(path))) {
         if (this.removeReposWithinFolder(path)) changes = true;
       }
     }
