@@ -4,6 +4,17 @@ export type GitTag = ReturnType<typeof gitTagFactory>;
 
 export function gitTagFactory(gitClient: GitInstance) {
   return {
+    delete: async (tagName: string) => {
+      try {
+        const git = gitClient();
+        await git.tag(["-d", tagName]);
+        return { error: false as const };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { error: true as const, message };
+      }
+    },
+
     add: async (tagName: string, commitHash: string, lightweight: boolean, message: string) => {
       try {
         const git = gitClient();

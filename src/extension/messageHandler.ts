@@ -139,9 +139,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("deleteTag", async (msg) => {
+    const result = await gitTag.delete(msg.tagName);
     bridge.post({
       command: "deleteTag",
-      status: await dataSource.deleteTag(msg.repo, msg.tagName)
+      status: result.error ? result.message : null
     });
   });
 

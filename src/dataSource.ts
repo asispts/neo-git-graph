@@ -211,10 +211,6 @@ export class DataSource {
     });
   }
 
-  public deleteTag(repo: string, tagName: string) {
-    return this.runGitCommand("tag -d " + escapeRefName(tagName), repo);
-  }
-
   public pushTag(repo: string, tagName: string) {
     return this.runGitCommand("push origin " + escapeRefName(tagName), repo);
   }
