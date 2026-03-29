@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "../avatarManager";
-import { GitClientManager } from "../backend/features/gitClient";
+import { GitBranch } from "../backend/features/gitBranch";
+import { GitClient } from "../backend/features/gitClient";
 import { abbrevCommit, copyToClipboard } from "../backend/utils";
 import { DataSource } from "../dataSource";
 import { encodeDiffDocUri } from "../diffDocProvider";
@@ -47,7 +48,8 @@ export function registerMessageHandlers(
   bridge: WebviewBridge,
   deps: {
     dataSource: DataSource;
-    gitManager: GitClientManager;
+    gitClient: GitClient;
+    gitBranch: GitBranch;
     repoManager: RepoManager;
     extensionState: ExtensionState;
     avatarManager: AvatarManager;
@@ -58,7 +60,8 @@ export function registerMessageHandlers(
 ) {
   const {
     dataSource,
-    gitManager,
+    gitClient,
+    gitBranch,
     repoManager,
     extensionState,
     avatarManager,
@@ -143,14 +146,14 @@ export function registerMessageHandlers(
 
   bridge.onMessage("selectRepo", (msg) => {
     if (msg.repo === getCurrentRepo()) return;
-    gitManager.setRepo(msg.repo);
+    gitClient.setRepo(msg.repo);
     setCurrentRepo(msg.repo);
     extensionState.setLastActiveRepo(msg.repo);
     repoFileWatcher.start(msg.repo);
   });
 
   bridge.onMessage("loadBranches", async (msg) => {
-    const branchData = await gitManager.get().branch.list(msg.showRemoteBranches);
+    const branchData = await gitBranch.list(msg.showRemoteBranches);
     const isRepo = branchData.error ? await dataSource.isGitRepository(getCurrentRepo()!) : true;
     bridge.post({
       command: "loadBranches",

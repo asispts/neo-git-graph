@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
-import { createGitClientManager } from "./backend/features/gitClient";
+import { gitBranchFactory } from "./backend/features/gitBranch";
+import { gitClientFactory } from "./backend/features/gitClient";
 import { buildExtensionUri } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
@@ -20,10 +21,11 @@ export function activate(context: vscode.ExtensionContext) {
   const avatarManager = new AvatarManager(dataSource, extensionState);
   const statusBarItem = new StatusBarItem(context);
   const repoManager = new RepoManager(dataSource, extensionState, statusBarItem);
-  const gitManager = createGitClientManager(
+  const gitClient = gitClientFactory(
     extensionState.getLastActiveRepo() ?? "",
     getConfig().gitPath()
   );
+  const gitBranch = gitBranchFactory(gitClient.getInstance);
 
   let currentPanel: WebviewPanel | undefined;
 
@@ -62,7 +64,8 @@ export function activate(context: vscode.ExtensionContext) {
         extensionState,
         avatarManager,
         repoManager,
-        gitManager,
+        gitClient,
+        gitBranch,
         onDispose: () => {
           currentPanel = undefined;
         }
@@ -84,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
         repoManager.maxDepthOfRepoSearchChanged();
       } else if (e.affectsConfiguration("git.path")) {
         dataSource.registerGitPath();
-        gitManager.setGitPath(getConfig().gitPath());
+        gitClient.setGitPath(getConfig().gitPath());
       }
     }),
     repoManager
