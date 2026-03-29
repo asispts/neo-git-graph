@@ -3,8 +3,10 @@ import * as vscode from "vscode";
 import { AvatarManager } from "../avatarManager";
 import { GitBranch } from "../backend/features/gitBranch";
 import { GitClient } from "../backend/features/gitClient";
+import { GitCommit } from "../backend/features/gitCommit";
 import { GitTag } from "../backend/features/gitTag";
 import { abbrevCommit, copyToClipboard } from "../backend/utils";
+import { getConfig } from "../config";
 import { DataSource } from "../dataSource";
 import { encodeDiffDocUri } from "../diffDocProvider";
 import { ExtensionState } from "../extensionState";
@@ -51,6 +53,7 @@ export function registerMessageHandlers(
     dataSource: DataSource;
     gitClient: GitClient;
     gitBranch: GitBranch;
+    gitCommits: GitCommit;
     gitTag: GitTag;
     repoManager: RepoManager;
     extensionState: ExtensionState;
@@ -64,6 +67,7 @@ export function registerMessageHandlers(
     dataSource,
     gitClient,
     gitBranch,
+    gitCommits,
     gitTag,
     repoManager,
     extensionState,
@@ -169,11 +173,12 @@ export function registerMessageHandlers(
   bridge.onMessage("loadCommits", async (msg) => {
     bridge.post({
       command: "loadCommits",
-      ...(await dataSource.getCommits(
-        msg.repo,
+      ...(await gitCommits.list(
         msg.branchName,
         msg.maxCommits,
-        msg.showRemoteBranches
+        msg.showRemoteBranches,
+        getConfig().dateType(),
+        getConfig().showUncommittedChanges()
       )),
       hard: msg.hard
     });

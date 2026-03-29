@@ -10,7 +10,7 @@ export interface GitCommitNode {
   refs: GitRef[];
 }
 
-export interface GitCommit {
+export interface GitLogEntry {
   hash: string;
   parentHashes: string[];
   author: string;

@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { AvatarManager } from "../avatarManager";
 import { GitBranch } from "../backend/features/gitBranch";
 import { GitClient } from "../backend/features/gitClient";
+import { GitCommit } from "../backend/features/gitCommit";
 import { GitTag } from "../backend/features/gitTag";
 import { buildExtensionUri } from "../backend/utils";
 import { getConfig } from "../config";
@@ -26,6 +27,7 @@ export function createWebviewPanel(opts: {
   repoManager: RepoManager;
   gitClient: GitClient;
   gitBranch: GitBranch;
+  gitCommits: GitCommit;
   gitTag: GitTag;
   onDispose: () => void;
 }) {
@@ -40,6 +42,7 @@ export function createWebviewPanel(opts: {
     repoManager,
     gitClient,
     gitBranch,
+    gitCommits,
     gitTag,
     onDispose
   } = opts;
@@ -115,6 +118,7 @@ export function createWebviewPanel(opts: {
     dataSource,
     gitClient,
     gitBranch,
+    gitCommits,
     gitTag,
     repoManager,
     extensionState,

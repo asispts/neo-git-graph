@@ -2,16 +2,7 @@ import * as cp from "node:child_process";
 
 import { escapeRefName, getPathFromStr } from "./backend/utils";
 import { getConfig } from "./config";
-import {
-  GitCommandStatus,
-  GitCommit,
-  GitCommitDetails,
-  GitCommitNode,
-  GitFileChangeType,
-  GitRefData,
-  GitResetMode,
-  GitUnsavedChanges
-} from "./types";
+import { GitCommandStatus, GitCommitDetails, GitFileChangeType, GitResetMode } from "./types";
 
 const eolRegex = /\r\n|\r|\n/g;
 const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
@@ -19,7 +10,6 @@ const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
 export class DataSource {
   private gitPath!: string;
   private gitExecPath!: string;
-  private gitLogFormat!: string;
   private gitCommitDetailsFormat!: string;
 
   constructor() {
@@ -34,77 +24,8 @@ export class DataSource {
 
   public generateGitCommandFormats() {
     let dateType = getConfig().dateType() === "Author Date" ? "%at" : "%ct";
-    this.gitLogFormat = ["%H", "%P", "%an", "%ae", dateType, "%s"].join(gitLogSeparator);
     this.gitCommitDetailsFormat =
       ["%H", "%P", "%an", "%ae", dateType, "%cn"].join(gitLogSeparator) + "%n%B";
-  }
-
-  public getCommits(repo: string, branch: string, maxCommits: number, showRemoteBranches: boolean) {
-    return new Promise<{
-      commits: GitCommitNode[];
-      head: string | null;
-      moreCommitsAvailable: boolean;
-    }>((resolve) => {
-      Promise.all([
-        this.getGitLog(repo, branch, maxCommits + 1, showRemoteBranches),
-        this.getRefs(repo, showRemoteBranches)
-      ]).then(async (results) => {
-        let commits = results[0],
-          refData = results[1],
-          i,
-          unsavedChanges = null;
-        let moreCommitsAvailable = commits.length === maxCommits + 1;
-        if (moreCommitsAvailable) commits.pop();
-
-        if (refData.head !== null) {
-          for (i = 0; i < commits.length; i++) {
-            if (refData.head === commits[i].hash) {
-              unsavedChanges = getConfig().showUncommittedChanges()
-                ? await this.getGitUnsavedChanges(repo)
-                : null;
-              if (unsavedChanges !== null) {
-                commits.unshift({
-                  hash: "*",
-                  parentHashes: [refData.head],
-                  author: "*",
-                  email: "",
-                  date: Math.round(new Date().getTime() / 1000),
-                  message: "Uncommitted Changes (" + unsavedChanges.changes + ")"
-                });
-              }
-              break;
-            }
-          }
-        }
-
-        let commitNodes: GitCommitNode[] = [];
-        let commitLookup: { [hash: string]: number } = {};
-
-        for (i = 0; i < commits.length; i++) {
-          commitLookup[commits[i].hash] = i;
-          commitNodes.push({
-            hash: commits[i].hash,
-            parentHashes: commits[i].parentHashes,
-            author: commits[i].author,
-            email: commits[i].email,
-            date: commits[i].date,
-            message: commits[i].message,
-            refs: []
-          });
-        }
-        for (i = 0; i < refData.refs.length; i++) {
-          if (typeof commitLookup[refData.refs[i].hash] === "number") {
-            commitNodes[commitLookup[refData.refs[i].hash]].refs.push(refData.refs[i]);
-          }
-        }
-
-        resolve({
-          commits: commitNodes,
-          head: refData.head,
-          moreCommitsAvailable: moreCommitsAvailable
-        });
-      });
-    });
   }
 
   public commitDetails(repo: string, commitHash: string) {
@@ -242,93 +163,6 @@ export class DataSource {
 
   public resetToCommit(repo: string, commitHash: string, resetMode: GitResetMode) {
     return this.runGitCommand("reset --" + resetMode + " " + commitHash, repo);
-  }
-
-  private getRefs(repo: string, showRemoteBranches: boolean) {
-    return new Promise<GitRefData>((resolve) => {
-      this.execGit(
-        "show-ref " + (showRemoteBranches ? "" : "--heads --tags") + " -d --head",
-        repo,
-        (err, stdout) => {
-          let refData: GitRefData = { head: null, refs: [] };
-          if (!err) {
-            let lines = stdout.split(eolRegex);
-            for (let i = 0; i < lines.length - 1; i++) {
-              let line = lines[i].split(" ");
-              if (line.length < 2) continue;
-
-              let hash = line.shift()!;
-              let ref = line.join(" ");
-
-              if (ref.startsWith("refs/heads/")) {
-                refData.refs.push({ hash: hash, name: ref.substring(11), type: "head" });
-              } else if (ref.startsWith("refs/tags/")) {
-                refData.refs.push({
-                  hash: hash,
-                  name: ref.endsWith("^{}") ? ref.substring(10, ref.length - 3) : ref.substring(10),
-                  type: "tag"
-                });
-              } else if (ref.startsWith("refs/remotes/")) {
-                refData.refs.push({ hash: hash, name: ref.substring(13), type: "remote" });
-              } else if (ref === "HEAD") {
-                refData.head = hash;
-              }
-            }
-          }
-          resolve(refData);
-        }
-      );
-    });
-  }
-
-  private getGitLog(repo: string, branch: string, num: number, showRemoteBranches: boolean) {
-    let args = ["log", "--max-count=" + num, "--format=" + this.gitLogFormat, "--date-order"];
-    if (branch !== "") {
-      args.push(escapeRefName(branch));
-    } else {
-      args.push("--branches", "--tags");
-      if (showRemoteBranches) args.push("--remotes");
-    }
-
-    return this.spawnGit(
-      args,
-      repo,
-      (stdout) => {
-        let lines = stdout.split(eolRegex);
-        let gitCommits: GitCommit[] = [];
-        for (let i = 0; i < lines.length - 1; i++) {
-          let line = lines[i].split(gitLogSeparator);
-          if (line.length !== 6) break;
-          gitCommits.push({
-            hash: line[0],
-            parentHashes: line[1].split(" "),
-            author: line[2],
-            email: line[3],
-            date: parseInt(line[4]),
-            message: line[5]
-          });
-        }
-        return gitCommits;
-      },
-      []
-    );
-  }
-
-  private getGitUnsavedChanges(repo: string) {
-    return new Promise<GitUnsavedChanges | null>((resolve) => {
-      this.execGit("status -s --branch --untracked-files --porcelain", repo, (err, stdout) => {
-        if (!err) {
-          let lines = stdout.split(eolRegex);
-          resolve(
-            lines.length > 2
-              ? { branch: lines[0].substring(3).split("...")[0], changes: lines.length - 2 }
-              : null
-          );
-        } else {
-          resolve(null);
-        }
-      });
-    });
   }
 
   private runGitCommand(command: string, repo: string) {
