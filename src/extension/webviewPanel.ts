@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "../avatarManager";
-import { GitClientManager } from "../backend/features/gitClient";
+import { GitBranch } from "../backend/features/gitBranch";
+import { GitClient } from "../backend/features/gitClient";
 import { buildExtensionUri } from "../backend/utils";
 import { getConfig } from "../config";
 import { DataSource } from "../dataSource";
@@ -22,7 +23,8 @@ export function createWebviewPanel(opts: {
   extensionState: ExtensionState;
   avatarManager: AvatarManager;
   repoManager: RepoManager;
-  gitManager: GitClientManager;
+  gitClient: GitClient;
+  gitBranch: GitBranch;
   onDispose: () => void;
 }) {
   const {
@@ -34,7 +36,8 @@ export function createWebviewPanel(opts: {
     extensionState,
     avatarManager,
     repoManager,
-    gitManager,
+    gitClient,
+    gitBranch,
     onDispose
   } = opts;
 
@@ -107,7 +110,8 @@ export function createWebviewPanel(opts: {
 
   registerMessageHandlers(bridge, {
     dataSource,
-    gitManager,
+    gitClient,
+    gitBranch,
     repoManager,
     extensionState,
     avatarManager,

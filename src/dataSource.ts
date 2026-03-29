@@ -236,36 +236,8 @@ export class DataSource {
     return this.runGitCommand("push origin " + escapeRefName(tagName), repo);
   }
 
-  public createBranch(repo: string, branchName: string, commitHash: string) {
-    return this.runGitCommand("branch " + escapeRefName(branchName) + " " + commitHash, repo);
-  }
-
-  public checkoutBranch(repo: string, branchName: string, remoteBranch: string | null) {
-    return this.runGitCommand(
-      "checkout " +
-        (remoteBranch === null
-          ? escapeRefName(branchName)
-          : " -b " + escapeRefName(branchName) + " " + escapeRefName(remoteBranch)),
-      repo
-    );
-  }
-
   public checkoutCommit(repo: string, commitHash: string) {
     return this.runGitCommand("checkout " + commitHash, repo);
-  }
-
-  public deleteBranch(repo: string, branchName: string, forceDelete: boolean) {
-    return this.runGitCommand(
-      "branch --delete" + (forceDelete ? " --force" : "") + " " + escapeRefName(branchName),
-      repo
-    );
-  }
-
-  public renameBranch(repo: string, oldName: string, newName: string) {
-    return this.runGitCommand(
-      "branch -m " + escapeRefName(oldName) + " " + escapeRefName(newName),
-      repo
-    );
   }
 
   public mergeBranch(repo: string, branchName: string, createNewCommit: boolean) {

@@ -1,7 +1,8 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "../avatarManager";
-import { GitClientManager } from "../backend/features/gitClient";
+import { GitBranch } from "../backend/features/gitBranch";
+import { GitClient } from "../backend/features/gitClient";
 import { abbrevCommit, copyToClipboard } from "../backend/utils";
 import { DataSource } from "../dataSource";
 import { encodeDiffDocUri } from "../diffDocProvider";
@@ -47,7 +48,8 @@ export function registerMessageHandlers(
   bridge: WebviewBridge,
   deps: {
     dataSource: DataSource;
-    gitManager: GitClientManager;
+    gitClient: GitClient;
+    gitBranch: GitBranch;
     repoManager: RepoManager;
     extensionState: ExtensionState;
     avatarManager: AvatarManager;
@@ -58,7 +60,8 @@ export function registerMessageHandlers(
 ) {
   const {
     dataSource,
-    gitManager,
+    gitClient,
+    gitBranch,
     repoManager,
     extensionState,
     avatarManager,
@@ -85,9 +88,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("checkoutBranch", async (msg) => {
+    const result = await gitBranch.checkout(msg.branchName, msg.remoteBranch);
     bridge.post({
       command: "checkoutBranch",
-      status: await dataSource.checkoutBranch(msg.repo, msg.branchName, msg.remoteBranch)
+      status: result.error ? result.message : null
     });
   });
 
@@ -121,16 +125,18 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("createBranch", async (msg) => {
+    const result = await gitBranch.create(msg.branchName, msg.commitHash);
     bridge.post({
       command: "createBranch",
-      status: await dataSource.createBranch(msg.repo, msg.branchName, msg.commitHash)
+      status: result.error ? result.message : null
     });
   });
 
   bridge.onMessage("deleteBranch", async (msg) => {
+    const result = await gitBranch.delete(msg.branchName, msg.forceDelete);
     bridge.post({
       command: "deleteBranch",
-      status: await dataSource.deleteBranch(msg.repo, msg.branchName, msg.forceDelete)
+      status: result.error ? result.message : null
     });
   });
 
@@ -143,14 +149,14 @@ export function registerMessageHandlers(
 
   bridge.onMessage("selectRepo", (msg) => {
     if (msg.repo === getCurrentRepo()) return;
-    gitManager.setRepo(msg.repo);
+    gitClient.setRepo(msg.repo);
     setCurrentRepo(msg.repo);
     extensionState.setLastActiveRepo(msg.repo);
     repoFileWatcher.start(msg.repo);
   });
 
   bridge.onMessage("loadBranches", async (msg) => {
-    const branchData = await gitManager.get().branch.list(msg.showRemoteBranches);
+    const branchData = await gitBranch.list(msg.showRemoteBranches);
     const isRepo = branchData.error ? await dataSource.isGitRepository(getCurrentRepo()!) : true;
     bridge.post({
       command: "loadBranches",
@@ -206,9 +212,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("renameBranch", async (msg) => {
+    const result = await gitBranch.rename(msg.oldName, msg.newName);
     bridge.post({
       command: "renameBranch",
-      status: await dataSource.renameBranch(msg.repo, msg.oldName, msg.newName)
+      status: result.error ? result.message : null
     });
   });
 
