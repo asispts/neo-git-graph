@@ -7,7 +7,6 @@ import { GitCommandStatus, GitResetMode } from "./types";
 const eolRegex = /\r\n|\r|\n/g;
 
 export class DataSource {
-  private gitPath!: string;
   private gitExecPath!: string;
 
   constructor() {
@@ -15,12 +14,8 @@ export class DataSource {
   }
 
   public registerGitPath() {
-    this.gitPath = getConfig().gitPath();
-    this.gitExecPath = this.gitPath.indexOf(" ") > -1 ? '"' + this.gitPath + '"' : this.gitPath;
-  }
-
-  public getCommitFile(repo: string, commitHash: string, filePath: string) {
-    return this.spawnGit(["show", commitHash + ":" + filePath], repo, (stdout) => stdout, "");
+    const gitPath = getConfig().gitPath();
+    this.gitExecPath = gitPath.indexOf(" ") > -1 ? '"' + gitPath + '"' : gitPath;
   }
 
   public async getRemoteUrl(repo: string) {
@@ -99,27 +94,4 @@ export class DataSource {
     cp.exec(this.gitExecPath + " " + command, { cwd: repo }, callback);
   }
 
-  private spawnGit<T>(
-    args: string[],
-    repo: string,
-    successValue: { (stdout: string): T },
-    errorValue: T
-  ) {
-    return new Promise<T>((resolve) => {
-      let stdout = "",
-        err = false;
-      const cmd = cp.spawn(this.gitPath, args, { cwd: repo });
-      cmd.stdout.on("data", (d) => {
-        stdout += d;
-      });
-      cmd.on("error", () => {
-        resolve(errorValue);
-        err = true;
-      });
-      cmd.on("exit", (code) => {
-        if (err) return;
-        resolve(code === 0 ? successValue(stdout) : errorValue);
-      });
-    });
-  }
 }

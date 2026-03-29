@@ -5,6 +5,7 @@ import { gitBranchFactory } from "./backend/features/gitBranch";
 import { gitClientFactory } from "./backend/features/gitClient";
 import { gitCommitFactory } from "./backend/features/gitCommit";
 import { gitCommitDetailsFactory } from "./backend/features/gitCommitDetails";
+import { gitCommitFileFactory } from "./backend/features/gitCommitFile";
 import { gitTagFactory } from "./backend/features/gitTag";
 import { buildExtensionUri } from "./backend/utils";
 import { getConfig } from "./config";
@@ -31,6 +32,7 @@ export function activate(context: vscode.ExtensionContext) {
   const gitBranch = gitBranchFactory(gitClient.getInstance);
   const gitCommits = gitCommitFactory(gitClient.getInstance);
   const gitCommitDetails = gitCommitDetailsFactory(gitClient.getInstance);
+  const gitCommitFile = gitCommitFileFactory(gitClient.getInstance);
   const gitTag = gitTagFactory(gitClient.getInstance);
 
   let currentPanel: WebviewPanel | undefined;
@@ -85,7 +87,7 @@ export function activate(context: vscode.ExtensionContext) {
     }),
     vscode.workspace.registerTextDocumentContentProvider(
       DiffDocProvider.scheme,
-      new DiffDocProvider(dataSource)
+      new DiffDocProvider(gitCommitFile)
     ),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("neo-git-graph.showStatusBarItem")) {
