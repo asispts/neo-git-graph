@@ -124,9 +124,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("createBranch", async (msg) => {
+    const result = await gitBranch.create(msg.branchName, msg.commitHash);
     bridge.post({
       command: "createBranch",
-      status: await dataSource.createBranch(msg.repo, msg.branchName, msg.commitHash)
+      status: result.error ? result.message : null
     });
   });
 

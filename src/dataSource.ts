@@ -236,10 +236,6 @@ export class DataSource {
     return this.runGitCommand("push origin " + escapeRefName(tagName), repo);
   }
 
-  public createBranch(repo: string, branchName: string, commitHash: string) {
-    return this.runGitCommand("branch " + escapeRefName(branchName) + " " + commitHash, repo);
-  }
-
   public checkoutBranch(repo: string, branchName: string, remoteBranch: string | null) {
     return this.runGitCommand(
       "checkout " +

@@ -25,6 +25,17 @@ export function gitBranchFactory(gitClient: GitInstance) {
         const message = e instanceof Error ? e.message : String(e);
         return { error: true as const, message };
       }
+    },
+
+    create: async (branchName: string, commitHash: string) => {
+      try {
+        const git = gitClient();
+        await git.raw(["branch", branchName, commitHash]);
+        return { error: false as const };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { error: true as const, message };
+      }
     }
   };
 }
