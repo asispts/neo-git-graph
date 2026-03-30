@@ -7,7 +7,7 @@
     "noImplicitAny": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "outDir": "../media",
+    "outDir": "../../media",
     "removeComments": true,
     "strict": true,
     "target": "es5"

@@ -44,7 +44,7 @@ describe("webview rendering", () => {
     vi.resetModules();
     createVscodeMock();
     setupHtml(defaultViewState);
-    await import("../../web/main");
+    await import("../../src/webview/main");
     receive({
       command: "loadBranches",
       branches: ["main"],

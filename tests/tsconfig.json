@@ -12,6 +12,6 @@
     "./features/**/*.ts",
     "../src/features/**/*.ts",
     "./webview/**/*.ts",
-    "../web/**/*.ts"
+    "../src/webview/**/*.ts"
   ]
 }

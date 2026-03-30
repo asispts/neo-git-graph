@@ -36,7 +36,7 @@
   "publisher": "asispts",
   "main": "./out/extension.js",
   "scripts": {
-    "typecheck": "tsc -p ./src --noEmit && tsc -p ./web --noEmit && tsc -p ./tests --noEmit",
+    "typecheck": "tsc -p ./src --noEmit && tsc -p ./src/webview --noEmit && tsc -p ./tests --noEmit",
     "vscode:prepublish": "pnpm run package",
     "package": "pnpm run typecheck && pnpm run lint && node esbuild.js --production",
     "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
