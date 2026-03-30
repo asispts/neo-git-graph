@@ -1,19 +1,12 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "../avatarManager";
-import { GitBranch } from "../backend/features/gitBranch";
-import { GitClient } from "../backend/features/gitClient";
-import { GitCommit } from "../backend/features/gitCommit";
-import { GitRepo } from "../backend/features/gitRepo";
-import { GitTag } from "../backend/features/gitTag";
 import { buildExtensionUri } from "../backend/utils";
 import { getConfig } from "../config";
-import { DataSource } from "../dataSource";
 import { ExtensionState } from "../extensionState";
 import { RepoFileWatcher } from "../repoFileWatcher";
 import { RepoManager } from "../repoManager";
 import { GitRepoSet } from "../types";
-import { registerMessageHandlers } from "./messageHandler";
 import { WebviewBridge } from "./webviewBridge";
 import { buildWebviewHtml } from "./webviewHtml";
 
@@ -22,15 +15,9 @@ export function createWebviewPanel(opts: {
   bridge: WebviewBridge;
   repoFileWatcher: RepoFileWatcher;
   extensionPath: string;
-  dataSource: DataSource;
   extensionState: ExtensionState;
   avatarManager: AvatarManager;
   repoManager: RepoManager;
-  gitClient: GitClient;
-  gitRepo: GitRepo;
-  gitBranch: GitBranch;
-  gitCommits: GitCommit;
-  gitTag: GitTag;
   onDispose: () => void;
 }) {
   const {
@@ -38,15 +25,9 @@ export function createWebviewPanel(opts: {
     bridge,
     repoFileWatcher,
     extensionPath,
-    dataSource,
     extensionState,
     avatarManager,
     repoManager,
-    gitClient,
-    gitRepo,
-    gitBranch,
-    gitCommits,
-    gitTag,
     onDispose
   } = opts;
 
@@ -117,28 +98,15 @@ export function createWebviewPanel(opts: {
     }
   });
 
-  registerMessageHandlers(bridge, {
-    dataSource,
-    gitClient,
-    gitRepo,
-    gitBranch,
-    gitCommits,
-    gitTag,
-    repoManager,
-    extensionState,
-    avatarManager,
-    repoFileWatcher,
-    getCurrentRepo: () => currentRepo,
-    setCurrentRepo: (r) => {
-      currentRepo = r;
-    }
-  });
-
   return {
     reveal(column?: vscode.ViewColumn) {
       panel.reveal(column);
     },
-    dispose
+    dispose,
+    getCurrentRepo: () => currentRepo,
+    setCurrentRepo: (r: string) => {
+      currentRepo = r;
+    }
   };
 }
 

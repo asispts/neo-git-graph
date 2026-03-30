@@ -10,6 +10,7 @@ import { buildExtensionUri } from "./backend/utils";
 import { getConfig } from "./config";
 import { DataSource } from "./dataSource";
 import { DiffDocProvider } from "./diffDocProvider";
+import { registerMessageHandlers } from "./extension/messageHandler";
 import { WebviewBridge, webviewBridgeFactory } from "./extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "./extension/webviewPanel";
 import { ExtensionState } from "./extensionState";
@@ -66,18 +67,26 @@ export function activate(context: vscode.ExtensionContext) {
         bridge,
         repoFileWatcher,
         extensionPath: context.extensionPath,
-        dataSource,
         extensionState,
         avatarManager,
         repoManager,
+        onDispose: () => {
+          currentPanel = undefined;
+        }
+      });
+      registerMessageHandlers(bridge, {
+        dataSource,
         gitClient,
         gitRepo,
         gitBranch,
         gitCommits,
         gitTag,
-        onDispose: () => {
-          currentPanel = undefined;
-        }
+        repoManager,
+        extensionState,
+        avatarManager,
+        repoFileWatcher,
+        getCurrentRepo: currentPanel.getCurrentRepo,
+        setCurrentRepo: currentPanel.setCurrentRepo
       });
     }),
     vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", () => {
