@@ -28,8 +28,7 @@ export function gitCommitFactory(gitClient: GitInstance) {
 
     checkout: async (commitHash: string) => {
       try {
-        const git = gitClient();
-        await git.checkout(commitHash);
+        await gitClient().checkout(commitHash);
         return { error: false as const };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);
@@ -39,8 +38,7 @@ export function gitCommitFactory(gitClient: GitInstance) {
 
     reset: async (commitHash: string, resetMode: GitResetMode) => {
       try {
-        const git = gitClient();
-        await git.raw(["reset", "--" + resetMode, commitHash]);
+        await gitClient().raw(["reset", "--" + resetMode, commitHash]);
         return { error: false as const };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);
@@ -50,11 +48,10 @@ export function gitCommitFactory(gitClient: GitInstance) {
 
     cherrypick: async (commitHash: string, parentIndex: number) => {
       try {
-        const git = gitClient();
         const args = ["cherry-pick"];
         if (parentIndex > 0) args.push("-m", String(parentIndex));
         args.push(commitHash);
-        await git.raw(args);
+        await gitClient().raw(args);
         return { error: false as const };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);
@@ -64,11 +61,10 @@ export function gitCommitFactory(gitClient: GitInstance) {
 
     revert: async (commitHash: string, parentIndex: number) => {
       try {
-        const git = gitClient();
         const args = ["revert", "--no-edit"];
         if (parentIndex > 0) args.push("-m", String(parentIndex));
         args.push(commitHash);
-        await git.raw(args);
+        await gitClient().raw(args);
         return { error: false as const };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);

@@ -6,8 +6,9 @@ export function gitBranchFactory(gitClient: GitInstance) {
   return {
     list: async (showRemoteBranches: boolean) => {
       try {
-        const git = gitClient();
-        const summary = await (showRemoteBranches ? git.branch() : git.branchLocal());
+        const summary = await (showRemoteBranches
+          ? gitClient().branch()
+          : gitClient().branchLocal());
         const head = summary.detached ? null : summary.current || null;
         const branches = head ? [head, ...summary.all.filter((b) => b !== head)] : [...summary.all];
         return { branches, head, error: false };
@@ -18,8 +19,7 @@ export function gitBranchFactory(gitClient: GitInstance) {
 
     rename: async (oldName: string, newName: string) => {
       try {
-        const git = gitClient();
-        await git.raw(["branch", "-m", oldName, newName]);
+        await gitClient().raw(["branch", "-m", oldName, newName]);
         return { error: false as const };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);
@@ -29,8 +29,7 @@ export function gitBranchFactory(gitClient: GitInstance) {
 
     create: async (branchName: string, commitHash: string) => {
       try {
-        const git = gitClient();
-        await git.raw(["branch", branchName, commitHash]);
+        await gitClient().raw(["branch", branchName, commitHash]);
         return { error: false as const };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);
@@ -40,8 +39,7 @@ export function gitBranchFactory(gitClient: GitInstance) {
 
     delete: async (branchName: string, forceDelete: boolean) => {
       try {
-        const git = gitClient();
-        await git.deleteLocalBranch(branchName, forceDelete);
+        await gitClient().deleteLocalBranch(branchName, forceDelete);
         return { error: false as const };
       } catch (e: unknown) {
         const message = e instanceof Error ? e.message : String(e);
@@ -51,11 +49,10 @@ export function gitBranchFactory(gitClient: GitInstance) {
 
     checkout: async (branchName: string, remoteBranch: string | null) => {
       try {
-        const git = gitClient();
         if (remoteBranch === null) {
-          await git.checkout(branchName);
+          await gitClient().checkout(branchName);
         } else {
-          await git.checkoutBranch(branchName, remoteBranch);
+          await gitClient().checkoutBranch(branchName, remoteBranch);
         }
         return { error: false as const };
       } catch (e: unknown) {
