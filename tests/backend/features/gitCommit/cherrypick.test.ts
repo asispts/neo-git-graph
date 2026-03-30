@@ -13,12 +13,11 @@ let cherrypickHash: string;
 
 beforeAll(() => {
   repo = makeRepo();
-  git(["config", "commit.gpgsign", "false"], repo);
   // Create a commit on a side branch to cherry-pick
   git(["checkout", "-b", "side"], repo);
   fs.writeFileSync(path.join(repo, "g"), "cherry");
   git(["add", "."], repo);
-  git(["-c", "commit.gpgsign=false", "commit", "-m", "cherry commit"], repo);
+  git(["commit", "-m", "cherry commit"], repo);
   cherrypickHash = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
   git(["checkout", "main"], repo);
 });

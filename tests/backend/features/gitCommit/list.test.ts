@@ -15,7 +15,7 @@ beforeAll(() => {
   repo = makeRepo();
   fs.writeFileSync(path.join(repo, "f2"), "y");
   git(["add", "."], repo);
-  git(["-c", "commit.gpgsign=false", "commit", "-m", "second"], repo);
+  git(["commit", "-m", "second"], repo);
 
   remoteRepo = makeRepo();
   repoWithRemote = makeRepo();
@@ -125,7 +125,7 @@ describe("getCommits", () => {
     const repo2 = makeRepo();
     fs.writeFileSync(path.join(repo2, "other"), "q");
     git(["add", "."], repo2);
-    git(["-c", "commit.gpgsign=false", "commit", "-m", "repo2-commit"], repo2);
+    git(["commit", "-m", "repo2-commit"], repo2);
     try {
       const client = gitClientFactory(repo, "git");
       const gitCommits = gitCommitFactory(client.getInstance);

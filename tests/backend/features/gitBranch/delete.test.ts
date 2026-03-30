@@ -34,7 +34,7 @@ describe("delete", () => {
     git(["checkout", "-b", "unmerged"], repo);
     fs.writeFileSync(path.join(repo, "g"), "y");
     git(["add", "."], repo);
-    git(["-c", "commit.gpgsign=false", "commit", "-m", "unmerged commit"], repo);
+    git(["commit", "-m", "unmerged commit"], repo);
     git(["checkout", "main"], repo);
 
     const client = gitClientFactory(repo, "git");

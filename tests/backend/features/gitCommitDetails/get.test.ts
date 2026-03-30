@@ -57,7 +57,7 @@ describe("get", () => {
     try {
       fs.writeFileSync(path.join(repo2, "f"), "modified content");
       git(["add", "."], repo2);
-      git(["-c", "commit.gpgsign=false", "commit", "-m", "mod"], repo2);
+      git(["commit", "-m", "mod"], repo2);
       const hash = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo2 }).toString().trim();
       const client = gitClientFactory(repo2, "git");
       const gitCommits = gitCommitFactory(client.getInstance);

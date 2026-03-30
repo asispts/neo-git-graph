@@ -13,11 +13,10 @@ let commitHash: string;
 
 beforeAll(() => {
   repo = makeRepo();
-  git(["config", "commit.gpgsign", "false"], repo);
   // Add a second commit to revert
   fs.writeFileSync(path.join(repo, "g"), "revert-me");
   git(["add", "."], repo);
-  git(["-c", "commit.gpgsign=false", "commit", "-m", "second commit"], repo);
+  git(["commit", "-m", "second commit"], repo);
   commitHash = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
 });
 

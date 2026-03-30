@@ -14,7 +14,6 @@ let bare: string;
 
 beforeAll(() => {
   repo = makeRepo();
-  cp.execFileSync("git", ["config", "tag.gpgsign", "false"], { cwd: repo });
 
   // Create a local bare repo to act as the remote — no network required
   bare = fs.mkdtempSync(path.join(os.tmpdir(), "ngg-test-bare-"));

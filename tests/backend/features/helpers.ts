@@ -22,8 +22,9 @@ export function makeRepo(): string {
   git(["config", "user.email", "t@t.com"], dir);
   git(["config", "user.name", "T"], dir);
   git(["config", "commit.gpgsign", "false"], dir);
+  git(["config", "tag.gpgsign", "false"], dir);
   fs.writeFileSync(path.join(dir, "f"), "x");
   git(["add", "."], dir);
-  git(["-c", "commit.gpgsign=false", "commit", "-m", "init"], dir);
+  git(["commit", "-m", "init"], dir);
   return dir;
 }

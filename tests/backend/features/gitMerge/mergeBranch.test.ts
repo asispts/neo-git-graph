@@ -15,7 +15,7 @@ beforeAll(() => {
   git(["checkout", "-b", "feature"], repo);
   fs.writeFileSync(path.join(repo, "feature.txt"), "feature");
   git(["add", "."], repo);
-  git(["-c", "commit.gpgsign=false", "commit", "-m", "feature commit"], repo);
+  git(["commit", "-m", "feature commit"], repo);
   git(["checkout", "main"], repo);
 });
 
@@ -39,7 +39,7 @@ describe("mergeBranch", () => {
     git(["checkout", "-b", "feature2"], repo);
     fs.writeFileSync(path.join(repo, "feature2.txt"), "feature2");
     git(["add", "."], repo);
-    git(["-c", "commit.gpgsign=false", "commit", "-m", "feature2 commit"], repo);
+    git(["commit", "-m", "feature2 commit"], repo);
     git(["checkout", "main"], repo);
 
     const client2 = gitClientFactory(repo, "git");

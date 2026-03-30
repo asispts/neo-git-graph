@@ -12,7 +12,6 @@ let commitHash: string;
 
 beforeAll(() => {
   repo = makeRepo();
-  cp.execFileSync("git", ["config", "tag.gpgsign", "false"], { cwd: repo });
   commitHash = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
 });
 

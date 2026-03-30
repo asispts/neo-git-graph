@@ -16,7 +16,7 @@ beforeAll(() => {
   firstHash = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
   fs.writeFileSync(path.join(repo, "f"), "y");
   git(["add", "."], repo);
-  git(["-c", "commit.gpgsign=false", "commit", "-m", "second"], repo);
+  git(["commit", "-m", "second"], repo);
 });
 
 afterAll(() => {
@@ -35,7 +35,7 @@ describe("reset", () => {
     expect(head).toBe(firstHash);
 
     // restore for next tests
-    git(["-c", "commit.gpgsign=false", "commit", "-m", "second"], repo);
+    git(["commit", "-m", "second"], repo);
   });
 
   it("mixed-resets to a previous commit", async () => {
@@ -50,7 +50,7 @@ describe("reset", () => {
 
     // restore for next tests
     git(["add", "."], repo);
-    git(["-c", "commit.gpgsign=false", "commit", "-m", "second"], repo);
+    git(["commit", "-m", "second"], repo);
   });
 
   it("hard-resets to a previous commit", async () => {

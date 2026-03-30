@@ -16,7 +16,7 @@ beforeAll(() => {
   git(["checkout", "-b", "feature"], repo);
   fs.writeFileSync(path.join(repo, "feature.txt"), "feature");
   git(["add", "."], repo);
-  git(["-c", "commit.gpgsign=false", "commit", "-m", "feature commit"], repo);
+  git(["commit", "-m", "feature commit"], repo);
   featureCommitHash = cp
     .execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo })
     .toString()
@@ -44,7 +44,7 @@ describe("mergeCommit", () => {
     git(["checkout", "-b", "feature2"], repo);
     fs.writeFileSync(path.join(repo, "feature2.txt"), "feature2");
     git(["add", "."], repo);
-    git(["-c", "commit.gpgsign=false", "commit", "-m", "feature2 commit"], repo);
+    git(["commit", "-m", "feature2 commit"], repo);
     const commit2Hash = cp
       .execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo })
       .toString()
