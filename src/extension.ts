@@ -4,6 +4,7 @@ import { AvatarManager } from "./avatarManager";
 import { gitBranchFactory } from "./backend/features/gitBranch";
 import { gitClientFactory } from "./backend/features/gitClient";
 import { gitCommitFactory } from "./backend/features/gitCommit";
+import { gitRepoFactory } from "./backend/features/gitRepo";
 import { gitTagFactory } from "./backend/features/gitTag";
 import { buildExtensionUri } from "./backend/utils";
 import { getConfig } from "./config";
@@ -22,11 +23,12 @@ export function activate(context: vscode.ExtensionContext) {
   const dataSource = new DataSource();
   const avatarManager = new AvatarManager(dataSource, extensionState);
   const statusBarItem = new StatusBarItem(context);
-  const repoManager = new RepoManager(dataSource, extensionState, statusBarItem);
   const gitClient = gitClientFactory(
     extensionState.getLastActiveRepo() ?? "",
     getConfig().gitPath()
   );
+  const gitRepo = gitRepoFactory(getConfig().gitPath());
+  const repoManager = new RepoManager(extensionState, statusBarItem, gitRepo);
   const gitBranch = gitBranchFactory(gitClient.getInstance);
   const gitCommits = gitCommitFactory(gitClient.getInstance);
   const gitTag = gitTagFactory(gitClient.getInstance);
@@ -69,6 +71,7 @@ export function activate(context: vscode.ExtensionContext) {
         avatarManager,
         repoManager,
         gitClient,
+        gitRepo,
         gitBranch,
         gitCommits,
         gitTag,
@@ -92,6 +95,7 @@ export function activate(context: vscode.ExtensionContext) {
       } else if (e.affectsConfiguration("git.path")) {
         dataSource.registerGitPath();
         gitClient.setGitPath(getConfig().gitPath());
+        gitRepo.setGitPath(getConfig().gitPath());
       }
     }),
     repoManager

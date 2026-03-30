@@ -26,14 +26,6 @@ export class DataSource {
     });
   }
 
-  public isGitRepository(path: string) {
-    return new Promise<boolean>((resolve) => {
-      this.execGit("rev-parse --git-dir", path, (err) => {
-        resolve(!err);
-      });
-    });
-  }
-
   public mergeBranch(repo: string, branchName: string, createNewCommit: boolean) {
     return this.runGitCommand(
       "merge " + escapeRefName(branchName) + (createNewCommit ? " --no-ff" : ""),

@@ -4,6 +4,7 @@ import { AvatarManager } from "../avatarManager";
 import { GitBranch } from "../backend/features/gitBranch";
 import { GitClient } from "../backend/features/gitClient";
 import { GitCommit } from "../backend/features/gitCommit";
+import { GitRepo } from "../backend/features/gitRepo";
 import { GitTag } from "../backend/features/gitTag";
 import { buildExtensionUri } from "../backend/utils";
 import { getConfig } from "../config";
@@ -26,6 +27,7 @@ export function createWebviewPanel(opts: {
   avatarManager: AvatarManager;
   repoManager: RepoManager;
   gitClient: GitClient;
+  gitRepo: GitRepo;
   gitBranch: GitBranch;
   gitCommits: GitCommit;
   gitTag: GitTag;
@@ -41,6 +43,7 @@ export function createWebviewPanel(opts: {
     avatarManager,
     repoManager,
     gitClient,
+    gitRepo,
     gitBranch,
     gitCommits,
     gitTag,
@@ -117,6 +120,7 @@ export function createWebviewPanel(opts: {
   registerMessageHandlers(bridge, {
     dataSource,
     gitClient,
+    gitRepo,
     gitBranch,
     gitCommits,
     gitTag,

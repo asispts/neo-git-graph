@@ -4,6 +4,7 @@ import { AvatarManager } from "../avatarManager";
 import { GitBranch } from "../backend/features/gitBranch";
 import { GitClient } from "../backend/features/gitClient";
 import { GitCommit } from "../backend/features/gitCommit";
+import { GitRepo } from "../backend/features/gitRepo";
 import { GitTag } from "../backend/features/gitTag";
 import { abbrevCommit, copyToClipboard } from "../backend/utils";
 import { getConfig } from "../config";
@@ -52,6 +53,7 @@ export function registerMessageHandlers(
   deps: {
     dataSource: DataSource;
     gitClient: GitClient;
+    gitRepo: GitRepo;
     gitBranch: GitBranch;
     gitCommits: GitCommit;
     gitTag: GitTag;
@@ -66,6 +68,7 @@ export function registerMessageHandlers(
   const {
     dataSource,
     gitClient,
+    gitRepo,
     gitBranch,
     gitCommits,
     gitTag,
@@ -162,7 +165,7 @@ export function registerMessageHandlers(
 
   bridge.onMessage("loadBranches", async (msg) => {
     const branchData = await gitBranch.list(msg.showRemoteBranches);
-    const isRepo = branchData.error ? await dataSource.isGitRepository(getCurrentRepo()!) : true;
+    const isRepo = branchData.error ? await gitRepo.isGitRepository(getCurrentRepo()!) : true;
     bridge.post({
       command: "loadBranches",
       branches: branchData.branches,
