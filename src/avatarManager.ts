@@ -4,12 +4,12 @@ import * as http from "node:http";
 import * as https from "node:https";
 import * as url from "node:url";
 
-import { DataSource } from "./dataSource";
+import { GitRemote } from "./backend/features/gitRemote";
 import { ExtensionState } from "./extensionState";
 import { AvatarCache, ResponseMessage } from "./types";
 
 export class AvatarManager {
-  private readonly dataSource: DataSource;
+  private readonly gitRemote: GitRemote;
   private readonly extensionState: ExtensionState;
   private readonly avatarStorageFolder: string;
   private postToWebview: ((msg: ResponseMessage) => void) | null = null;
@@ -21,8 +21,8 @@ export class AvatarManager {
   private githubTimeout: number = 0;
   private gitLabTimeout: number = 0;
 
-  constructor(dataSource: DataSource, extensionState: ExtensionState) {
-    this.dataSource = dataSource;
+  constructor(gitRemote: GitRemote, extensionState: ExtensionState) {
+    this.gitRemote = gitRemote;
     this.extensionState = extensionState;
     this.avatarStorageFolder = this.extensionState.getAvatarStoragePath();
     this.avatars = this.extensionState.getAvatarCache();
@@ -108,7 +108,7 @@ export class AvatarManager {
       return this.remoteSourceCache[avatarRequest.repo];
     } else {
       // Fetch the remote repo source
-      let remoteUrl = await this.dataSource.getRemoteUrl(avatarRequest.repo),
+      let remoteUrl = await this.gitRemote.getRemoteUrl(avatarRequest.repo),
         remoteSource: RemoteSource;
       if (remoteUrl !== null) {
         // Depending on the domain of the remote repo source, determine the type of source it is

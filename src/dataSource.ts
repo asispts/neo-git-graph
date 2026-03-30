@@ -18,14 +18,6 @@ export class DataSource {
     this.gitExecPath = gitPath.indexOf(" ") > -1 ? '"' + gitPath + '"' : gitPath;
   }
 
-  public async getRemoteUrl(repo: string) {
-    return new Promise<string | null>((resolve) => {
-      this.execGit("config --get remote.origin.url", repo, (err, stdout) => {
-        resolve(!err ? stdout.split(eolRegex)[0] : null);
-      });
-    });
-  }
-
   public mergeBranch(repo: string, branchName: string, createNewCommit: boolean) {
     return this.runGitCommand(
       "merge " + escapeRefName(branchName) + (createNewCommit ? " --no-ff" : ""),
