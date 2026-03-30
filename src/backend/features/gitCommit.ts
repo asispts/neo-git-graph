@@ -60,6 +60,20 @@ export function gitCommitFactory(gitClient: GitInstance) {
         const message = e instanceof Error ? e.message : String(e);
         return { error: true as const, message };
       }
+    },
+
+    revert: async (commitHash: string, parentIndex: number) => {
+      try {
+        const git = gitClient();
+        const args = ["revert", "--no-edit"];
+        if (parentIndex > 0) args.push("-m", String(parentIndex));
+        args.push(commitHash);
+        await git.raw(args);
+        return { error: false as const };
+      } catch (e: unknown) {
+        const message = e instanceof Error ? e.message : String(e);
+        return { error: true as const, message };
+      }
     }
   };
 }

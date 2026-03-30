@@ -235,9 +235,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("revertCommit", async (msg) => {
+    const result = await gitCommits.revert(msg.commitHash, msg.parentIndex);
     bridge.post({
       command: "revertCommit",
-      status: await dataSource.revertCommit(msg.repo, msg.commitHash, msg.parentIndex)
+      status: result.error ? result.message : null
     });
   });
 

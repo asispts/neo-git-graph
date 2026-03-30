@@ -45,13 +45,6 @@ export class DataSource {
     return this.runGitCommand("merge " + commitHash + (createNewCommit ? " --no-ff" : ""), repo);
   }
 
-  public revertCommit(repo: string, commitHash: string, parentIndex: number) {
-    return this.runGitCommand(
-      "revert --no-edit " + commitHash + (parentIndex > 0 ? " -m " + parentIndex : ""),
-      repo
-    );
-  }
-
   private runGitCommand(command: string, repo: string) {
     return new Promise<GitCommandStatus>((resolve) => {
       this.execGit(command, repo, (err, stdout, stderr) => {
