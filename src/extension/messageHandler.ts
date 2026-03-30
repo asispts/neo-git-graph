@@ -106,9 +106,10 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("cherrypickCommit", async (msg) => {
+    const result = await gitCommits.cherrypick(msg.commitHash, msg.parentIndex);
     bridge.post({
       command: "cherrypickCommit",
-      status: await dataSource.cherrypickCommit(msg.repo, msg.commitHash, msg.parentIndex)
+      status: result.error ? result.message : null
     });
   });
 

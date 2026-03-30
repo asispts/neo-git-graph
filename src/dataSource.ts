@@ -45,13 +45,6 @@ export class DataSource {
     return this.runGitCommand("merge " + commitHash + (createNewCommit ? " --no-ff" : ""), repo);
   }
 
-  public cherrypickCommit(repo: string, commitHash: string, parentIndex: number) {
-    return this.runGitCommand(
-      "cherry-pick " + commitHash + (parentIndex > 0 ? " -m " + parentIndex : ""),
-      repo
-    );
-  }
-
   public revertCommit(repo: string, commitHash: string, parentIndex: number) {
     return this.runGitCommand(
       "revert --no-edit " + commitHash + (parentIndex > 0 ? " -m " + parentIndex : ""),
