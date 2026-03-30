@@ -1,45 +1,21 @@
-/* Git Interfaces / Types */
+import type {
+  GitCommitDetails,
+  GitCommitNode,
+  GitFileChangeType,
+  GitResetMode
+} from "./backend/types";
 
-export interface GitCommitNode {
-  hash: string;
-  parentHashes: string[];
-  author: string;
-  email: string;
-  date: number;
-  message: string;
-  refs: GitRef[];
-}
-
-export interface GitLogEntry {
-  hash: string;
-  parentHashes: string[];
-  author: string;
-  email: string;
-  date: number;
-  message: string;
-}
-
-export interface GitCommitDetails {
-  hash: string;
-  parents: string[];
-  author: string;
-  email: string;
-  date: number;
-  committer: string;
-  body: string;
-  fileChanges: GitFileChange[];
-}
-
-export interface GitRef {
-  hash: string;
-  name: string;
-  type: "head" | "tag" | "remote";
-}
-
-export interface GitRefData {
-  head: string | null;
-  refs: GitRef[];
-}
+export type {
+  DateType,
+  GitCommitDetails,
+  GitCommitNode,
+  GitFileChange,
+  GitFileChangeType,
+  GitLogEntry,
+  GitRef,
+  GitRefData,
+  GitResetMode
+} from "./backend/types";
 
 export type GitRepoSet = { [repo: string]: GitRepoState };
 export interface GitRepoState {
@@ -64,14 +40,6 @@ export interface GitGraphViewState {
   showCurrentBranchByDefault: boolean;
 }
 
-export interface GitFileChange {
-  oldFilePath: string;
-  newFilePath: string;
-  type: GitFileChangeType;
-  additions: number | null;
-  deletions: number | null;
-}
-
 export interface Avatar {
   image: string;
   timestamp: number;
@@ -80,12 +48,9 @@ export interface Avatar {
 export type AvatarCache = { [email: string]: Avatar };
 
 export type DateFormat = "Date & Time" | "Date Only" | "Relative";
-export type DateType = "Author Date" | "Commit Date";
 export type GraphStyle = "rounded" | "angular";
 export type TabIconColourTheme = "colour" | "grey";
 export type GitCommandStatus = string | null;
-export type GitResetMode = "soft" | "mixed" | "hard";
-export type GitFileChangeType = "A" | "M" | "D" | "R";
 
 /* Request / Response Messages */
 

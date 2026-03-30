@@ -1,4 +1,4 @@
-import type { DateType, GitCommitDetails, GitResetMode } from "../../types";
+import type { DateType, GitCommitDetails, GitResetMode } from "../types";
 import type { GitInstance } from "./gitClient";
 import { getCommitDetails } from "./gitCommitDetails";
 import { listCommits } from "./gitCommitList";
