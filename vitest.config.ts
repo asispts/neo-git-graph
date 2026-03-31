@@ -10,7 +10,7 @@ export default defineConfig({
       {
         resolve: { alias },
         test: {
-          name: "features",
+          name: "backend",
           include: ["tests/backend/**/*.test.ts"]
         }
       },

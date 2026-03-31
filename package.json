@@ -41,7 +41,7 @@
     "package": "pnpm run typecheck && pnpm run lint && node esbuild.js --production",
     "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
     "compile": "pnpm run clean && node esbuild.js",
-    "test": "vitest run --project features && vitest run --project webview",
+    "test": "vitest run --project backend && vitest run --project webview",
     "test:ext": "pnpm run compile && pnpm run compile-tests && vscode-test",
     "compile-tests": "tsc -p tests/extension/tsconfig.json",
     "watch:esbuild": "node esbuild.js --watch",
