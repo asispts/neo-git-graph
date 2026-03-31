@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
-import { RepoFileWatcher } from "../repoFileWatcher";
-import { RequestMessage, ResponseMessage } from "../types";
+import { RepoFileWatcher } from "@/repoFileWatcher";
+import { RequestMessage, ResponseMessage } from "@/types";
 
 export function webviewBridgeFactory(webview: vscode.Webview, repoFileWatcher: RepoFileWatcher) {
   const handlers = new Map<string, (msg: RequestMessage) => void | Promise<void>>();

@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 
-import { buildExtensionUri, getNonce } from "../backend/utils";
-import { getConfig } from "../config";
-import { ExtensionState } from "../extensionState";
-import { RepoManager } from "../repoManager";
-import { GitGraphViewState } from "../types";
+import { buildExtensionUri, getNonce } from "@/backend/utils";
+import { getConfig } from "@/config";
+import { ExtensionState } from "@/extensionState";
+import { RepoManager } from "@/repoManager";
+import { GitGraphViewState } from "@/types";
 
 export function buildWebviewHtml(opts: {
   webview: vscode.Webview;

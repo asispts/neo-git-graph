@@ -1,6 +1,7 @@
 import type { SimpleGit } from "simple-git";
 
-import type { DateType, GitCommitDetails, GitFileChangeType } from "../types";
+import type { DateType, GitCommitDetails, GitFileChangeType } from "@/backend/types";
+
 import type { GitInstance } from "./gitClient";
 
 const eolRegex = /\r\n|\r|\n/g;

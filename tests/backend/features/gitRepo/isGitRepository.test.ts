@@ -3,7 +3,8 @@ import * as os from "node:os";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { gitRepoFactory } from "../../../../src/backend/features/gitRepo";
+import { gitRepoFactory } from "@/backend/features/gitRepo";
+
 import { makeRepo } from "../helpers";
 
 let repo: string;

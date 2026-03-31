@@ -2,7 +2,8 @@ import * as fs from "node:fs";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { gitRemoteFactory } from "../../../../src/backend/features/gitRemote";
+import { gitRemoteFactory } from "@/backend/features/gitRemote";
+
 import { git, makeRepo } from "../helpers";
 
 let repoWithRemote: string;

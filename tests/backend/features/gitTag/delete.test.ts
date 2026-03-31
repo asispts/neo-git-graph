@@ -3,8 +3,9 @@ import * as fs from "node:fs";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { gitClientFactory } from "../../../../src/backend/features/gitClient";
-import { gitTagFactory } from "../../../../src/backend/features/gitTag";
+import { gitClientFactory } from "@/backend/features/gitClient";
+import { gitTagFactory } from "@/backend/features/gitTag";
+
 import { makeRepo } from "../helpers";
 
 let repo: string;

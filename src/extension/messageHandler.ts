@@ -1,19 +1,20 @@
 import * as vscode from "vscode";
 
-import { AvatarManager } from "../avatarManager";
-import { GitBranch } from "../backend/features/gitBranch";
-import { GitClient } from "../backend/features/gitClient";
-import { GitCommit } from "../backend/features/gitCommit";
-import { GitMerge } from "../backend/features/gitMerge";
-import { GitRepo } from "../backend/features/gitRepo";
-import { GitTag } from "../backend/features/gitTag";
-import { abbrevCommit, copyToClipboard } from "../backend/utils";
-import { getConfig } from "../config";
-import { encodeDiffDocUri } from "../diffDocProvider";
-import { ExtensionState } from "../extensionState";
-import { RepoFileWatcher } from "../repoFileWatcher";
-import { RepoManager } from "../repoManager";
-import { GitFileChangeType } from "../types";
+import { AvatarManager } from "@/avatarManager";
+import { GitBranch } from "@/backend/features/gitBranch";
+import { GitClient } from "@/backend/features/gitClient";
+import { GitCommit } from "@/backend/features/gitCommit";
+import { GitMerge } from "@/backend/features/gitMerge";
+import { GitRepo } from "@/backend/features/gitRepo";
+import { GitTag } from "@/backend/features/gitTag";
+import { abbrevCommit, copyToClipboard } from "@/backend/utils";
+import { getConfig } from "@/config";
+import { encodeDiffDocUri } from "@/diffDocProvider";
+import { ExtensionState } from "@/extensionState";
+import { RepoFileWatcher } from "@/repoFileWatcher";
+import { RepoManager } from "@/repoManager";
+import { GitFileChangeType } from "@/types";
+
 import { WebviewBridge } from "./webviewBridge";
 
 function viewDiff(

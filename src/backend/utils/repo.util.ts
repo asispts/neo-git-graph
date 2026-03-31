@@ -1,4 +1,4 @@
-import { GitRepoSet } from "../../types";
+import { GitRepoSet } from "@/types";
 
 export function isPathWithinRepos(path: string, repos: GitRepoSet) {
   const repoPaths = Object.keys(repos);

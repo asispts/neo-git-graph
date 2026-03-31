@@ -3,8 +3,9 @@ import * as path from "node:path";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { gitBranchFactory } from "../../../../src/backend/features/gitBranch";
-import { gitClientFactory } from "../../../../src/backend/features/gitClient";
+import { gitBranchFactory } from "@/backend/features/gitBranch";
+import { gitClientFactory } from "@/backend/features/gitClient";
+
 import { git, makeRepo } from "../helpers";
 
 let repo: string;

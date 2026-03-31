@@ -1,4 +1,4 @@
-import type * as GG from "../../src/types";
+import type * as GG from "@/types";
 
 export function createVscodeMock() {
   const sent: GG.RequestMessage[] = [];

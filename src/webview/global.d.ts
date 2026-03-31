@@ -1,4 +1,4 @@
-import * as GG from "../types";
+import * as GG from "@/types";
 
 declare global {
   function acquireVsCodeApi(): {

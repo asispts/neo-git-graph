@@ -1,12 +1,13 @@
 import * as vscode from "vscode";
 
-import { AvatarManager } from "../avatarManager";
-import { buildExtensionUri } from "../backend/utils";
-import { getConfig } from "../config";
-import { ExtensionState } from "../extensionState";
-import { RepoFileWatcher } from "../repoFileWatcher";
-import { RepoManager } from "../repoManager";
-import { GitRepoSet } from "../types";
+import { AvatarManager } from "@/avatarManager";
+import { buildExtensionUri } from "@/backend/utils";
+import { getConfig } from "@/config";
+import { ExtensionState } from "@/extensionState";
+import { RepoFileWatcher } from "@/repoFileWatcher";
+import { RepoManager } from "@/repoManager";
+import { GitRepoSet } from "@/types";
+
 import { WebviewBridge } from "./webviewBridge";
 import { buildWebviewHtml } from "./webviewHtml";
 
