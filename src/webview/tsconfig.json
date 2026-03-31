@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "baseUrl": "..",
+    "baseUrl": "../..",
     "paths": {
-      "@/*": ["./*"]
+      "@/*": ["src/*"]
     },
     "lib": ["es2020", "dom"],
     "module": "commonjs",
