@@ -12,10 +12,10 @@
     "skipLibCheck": true
   },
   "include": [
+    "./backend/**/*.ts",
     "./extension/**/*.ts",
-    "./features/**/*.ts",
-    "../src/features/**/*.ts",
     "./webview/**/*.ts",
+    "../src/backend/**/*.ts",
     "../src/webview/**/*.ts"
   ]
 }
