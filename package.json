@@ -37,7 +37,7 @@
   "main": "./out/extension.js",
   "scripts": {
     "typecheck": "tsc -p ./src --noEmit && tsc -p ./src/webview --noEmit && tsc -p ./tests --noEmit",
-    "vscode:prepublish": "pnpm run package",
+    "vscode:prepublish": "pnpm run clean && pnpm run package",
     "package": "pnpm run typecheck && pnpm run lint && node esbuild.js --production",
     "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
     "compile": "pnpm run clean && node esbuild.js",
