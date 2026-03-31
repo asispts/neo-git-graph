@@ -1,79 +1,41 @@
 import * as vscode from "vscode";
 
-import { DateFormat, DateType, GraphStyle, TabIconColourTheme } from "./types";
+import { DateFormat, DateType, GraphStyle } from "./types";
 
-class Config {
-  private workspaceConfiguration: vscode.WorkspaceConfiguration;
+type TabIconColourTheme = "colour" | "grey";
 
-  constructor() {
-    this.workspaceConfiguration = vscode.workspace.getConfiguration("neo-git-graph");
-  }
-
-  public autoCenterCommitDetailsView() {
-    return this.workspaceConfiguration.get("autoCenterCommitDetailsView", true);
-  }
-
-  public dateFormat(): DateFormat {
-    return this.workspaceConfiguration.get("dateFormat", "Date & Time");
-  }
-
-  public dateType(): DateType {
-    return this.workspaceConfiguration.get("dateType", "Author Date");
-  }
-
-  public fetchAvatars() {
-    return this.workspaceConfiguration.get("fetchAvatars", false);
-  }
-
-  public graphColours() {
-    return this.workspaceConfiguration
-      .get("graphColours", ["#0085d9", "#d9008f", "#00d90a", "#d98500", "#a300d9", "#ff0000"])
-      .filter(
-        (v) =>
-          v.match(
-            /^\s*(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|rgb[a]?\s*\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\))\s*$/
-          ) !== null
-      );
-  }
-
-  public graphStyle(): GraphStyle {
-    return this.workspaceConfiguration.get("graphStyle", "rounded");
-  }
-
-  public initialLoadCommits() {
-    return this.workspaceConfiguration.get("initialLoadCommits", 300);
-  }
-
-  public loadMoreCommits() {
-    return this.workspaceConfiguration.get("loadMoreCommits", 75);
-  }
-
-  public maxDepthOfRepoSearch() {
-    return this.workspaceConfiguration.get("maxDepthOfRepoSearch", 0);
-  }
-
-  public showCurrentBranchByDefault() {
-    return this.workspaceConfiguration.get("showCurrentBranchByDefault", false);
-  }
-
-  public showStatusBarItem() {
-    return this.workspaceConfiguration.get("showStatusBarItem", true);
-  }
-
-  public showUncommittedChanges() {
-    return this.workspaceConfiguration.get("showUncommittedChanges", true);
-  }
-
-  public tabIconColourTheme(): TabIconColourTheme {
-    return this.workspaceConfiguration.get("tabIconColourTheme", "colour");
-  }
-
-  public gitPath(): string {
-    let path = vscode.workspace.getConfiguration("git").get("path", null);
-    return path !== null ? path : "git";
-  }
+function getConfig<T>(key: string, defaultValue: T): T {
+  return vscode.workspace.getConfiguration("neo-git-graph").get(key, defaultValue);
 }
 
-export function getConfig() {
-  return new Config();
-}
+export const config = {
+  autoCenterCommitDetailsView: (): boolean => getConfig("autoCenterCommitDetailsView", true),
+  dateFormat: (): DateFormat => getConfig("dateFormat", "Date & Time"),
+  dateType: (): DateType => getConfig("dateType", "Author Date"),
+  fetchAvatars: (): boolean => getConfig("fetchAvatars", false),
+  graphColours: (): string[] =>
+    getConfig("graphColours", [
+      "#0085d9",
+      "#d9008f",
+      "#00d90a",
+      "#d98500",
+      "#a300d9",
+      "#ff0000"
+    ]).filter(
+      (v: string) =>
+        v.match(
+          /^\s*(#[0-9a-fA-F]{6}|#[0-9a-fA-F]{8}|rgb[a]?\s*\(\d{1,3},\s*\d{1,3},\s*\d{1,3}\))\s*$/
+        ) !== null
+    ),
+  graphStyle: (): GraphStyle => getConfig("graphStyle", "rounded"),
+  initialLoadCommits: (): number => getConfig("initialLoadCommits", 300),
+  loadMoreCommits: (): number => getConfig("loadMoreCommits", 75),
+  maxDepthOfRepoSearch: (): number => getConfig("maxDepthOfRepoSearch", 0),
+  showCurrentBranchByDefault: (): boolean => getConfig("showCurrentBranchByDefault", false),
+  showStatusBarItem: (): boolean => getConfig("showStatusBarItem", true),
+  showUncommittedChanges: (): boolean => getConfig("showUncommittedChanges", true),
+  tabIconColourTheme: (): TabIconColourTheme => getConfig("tabIconColourTheme", "colour"),
+  gitPath: (): string => vscode.workspace.getConfiguration("git").get("path", null) ?? "git"
+};
+
+export type Config = typeof config;

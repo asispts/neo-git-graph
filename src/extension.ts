@@ -8,7 +8,7 @@ import { gitMergeFactory } from "./backend/features/gitMerge";
 import { gitRemoteFactory } from "./backend/features/gitRemote";
 import { gitTagFactory } from "./backend/features/gitTag";
 import { buildExtensionUri } from "./backend/utils";
-import { getConfig } from "./config";
+import { config } from "./config";
 import { DiffDocProvider } from "./diffDocProvider";
 import { registerMessageHandlers } from "./extension/messageHandler";
 import { WebviewBridge, webviewBridgeFactory } from "./extension/webviewBridge";
@@ -21,14 +21,11 @@ import { StatusBarItem } from "./statusBarItem";
 export function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel("(neo) Git Graph");
   const extensionState = new ExtensionState(context);
-  const gitRemote = gitRemoteFactory(getConfig().gitPath());
+  const gitRemote = gitRemoteFactory(config.gitPath());
   const avatarManager = new AvatarManager(gitRemote, extensionState);
-  const statusBarItem = new StatusBarItem(context);
-  const gitClient = gitClientFactory(
-    extensionState.getLastActiveRepo() ?? "",
-    getConfig().gitPath()
-  );
-  const repoManager = new RepoManager(extensionState, statusBarItem);
+  const statusBarItem = new StatusBarItem(context, config);
+  const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
+  const repoManager = new RepoManager(extensionState, statusBarItem, config);
   const gitBranch = gitBranchFactory(gitClient.getInstance);
   const gitCommits = gitCommitFactory(gitClient.getInstance);
   const gitMerge = gitMergeFactory(gitClient.getInstance);
@@ -63,6 +60,7 @@ export function activate(context: vscode.ExtensionContext) {
       bridge = webviewBridgeFactory(panel.webview, repoFileWatcher);
       avatarManager.registerBridge(bridge.post.bind(bridge));
       const { onPanelShown } = registerMessageHandlers(bridge, {
+        config,
         gitClient,
         gitBranch,
         gitCommits,
@@ -76,6 +74,7 @@ export function activate(context: vscode.ExtensionContext) {
       currentPanel = createWebviewPanel({
         panel,
         bridge,
+        config,
         repoFileWatcher,
         extensionPath: context.extensionPath,
         extensionState,
@@ -100,8 +99,8 @@ export function activate(context: vscode.ExtensionContext) {
       } else if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
         repoManager.maxDepthOfRepoSearchChanged();
       } else if (e.affectsConfiguration("git.path")) {
-        gitClient.setGitPath(getConfig().gitPath());
-        gitRemote.setGitPath(getConfig().gitPath());
+        gitClient.setGitPath(config.gitPath());
+        gitRemote.setGitPath(config.gitPath());
       }
     }),
     repoManager

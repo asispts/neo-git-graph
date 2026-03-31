@@ -49,7 +49,6 @@ export type AvatarCache = { [email: string]: Avatar };
 
 export type DateFormat = "Date & Time" | "Date Only" | "Relative";
 export type GraphStyle = "rounded" | "angular";
-export type TabIconColourTheme = "colour" | "grey";
 export type GitCommandStatus = string | null;
 
 /* Request / Response Messages */

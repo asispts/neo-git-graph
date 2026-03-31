@@ -1,12 +1,14 @@
 import * as vscode from "vscode";
 
-import { getConfig } from "./config";
+import { Config } from "./config";
 
 export class StatusBarItem {
   private statusBarItem: vscode.StatusBarItem;
   private numRepos: number = 0;
+  private config: Config;
 
-  constructor(context: vscode.ExtensionContext) {
+  constructor(context: vscode.ExtensionContext, config: Config) {
+    this.config = config;
     this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
     this.statusBarItem.text = "(neo) Git Graph";
     this.statusBarItem.tooltip = "View Git Graph";
@@ -20,7 +22,7 @@ export class StatusBarItem {
   }
 
   public refresh() {
-    if (getConfig().showStatusBarItem() && this.numRepos > 0) {
+    if (this.config.showStatusBarItem() && this.numRepos > 0) {
       this.statusBarItem.show();
     } else {
       this.statusBarItem.hide();

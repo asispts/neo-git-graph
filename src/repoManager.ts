@@ -10,7 +10,7 @@ import {
   sortRepos
 } from "./backend/utils";
 import { doesPathExist, isDirectory } from "./backend/utils/path.util";
-import { getConfig } from "./config";
+import { Config } from "./config";
 import { ExtensionState } from "./extensionState";
 import { StatusBarItem } from "./statusBarItem";
 import { GitRepoSet, GitRepoState } from "./types";
@@ -18,6 +18,7 @@ import { GitRepoSet, GitRepoState } from "./types";
 export class RepoManager {
   private readonly extensionState: ExtensionState;
   private readonly statusBarItem: StatusBarItem;
+  private readonly config: Config;
   private repos: GitRepoSet;
   private maxDepthOfRepoSearch: number;
   private folderWatchers: { [workspace: string]: vscode.FileSystemWatcher } = {};
@@ -29,11 +30,12 @@ export class RepoManager {
   private processCreateEventsTimeout: NodeJS.Timeout | null = null;
   private processChangeEventsTimeout: NodeJS.Timeout | null = null;
 
-  constructor(extensionState: ExtensionState, statusBarItem: StatusBarItem) {
+  constructor(extensionState: ExtensionState, statusBarItem: StatusBarItem, config: Config) {
     this.extensionState = extensionState;
     this.statusBarItem = statusBarItem;
+    this.config = config;
     this.repos = extensionState.getRepos();
-    this.maxDepthOfRepoSearch = getConfig().maxDepthOfRepoSearch();
+    this.maxDepthOfRepoSearch = config.maxDepthOfRepoSearch();
     this.startupTasks();
 
     this.folderChangeHandler = vscode.workspace.onDidChangeWorkspaceFolders(async (e) => {
@@ -80,7 +82,7 @@ export class RepoManager {
   }
 
   public maxDepthOfRepoSearchChanged() {
-    let newDepth = getConfig().maxDepthOfRepoSearch();
+    let newDepth = this.config.maxDepthOfRepoSearch();
     if (newDepth > this.maxDepthOfRepoSearch) {
       this.maxDepthOfRepoSearch = newDepth;
       this.searchWorkspaceForRepos();
@@ -155,7 +157,7 @@ export class RepoManager {
     return new Promise<boolean>((resolve) => {
       let repoPaths = Object.keys(this.repos),
         changes = false;
-      evalPromises(repoPaths, 3, (path) => isGitRepository(path, getConfig().gitPath())).then(
+      evalPromises(repoPaths, 3, (path) => isGitRepository(path, this.config.gitPath())).then(
         (results) => {
           for (let i = 0; i < repoPaths.length; i++) {
             if (!results[i]) {
@@ -199,7 +201,7 @@ export class RepoManager {
         return;
       }
 
-      isGitRepository(directory, getConfig().gitPath())
+      isGitRepository(directory, this.config.gitPath())
         .then((isRepo) => {
           if (isRepo) {
             this.addRepo(directory);

@@ -7,7 +7,7 @@ import { GitCommit } from "@/backend/features/gitCommit";
 import { GitMerge } from "@/backend/features/gitMerge";
 import { GitTag } from "@/backend/features/gitTag";
 import { abbrevCommit, copyToClipboard, isGitRepository } from "@/backend/utils";
-import { getConfig } from "@/config";
+import { Config } from "@/config";
 import { encodeDiffDocUri } from "@/diffDocProvider";
 import { ExtensionState } from "@/extensionState";
 import { RepoFileWatcher } from "@/repoFileWatcher";
@@ -51,6 +51,7 @@ function viewDiff(
 export function registerMessageHandlers(
   bridge: WebviewBridge,
   deps: {
+    config: Config;
     gitClient: GitClient;
     gitBranch: GitBranch;
     gitCommits: GitCommit;
@@ -63,6 +64,7 @@ export function registerMessageHandlers(
   }
 ) {
   const {
+    config,
     gitClient,
     gitBranch,
     gitCommits,
@@ -115,7 +117,7 @@ export function registerMessageHandlers(
   bridge.onMessage("commitDetails", async (msg) => {
     bridge.post({
       command: "commitDetails",
-      commitDetails: await gitCommits.details(msg.commitHash, getConfig().dateType())
+      commitDetails: await gitCommits.details(msg.commitHash, config.dateType())
     });
   });
 
@@ -161,9 +163,7 @@ export function registerMessageHandlers(
 
   bridge.onMessage("loadBranches", async (msg) => {
     const branchData = await gitBranch.list(msg.showRemoteBranches);
-    const isRepo = branchData.error
-      ? await isGitRepository(currentRepo!, getConfig().gitPath())
-      : true;
+    const isRepo = branchData.error ? await isGitRepository(currentRepo!, config.gitPath()) : true;
     bridge.post({
       command: "loadBranches",
       branches: branchData.branches,
@@ -180,8 +180,8 @@ export function registerMessageHandlers(
         msg.branchName,
         msg.maxCommits,
         msg.showRemoteBranches,
-        getConfig().dateType(),
-        getConfig().showUncommittedChanges()
+        config.dateType(),
+        config.showUncommittedChanges()
       )),
       hard: msg.hard
     });

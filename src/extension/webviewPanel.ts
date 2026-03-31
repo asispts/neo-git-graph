@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import { AvatarManager } from "@/avatarManager";
 import { buildExtensionUri } from "@/backend/utils";
-import { getConfig } from "@/config";
+import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { RepoManager } from "@/repoManager";
@@ -14,6 +14,7 @@ import { buildWebviewHtml } from "./webviewHtml";
 export function createWebviewPanel(opts: {
   panel: vscode.WebviewPanel;
   bridge: WebviewBridge;
+  config: Config;
   repoFileWatcher: RepoFileWatcher;
   extensionPath: string;
   extensionState: ExtensionState;
@@ -25,6 +26,7 @@ export function createWebviewPanel(opts: {
   const {
     panel,
     bridge,
+    config,
     repoFileWatcher,
     extensionPath,
     extensionState,
@@ -39,7 +41,7 @@ export function createWebviewPanel(opts: {
   let isPanelVisible = true;
 
   panel.iconPath =
-    getConfig().tabIconColourTheme() === "colour"
+    config.tabIconColourTheme() === "colour"
       ? buildExtensionUri(extensionPath, "resources", "webview-icon.svg")
       : {
           light: buildExtensionUri(extensionPath, "resources", "webview-icon-light.svg"),
@@ -49,6 +51,7 @@ export function createWebviewPanel(opts: {
   function update() {
     const result = buildWebviewHtml({
       webview: panel.webview,
+      config,
       extensionPath,
       extensionState,
       repoManager
