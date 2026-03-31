@@ -1,4 +1,5 @@
 const esbuild = require("esbuild");
+const path = require("node:path");
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
@@ -19,6 +20,16 @@ const esbuildProblemMatcherPlugin = {
   }
 };
 
+const aliasPlugin = {
+  name: "alias",
+  setup(build) {
+    build.onResolve({ filter: /^@\// }, async (args) => {
+      const resolved = path.resolve(__dirname, "src", args.path.slice(2));
+      return build.resolve(resolved, { kind: args.kind, resolveDir: path.dirname(resolved) });
+    });
+  }
+};
+
 async function main() {
   const extension = await esbuild.context({
     entryPoints: ["src/extension.ts"],
@@ -32,7 +43,7 @@ async function main() {
     outfile: "out/extension.js",
     external: ["vscode"],
     logLevel: "silent",
-    plugins: [esbuildProblemMatcherPlugin]
+    plugins: [aliasPlugin, esbuildProblemMatcherPlugin]
   });
 
   const webview = await esbuild.context({
@@ -45,7 +56,7 @@ async function main() {
     target: "es6",
     outfile: "out/web.min.js",
     logLevel: "silent",
-    plugins: [esbuildProblemMatcherPlugin]
+    plugins: [aliasPlugin, esbuildProblemMatcherPlugin]
   });
 
   if (watch) {
