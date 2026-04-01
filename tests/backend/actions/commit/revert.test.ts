@@ -26,16 +26,16 @@ afterAll(() => {
 
 describe("revertCommit", () => {
   it("reverts a commit", async () => {
-    const result = await revertCommit(simpleGit(repo), { commitHash, parentIndex: 0 });
-    expect(result).toEqual({ error: false });
+    await revertCommit(simpleGit(repo), { commitHash, parentIndex: 0 });
     expect(fs.existsSync(path.join(repo, "g"))).toBe(false);
   });
 
-  it("returns error for a nonexistent commit hash", async () => {
-    const result = await revertCommit(simpleGit(repo), {
-      commitHash: "0000000000000000000000000000000000000000",
-      parentIndex: 0
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws for a nonexistent commit hash", async () => {
+    await expect(
+      revertCommit(simpleGit(repo), {
+        commitHash: "0000000000000000000000000000000000000000",
+        parentIndex: 0
+      })
+    ).rejects.toThrow();
   });
 });

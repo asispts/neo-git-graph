@@ -22,11 +22,10 @@ afterAll(() => {
 
 describe("createBranch", () => {
   it("creates a new branch at the given commit", async () => {
-    const result = await createBranch(simpleGit(repo), {
+    await createBranch(simpleGit(repo), {
       branchName: "new-branch",
       commitHash
     });
-    expect(result).toEqual({ error: false });
 
     const listed = cp
       .execFileSync("git", ["branch", "--list", "new-branch"], { cwd: repo })
@@ -35,16 +34,18 @@ describe("createBranch", () => {
     expect(listed).toBe("new-branch");
   });
 
-  it("returns error when the branch already exists", async () => {
-    const result = await createBranch(simpleGit(repo), { branchName: "main", commitHash });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the branch already exists", async () => {
+    await expect(
+      createBranch(simpleGit(repo), { branchName: "main", commitHash })
+    ).rejects.toThrow();
   });
 
-  it("returns error when the commit hash is invalid", async () => {
-    const result = await createBranch(simpleGit(repo), {
-      branchName: "bad-branch",
-      commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the commit hash is invalid", async () => {
+    await expect(
+      createBranch(simpleGit(repo), {
+        branchName: "bad-branch",
+        commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+      })
+    ).rejects.toThrow();
   });
 });

@@ -28,19 +28,19 @@ afterAll(() => {
 
 describe("cherrypickCommit", () => {
   it("cherry-picks a commit onto the current branch", async () => {
-    const result = await cherrypickCommit(simpleGit(repo), {
+    await cherrypickCommit(simpleGit(repo), {
       commitHash: cherrypickHash,
       parentIndex: 0
     });
-    expect(result).toEqual({ error: false });
     expect(fs.existsSync(path.join(repo, "g"))).toBe(true);
   });
 
-  it("returns error for a nonexistent commit hash", async () => {
-    const result = await cherrypickCommit(simpleGit(repo), {
-      commitHash: "0000000000000000000000000000000000000000",
-      parentIndex: 0
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws for a nonexistent commit hash", async () => {
+    await expect(
+      cherrypickCommit(simpleGit(repo), {
+        commitHash: "0000000000000000000000000000000000000000",
+        parentIndex: 0
+      })
+    ).rejects.toThrow();
   });
 });

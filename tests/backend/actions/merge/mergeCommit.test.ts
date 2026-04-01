@@ -31,11 +31,10 @@ afterAll(() => {
 
 describe("mergeCommit", () => {
   it("merges a commit hash", async () => {
-    const result = await mergeCommit(simpleGit(repo), {
+    await mergeCommit(simpleGit(repo), {
       commitHash: featureCommitHash,
       createNewCommit: false
     });
-    expect(result).toEqual({ error: false });
 
     const log = cp.execFileSync("git", ["log", "--oneline"], { cwd: repo }).toString();
     expect(log).toContain("feature commit");
@@ -52,21 +51,21 @@ describe("mergeCommit", () => {
       .trim();
     git(["checkout", "main"], repo);
 
-    const result = await mergeCommit(simpleGit(repo), {
+    await mergeCommit(simpleGit(repo), {
       commitHash: commit2Hash,
       createNewCommit: true
     });
-    expect(result).toEqual({ error: false });
 
     const log = cp.execFileSync("git", ["log", "--oneline"], { cwd: repo }).toString();
     expect(log).toContain("Merge commit");
   });
 
-  it("returns error when the commit hash is invalid", async () => {
-    const result = await mergeCommit(simpleGit(repo), {
-      commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-      createNewCommit: false
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the commit hash is invalid", async () => {
+    await expect(
+      mergeCommit(simpleGit(repo), {
+        commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+        createNewCommit: false
+      })
+    ).rejects.toThrow();
   });
 });

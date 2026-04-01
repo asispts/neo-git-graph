@@ -26,11 +26,10 @@ afterAll(() => {
 
 describe("resetToCommit", () => {
   it("soft-resets to a previous commit", async () => {
-    const result = await resetToCommit(simpleGit(repo), {
+    await resetToCommit(simpleGit(repo), {
       commitHash: firstHash,
       resetMode: "soft"
     });
-    expect(result).toEqual({ error: false });
 
     const head = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
     expect(head).toBe(firstHash);
@@ -39,11 +38,10 @@ describe("resetToCommit", () => {
   });
 
   it("mixed-resets to a previous commit", async () => {
-    const result = await resetToCommit(simpleGit(repo), {
+    await resetToCommit(simpleGit(repo), {
       commitHash: firstHash,
       resetMode: "mixed"
     });
-    expect(result).toEqual({ error: false });
 
     const head = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
     expect(head).toBe(firstHash);
@@ -53,21 +51,21 @@ describe("resetToCommit", () => {
   });
 
   it("hard-resets to a previous commit", async () => {
-    const result = await resetToCommit(simpleGit(repo), {
+    await resetToCommit(simpleGit(repo), {
       commitHash: firstHash,
       resetMode: "hard"
     });
-    expect(result).toEqual({ error: false });
 
     const head = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
     expect(head).toBe(firstHash);
   });
 
-  it("returns error for an invalid commit hash", async () => {
-    const result = await resetToCommit(simpleGit(repo), {
-      commitHash: "0000000000000000000000000000000000000000",
-      resetMode: "hard"
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws for an invalid commit hash", async () => {
+    await expect(
+      resetToCommit(simpleGit(repo), {
+        commitHash: "0000000000000000000000000000000000000000",
+        resetMode: "hard"
+      })
+    ).rejects.toThrow();
   });
 });

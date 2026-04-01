@@ -14,7 +14,6 @@ import { GitClient } from "@/backend/gitClient";
 import { commitDetails } from "@/backend/queries/commitDetails";
 import { loadBranches } from "@/backend/queries/loadBranches";
 import { loadCommits } from "@/backend/queries/loadCommits";
-import { ActionResult } from "@/backend/types";
 import { abbrevCommit, copyToClipboard } from "@/backend/utils";
 import { Config } from "@/config";
 import { encodeDiffDocUri } from "@/diffDocProvider";
@@ -74,14 +73,16 @@ export function registerMessageHandlers(
 
   function registerAction<T extends RequestMessage["command"]>(
     command: T,
-    handler: (msg: Extract<RequestMessage, { command: T }>) => Promise<ActionResult>
+    handler: (msg: Extract<RequestMessage, { command: T }>) => Promise<void>
   ) {
     bridge.onMessage(command, async (msg) => {
-      const result = await handler(msg);
-      bridge.post({
-        command,
-        status: result.error ? result.message : null
-      } as ResponseMessage);
+      let status: string | null = null;
+      try {
+        await handler(msg);
+      } catch (e: unknown) {
+        status = e instanceof Error ? e.message : String(e);
+      }
+      bridge.post({ command, status } as ResponseMessage);
     });
   }
 

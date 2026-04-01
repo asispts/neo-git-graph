@@ -31,15 +31,13 @@ afterAll(() => {
 
 describe("pushTag", () => {
   it("pushes an existing tag to origin", async () => {
-    const result = await pushTag(simpleGit(repo), { tagName: "v1.0" });
-    expect(result).toEqual({ error: false });
+    await pushTag(simpleGit(repo), { tagName: "v1.0" });
 
     const tags = cp.execFileSync("git", ["tag", "-l"], { cwd: bare }).toString().trim();
     expect(tags).toBe("v1.0");
   });
 
-  it("returns error when the tag does not exist locally", async () => {
-    const result = await pushTag(simpleGit(repo), { tagName: "v99.0-nonexistent" });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the tag does not exist locally", async () => {
+    await expect(pushTag(simpleGit(repo), { tagName: "v99.0-nonexistent" })).rejects.toThrow();
   });
 });

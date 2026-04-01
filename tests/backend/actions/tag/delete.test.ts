@@ -24,15 +24,13 @@ describe("deleteTag", () => {
   it("deletes an existing tag", async () => {
     cp.execFileSync("git", ["tag", "v1.0", commitHash], { cwd: repo });
 
-    const result = await deleteTag(simpleGit(repo), { tagName: "v1.0" });
-    expect(result).toEqual({ error: false });
+    await deleteTag(simpleGit(repo), { tagName: "v1.0" });
 
     const tags = cp.execFileSync("git", ["tag"], { cwd: repo }).toString().trim();
     expect(tags).not.toContain("v1.0");
   });
 
-  it("returns error when the tag does not exist", async () => {
-    const result = await deleteTag(simpleGit(repo), { tagName: "nonexistent" });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the tag does not exist", async () => {
+    await expect(deleteTag(simpleGit(repo), { tagName: "nonexistent" })).rejects.toThrow();
   });
 });

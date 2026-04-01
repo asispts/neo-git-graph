@@ -22,13 +22,12 @@ afterAll(() => {
 
 describe("addTag", () => {
   it("creates a lightweight tag at the given commit", async () => {
-    const result = await addTag(simpleGit(repo), {
+    await addTag(simpleGit(repo), {
       tagName: "v1.0-lw",
       commitHash,
       lightweight: true,
       message: ""
     });
-    expect(result).toEqual({ error: false });
 
     const tagName = cp
       .execFileSync("git", ["tag", "-l", "v1.0-lw"], { cwd: repo })
@@ -38,13 +37,12 @@ describe("addTag", () => {
   });
 
   it("creates an annotated tag at the given commit", async () => {
-    const result = await addTag(simpleGit(repo), {
+    await addTag(simpleGit(repo), {
       tagName: "v1.0",
       commitHash,
       lightweight: false,
       message: "Release v1.0"
     });
-    expect(result).toEqual({ error: false });
 
     const tagType = cp
       .execFileSync("git", ["cat-file", "-t", "v1.0"], { cwd: repo })
@@ -53,23 +51,25 @@ describe("addTag", () => {
     expect(tagType).toBe("tag");
   });
 
-  it("returns error when the tag already exists", async () => {
-    const result = await addTag(simpleGit(repo), {
-      tagName: "v1.0-lw",
-      commitHash,
-      lightweight: true,
-      message: ""
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the tag already exists", async () => {
+    await expect(
+      addTag(simpleGit(repo), {
+        tagName: "v1.0-lw",
+        commitHash,
+        lightweight: true,
+        message: ""
+      })
+    ).rejects.toThrow();
   });
 
-  it("returns error when the commit hash is invalid", async () => {
-    const result = await addTag(simpleGit(repo), {
-      tagName: "v2.0",
-      commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
-      lightweight: true,
-      message: ""
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the commit hash is invalid", async () => {
+    await expect(
+      addTag(simpleGit(repo), {
+        tagName: "v2.0",
+        commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+        lightweight: true,
+        message: ""
+      })
+    ).rejects.toThrow();
   });
 });

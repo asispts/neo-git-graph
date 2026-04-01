@@ -21,11 +21,10 @@ afterAll(() => {
 
 describe("renameBranch", () => {
   it("renames an existing branch", async () => {
-    const result = await renameBranch(simpleGit(repo), {
+    await renameBranch(simpleGit(repo), {
       oldName: "old-name",
       newName: "new-name"
     });
-    expect(result).toEqual({ error: false });
 
     const listedOld = cp
       .execFileSync("git", ["branch", "--list", "old-name"], { cwd: repo })
@@ -39,16 +38,18 @@ describe("renameBranch", () => {
     expect(listedNew).toBe("new-name");
   });
 
-  it("returns error when the source branch does not exist", async () => {
-    const result = await renameBranch(simpleGit(repo), {
-      oldName: "nonexistent-branch",
-      newName: "whatever"
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the source branch does not exist", async () => {
+    await expect(
+      renameBranch(simpleGit(repo), {
+        oldName: "nonexistent-branch",
+        newName: "whatever"
+      })
+    ).rejects.toThrow();
   });
 
-  it("returns error when the target branch already exists", async () => {
-    const result = await renameBranch(simpleGit(repo), { oldName: "new-name", newName: "main" });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the target branch already exists", async () => {
+    await expect(
+      renameBranch(simpleGit(repo), { oldName: "new-name", newName: "main" })
+    ).rejects.toThrow();
   });
 });

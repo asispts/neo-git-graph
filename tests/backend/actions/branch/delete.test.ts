@@ -23,11 +23,10 @@ describe("deleteBranch", () => {
   it("deletes an existing branch", async () => {
     git(["branch", "to-delete"], repo);
 
-    const result = await deleteBranch(simpleGit(repo), {
+    await deleteBranch(simpleGit(repo), {
       branchName: "to-delete",
       forceDelete: false
     });
-    expect(result).toEqual({ error: false });
 
     const listed = cp
       .execFileSync("git", ["branch", "--list", "to-delete"], { cwd: repo })
@@ -36,26 +35,26 @@ describe("deleteBranch", () => {
     expect(listed).toBe("");
   });
 
-  it("returns error when deleting a branch with unmerged changes without force", async () => {
+  it("throws when deleting a branch with unmerged changes without force", async () => {
     git(["checkout", "-b", "unmerged"], repo);
     fs.writeFileSync(path.join(repo, "g"), "y");
     git(["add", "."], repo);
     git(["commit", "-m", "unmerged commit"], repo);
     git(["checkout", "main"], repo);
 
-    const result = await deleteBranch(simpleGit(repo), {
-      branchName: "unmerged",
-      forceDelete: false
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+    await expect(
+      deleteBranch(simpleGit(repo), {
+        branchName: "unmerged",
+        forceDelete: false
+      })
+    ).rejects.toThrow();
   });
 
   it("force-deletes a branch with unmerged changes", async () => {
-    const result = await deleteBranch(simpleGit(repo), {
+    await deleteBranch(simpleGit(repo), {
       branchName: "unmerged",
       forceDelete: true
     });
-    expect(result).toEqual({ error: false });
 
     const listed = cp
       .execFileSync("git", ["branch", "--list", "unmerged"], { cwd: repo })
@@ -64,11 +63,12 @@ describe("deleteBranch", () => {
     expect(listed).toBe("");
   });
 
-  it("returns error when the branch does not exist", async () => {
-    const result = await deleteBranch(simpleGit(repo), {
-      branchName: "nonexistent",
-      forceDelete: false
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws when the branch does not exist", async () => {
+    await expect(
+      deleteBranch(simpleGit(repo), {
+        branchName: "nonexistent",
+        forceDelete: false
+      })
+    ).rejects.toThrow();
   });
 });

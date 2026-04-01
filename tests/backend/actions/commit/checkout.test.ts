@@ -22,17 +22,17 @@ afterAll(() => {
 
 describe("checkoutCommit", () => {
   it("checks out a commit hash (detaches HEAD)", async () => {
-    const result = await checkoutCommit(simpleGit(repo), { commitHash });
-    expect(result).toEqual({ error: false });
+    await checkoutCommit(simpleGit(repo), { commitHash });
 
     const head = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
     expect(head).toBe(commitHash);
   });
 
-  it("returns error for a nonexistent commit hash", async () => {
-    const result = await checkoutCommit(simpleGit(repo), {
-      commitHash: "0000000000000000000000000000000000000000"
-    });
-    expect(result).toEqual({ error: true, message: expect.any(String) });
+  it("throws for a nonexistent commit hash", async () => {
+    await expect(
+      checkoutCommit(simpleGit(repo), {
+        commitHash: "0000000000000000000000000000000000000000"
+      })
+    ).rejects.toThrow();
   });
 });
