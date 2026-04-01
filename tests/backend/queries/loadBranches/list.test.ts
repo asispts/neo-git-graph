@@ -1,7 +1,6 @@
 import * as cp from "node:child_process";
 import * as fs from "node:fs";
 import * as os from "node:os";
-import * as path from "node:path";
 
 import simpleGit from "simple-git";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
@@ -9,8 +8,6 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { loadBranches } from "@/backend/queries/loadBranches";
 
 import { git, makeRepo } from "../../helpers";
-
-const PROJECT_ROOT = path.resolve(__dirname, "../../../..");
 
 let simpleRepo: string;
 let detachedRepo: string;
@@ -83,10 +80,10 @@ describe("loadBranches", () => {
   });
 
   it("excludes remote-tracking branches when showRemoteBranches is false", async () => {
-    const result = await loadBranches(simpleGit(PROJECT_ROOT), {
+    const result = await loadBranches(simpleGit(repoWithRemote), {
       showRemoteBranches: false,
       hard: false,
-      currentRepo: PROJECT_ROOT,
+      currentRepo: repoWithRemote,
       gitPath: "git"
     });
     expect(result).toEqual({
