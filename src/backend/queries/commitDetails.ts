@@ -1,6 +1,6 @@
 import type { SimpleGit } from "simple-git";
 
-import type { DateType, GitCommitDetails, GitFileChangeType } from "@/backend/types";
+import type { DateType, GitCommitDetails, GitFileChangeType, QueryResult } from "@/backend/types";
 
 const eolRegex = /\r\n|\r|\n/g;
 const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
@@ -8,10 +8,6 @@ const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
 type CommitDetailsInput = {
   commitHash: string;
   dateType: DateType;
-};
-
-type CommitDetailsOutput = {
-  commitDetails: GitCommitDetails | null;
 };
 
 function toPath(str: string) {
@@ -73,7 +69,7 @@ async function fetchNumStat(git: SimpleGit, commitHash: string): Promise<string[
 export async function commitDetails(
   git: SimpleGit,
   input: CommitDetailsInput
-): Promise<CommitDetailsOutput> {
+): Promise<QueryResult<"commitDetails">> {
   try {
     const [details, nameStatusLines, numStatLines] = await Promise.all([
       fetchCommitInfo(git, input.commitHash, input.dateType),

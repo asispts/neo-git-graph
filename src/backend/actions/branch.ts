@@ -1,35 +1,32 @@
 import type { SimpleGit } from "simple-git";
 
-type CreateBranchInput = {
-  branchName: string;
-  commitHash: string;
-};
+import type { ActionPayload } from "@/backend/types";
 
-type DeleteBranchInput = {
-  branchName: string;
-  forceDelete: boolean;
-};
-type RenameBranchInput = {
-  oldName: string;
-  newName: string;
-};
-type CheckoutBranchInput = {
-  branchName: string;
-  remoteBranch: string | null;
-};
-export async function createBranch(git: SimpleGit, input: CreateBranchInput): Promise<void> {
+export async function createBranch(
+  git: SimpleGit,
+  input: ActionPayload<"createBranch">
+): Promise<void> {
   await git.raw(["branch", input.branchName, input.commitHash]);
 }
 
-export async function deleteBranch(git: SimpleGit, input: DeleteBranchInput): Promise<void> {
+export async function deleteBranch(
+  git: SimpleGit,
+  input: ActionPayload<"deleteBranch">
+): Promise<void> {
   await git.deleteLocalBranch(input.branchName, input.forceDelete);
 }
 
-export async function renameBranch(git: SimpleGit, input: RenameBranchInput): Promise<void> {
+export async function renameBranch(
+  git: SimpleGit,
+  input: ActionPayload<"renameBranch">
+): Promise<void> {
   await git.raw(["branch", "-m", input.oldName, input.newName]);
 }
 
-export async function checkoutBranch(git: SimpleGit, input: CheckoutBranchInput): Promise<void> {
+export async function checkoutBranch(
+  git: SimpleGit,
+  input: ActionPayload<"checkoutBranch">
+): Promise<void> {
   if (input.remoteBranch === null) {
     await git.checkout(input.branchName);
   } else {

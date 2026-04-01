@@ -1,5 +1,6 @@
 import type { SimpleGit } from "simple-git";
 
+import type { QueryResult } from "@/backend/types";
 import { isGitRepository } from "@/backend/utils/git.util";
 
 type LoadBranchesInput = {
@@ -9,17 +10,10 @@ type LoadBranchesInput = {
   gitPath: string;
 };
 
-type LoadBranchesOutput = {
-  branches: string[];
-  head: string | null;
-  hard: boolean;
-  isRepo: boolean;
-};
-
 export async function loadBranches(
   git: SimpleGit,
   input: LoadBranchesInput
-): Promise<LoadBranchesOutput> {
+): Promise<QueryResult<"loadBranches">> {
   const { showRemoteBranches, hard, currentRepo, gitPath } = input;
 
   let branches: string[];

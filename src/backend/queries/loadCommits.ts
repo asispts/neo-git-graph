@@ -1,6 +1,12 @@
 import type { SimpleGit } from "simple-git";
 
-import type { DateType, GitCommitNode, GitLogEntry, GitRefData } from "@/backend/types";
+import type {
+  DateType,
+  GitCommitNode,
+  GitLogEntry,
+  GitRefData,
+  QueryResult
+} from "@/backend/types";
 
 const eolRegex = /\r\n|\r|\n/g;
 const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
@@ -12,13 +18,6 @@ type LoadCommitsInput = {
   hard: boolean;
   dateType: DateType;
   showUncommittedChanges: boolean;
-};
-
-type LoadCommitsOutput = {
-  commits: GitCommitNode[];
-  head: string | null;
-  moreCommitsAvailable: boolean;
-  hard: boolean;
 };
 
 async function getRefs(git: SimpleGit, showRemoteBranches: boolean): Promise<GitRefData> {
@@ -105,7 +104,7 @@ async function getUnsavedChanges(git: SimpleGit) {
 export async function loadCommits(
   git: SimpleGit,
   input: LoadCommitsInput
-): Promise<LoadCommitsOutput> {
+): Promise<QueryResult<"loadCommits">> {
   const { branchName, maxCommits, showRemoteBranches, hard, dateType, showUncommittedChanges } =
     input;
 

@@ -1,12 +1,10 @@
-import type {
-  GitCommitDetails,
-  GitCommitNode,
-  GitFileChangeType,
-  GitResetMode
-} from "./backend/types";
+import type { ActionRequest, ActionResponse } from "./backend/types/actions.types";
+import type { QueryRequest, QueryResponse } from "./backend/types/queries.types";
 
 export type {
+  ActionPayload,
   DateType,
+  GitCommandStatus,
   GitCommitDetails,
   GitCommitNode,
   GitFileChange,
@@ -14,20 +12,16 @@ export type {
   GitLogEntry,
   GitRef,
   GitRefData,
-  GitResetMode
+  GitResetMode,
+  QueryResult
 } from "./backend/types";
 
 export type GitRepoSet = { [repo: string]: GitRepoState };
-export interface GitRepoState {
+export type GitRepoState = {
   columnWidths: number[] | null;
-}
+};
 
-export interface GitUnsavedChanges {
-  branch: string;
-  changes: number;
-}
-
-export interface GitGraphViewState {
+export type GitGraphViewState = {
   autoCenterCommitDetailsView: boolean;
   dateFormat: DateFormat;
   fetchAvatars: boolean;
@@ -38,306 +32,96 @@ export interface GitGraphViewState {
   loadMoreCommits: number;
   repos: GitRepoSet;
   showCurrentBranchByDefault: boolean;
-}
+};
 
-export interface Avatar {
+export type Avatar = {
   image: string;
   timestamp: number;
   identicon: boolean;
-}
+};
 export type AvatarCache = { [email: string]: Avatar };
 
 export type DateFormat = "Date & Time" | "Date Only" | "Relative";
 export type GraphStyle = "rounded" | "angular";
-export type GitCommandStatus = string | null;
 
-/* Request / Response Messages */
+/* Infrastructure Request / Response Messages */
 
-export interface RequestAddTag {
-  command: "addTag";
-  repo: string;
-  commitHash: string;
-  tagName: string;
-  lightweight: boolean;
-  message: string;
-}
-export interface ResponseAddTag {
-  command: "addTag";
-  status: GitCommandStatus;
-}
-
-export interface RequestCheckoutBranch {
-  command: "checkoutBranch";
-  repo: string;
-  branchName: string;
-  remoteBranch: string | null;
-}
-export interface ResponseCheckoutBranch {
-  command: "checkoutBranch";
-  status: GitCommandStatus;
-}
-
-export interface RequestCheckoutCommit {
-  command: "checkoutCommit";
-  repo: string;
-  commitHash: string;
-}
-export interface ResponseCheckoutCommit {
-  command: "checkoutCommit";
-  status: GitCommandStatus;
-}
-
-export interface RequestCherrypickCommit {
-  command: "cherrypickCommit";
-  repo: string;
-  commitHash: string;
-  parentIndex: number;
-}
-export interface ResponseCherrypickCommit {
-  command: "cherrypickCommit";
-  status: GitCommandStatus;
-}
-
-export interface RequestCommitDetails {
-  command: "commitDetails";
-  repo: string;
-  commitHash: string;
-}
-export interface ResponseCommitDetails {
-  command: "commitDetails";
-  commitDetails: GitCommitDetails | null;
-}
-
-export interface RequestCopyToClipboard {
-  command: "copyToClipboard";
-  type: string;
-  data: string;
-}
-export interface ResponseCopyToClipboard {
-  command: "copyToClipboard";
-  type: string;
-  success: boolean;
-}
-
-export interface RequestCreateBranch {
-  command: "createBranch";
-  repo: string;
-  commitHash: string;
-  branchName: string;
-}
-export interface ResponseCreateBranch {
-  command: "createBranch";
-  status: GitCommandStatus;
-}
-
-export interface RequestDeleteBranch {
-  command: "deleteBranch";
-  repo: string;
-  branchName: string;
-  forceDelete: boolean;
-}
-export interface ResponseDeleteBranch {
-  command: "deleteBranch";
-  status: GitCommandStatus;
-}
-
-export interface RequestDeleteTag {
-  command: "deleteTag";
-  repo: string;
-  tagName: string;
-}
-export interface ResponseDeleteTag {
-  command: "deleteTag";
-  status: GitCommandStatus;
-}
-
-export interface RequestFetchAvatar {
+export type RequestFetchAvatar = {
   command: "fetchAvatar";
   repo: string;
   email: string;
   commits: string[];
-}
-export interface ResponseFetchAvatar {
+};
+export type ResponseFetchAvatar = {
   command: "fetchAvatar";
   email: string;
   image: string;
-}
+};
 
-export interface RequestSelectRepo {
+export type RequestSelectRepo = {
   command: "selectRepo";
   repo: string;
-}
+};
 
-export interface RequestLoadBranches {
-  command: "loadBranches";
-  showRemoteBranches: boolean;
-  hard: boolean;
-}
-export interface ResponseLoadBranches {
-  command: "loadBranches";
-  branches: string[];
-  head: string | null;
-  hard: boolean;
-  isRepo: boolean;
-}
-
-export interface RequestLoadCommits {
-  command: "loadCommits";
-  repo: string;
-  branchName: string;
-  maxCommits: number;
-  showRemoteBranches: boolean;
-  hard: boolean;
-}
-export interface ResponseLoadCommits {
-  command: "loadCommits";
-  commits: GitCommitNode[];
-  head: string | null;
-  moreCommitsAvailable: boolean;
-  hard: boolean;
-}
-
-export interface RequestLoadRepos {
+export type RequestLoadRepos = {
   command: "loadRepos";
   check: boolean;
-}
-export interface ResponseLoadRepos {
+};
+export type ResponseLoadRepos = {
   command: "loadRepos";
   repos: GitRepoSet;
   lastActiveRepo: string | null;
-}
+};
 
-export interface RequestMergeBranch {
-  command: "mergeBranch";
-  repo: string;
-  branchName: string;
-  createNewCommit: boolean;
-}
-export interface ResponseMergeBranch {
-  command: "mergeBranch";
-  status: GitCommandStatus;
-}
-
-export interface RequestMergeCommit {
-  command: "mergeCommit";
-  repo: string;
-  commitHash: string;
-  createNewCommit: boolean;
-}
-export interface ResponseMergeCommit {
-  command: "mergeCommit";
-  status: GitCommandStatus;
-}
-
-export interface RequestPushTag {
-  command: "pushTag";
-  repo: string;
-  tagName: string;
-}
-export interface ResponsePushTag {
-  command: "pushTag";
-  status: GitCommandStatus;
-}
-
-export interface ResponseRefresh {
-  command: "refresh";
-}
-
-export interface RequestRenameBranch {
-  command: "renameBranch";
-  repo: string;
-  oldName: string;
-  newName: string;
-}
-export interface ResponseRenameBranch {
-  command: "renameBranch";
-  status: GitCommandStatus;
-}
-
-export interface RequestResetToCommit {
-  command: "resetToCommit";
-  repo: string;
-  commitHash: string;
-  resetMode: GitResetMode;
-}
-export interface ResponseResetToCommit {
-  command: "resetToCommit";
-  status: GitCommandStatus;
-}
-
-export interface RequestRevertCommit {
-  command: "revertCommit";
-  repo: string;
-  commitHash: string;
-  parentIndex: number;
-}
-export interface ResponseRevertCommit {
-  command: "revertCommit";
-  status: GitCommandStatus;
-}
-
-export interface RequestSaveRepoState {
+export type RequestSaveRepoState = {
   command: "saveRepoState";
   repo: string;
   state: GitRepoState;
-}
+};
 
-export interface RequestViewDiff {
+export type RequestCopyToClipboard = {
+  command: "copyToClipboard";
+  type: string;
+  data: string;
+};
+export type ResponseCopyToClipboard = {
+  command: "copyToClipboard";
+  type: string;
+  success: boolean;
+};
+
+export type RequestViewDiff = {
   command: "viewDiff";
   repo: string;
   commitHash: string;
   oldFilePath: string;
   newFilePath: string;
-  type: GitFileChangeType;
-}
-export interface ResponseViewDiff {
+  type: import("./backend/types").GitFileChangeType;
+};
+export type ResponseViewDiff = {
   command: "viewDiff";
   success: boolean;
-}
+};
+
+export type ResponseRefresh = {
+  command: "refresh";
+};
 
 export type RequestMessage =
-  | RequestAddTag
-  | RequestCheckoutBranch
-  | RequestCheckoutCommit
-  | RequestCherrypickCommit
-  | RequestCommitDetails
-  | RequestCopyToClipboard
-  | RequestCreateBranch
-  | RequestDeleteBranch
-  | RequestDeleteTag
+  | ActionRequest
+  | QueryRequest
   | RequestFetchAvatar
   | RequestSelectRepo
-  | RequestLoadBranches
-  | RequestLoadCommits
   | RequestLoadRepos
-  | RequestMergeBranch
-  | RequestMergeCommit
-  | RequestPushTag
-  | RequestRenameBranch
-  | RequestResetToCommit
-  | RequestRevertCommit
   | RequestSaveRepoState
+  | RequestCopyToClipboard
   | RequestViewDiff;
 
 export type ResponseMessage =
-  | ResponseAddTag
-  | ResponseCheckoutBranch
-  | ResponseCheckoutCommit
-  | ResponseCherrypickCommit
-  | ResponseCommitDetails
-  | ResponseCopyToClipboard
-  | ResponseCreateBranch
-  | ResponseDeleteBranch
-  | ResponseDeleteTag
+  | ActionResponse
+  | QueryResponse
   | ResponseFetchAvatar
-  | ResponseLoadBranches
-  | ResponseLoadCommits
   | ResponseLoadRepos
-  | ResponseMergeBranch
-  | ResponseMergeCommit
-  | ResponsePushTag
-  | ResponseRefresh
-  | ResponseRenameBranch
-  | ResponseResetToCommit
-  | ResponseRevertCommit
-  | ResponseViewDiff;
+  | ResponseCopyToClipboard
+  | ResponseViewDiff
+  | ResponseRefresh;

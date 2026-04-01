@@ -1,19 +1,8 @@
 import type { SimpleGit } from "simple-git";
 
-type AddTagInput = {
-  tagName: string;
-  commitHash: string;
-  lightweight: boolean;
-  message: string;
-};
-type PushTagInput = {
-  tagName: string;
-};
-type DeleteTagInput = {
-  tagName: string;
-};
+import type { ActionPayload } from "@/backend/types";
 
-export async function addTag(git: SimpleGit, input: AddTagInput): Promise<void> {
+export async function addTag(git: SimpleGit, input: ActionPayload<"addTag">): Promise<void> {
   const args: string[] = [];
   if (input.lightweight) {
     args.push(input.tagName);
@@ -24,10 +13,10 @@ export async function addTag(git: SimpleGit, input: AddTagInput): Promise<void> 
   await git.tag(args);
 }
 
-export async function deleteTag(git: SimpleGit, input: DeleteTagInput): Promise<void> {
+export async function deleteTag(git: SimpleGit, input: ActionPayload<"deleteTag">): Promise<void> {
   await git.tag(["-d", input.tagName]);
 }
 
-export async function pushTag(git: SimpleGit, input: PushTagInput): Promise<void> {
+export async function pushTag(git: SimpleGit, input: ActionPayload<"pushTag">): Promise<void> {
   await git.push("origin", input.tagName);
 }
