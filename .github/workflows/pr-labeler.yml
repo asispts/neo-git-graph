@@ -16,7 +16,7 @@ jobs:
     if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'edited')
     steps:
       - name: Apply type label
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const body = context.payload.pull_request.body || '';
@@ -55,7 +55,7 @@ jobs:
     if: github.event_name == 'pull_request' && (github.event.action == 'opened' || github.event.action == 'reopened')
     steps:
       - name: 'Add "status: needs review"'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             await github.rest.issues.addLabels({
@@ -70,7 +70,7 @@ jobs:
     if: github.event_name == 'pull_request_review' && github.event.review.state == 'approved'
     steps:
       - name: 'Remove "status: needs review" on approval'
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             await github.rest.issues.removeLabel({
