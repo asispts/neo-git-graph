@@ -20,11 +20,9 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (path: string) => simpleGit({ baseDir: path, binary: "git" });
-
 describe("checkoutCommit", () => {
   it("checks out a commit hash (detaches HEAD)", async () => {
-    const result = await checkoutCommit(makeGit(repo), { commitHash });
+    const result = await checkoutCommit(simpleGit(repo), { commitHash });
     expect(result).toEqual({ error: false });
 
     const head = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
@@ -32,7 +30,7 @@ describe("checkoutCommit", () => {
   });
 
   it("returns error for a nonexistent commit hash", async () => {
-    const result = await checkoutCommit(makeGit(repo), {
+    const result = await checkoutCommit(simpleGit(repo), {
       commitHash: "0000000000000000000000000000000000000000"
     });
     expect(result).toEqual({ error: true, message: expect.any(String) });

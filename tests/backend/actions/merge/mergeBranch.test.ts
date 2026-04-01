@@ -24,11 +24,9 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
-
 describe("mergeBranch", () => {
   it("merges a branch with fast-forward by default", async () => {
-    const result = await mergeBranch(makeGit(repo), {
+    const result = await mergeBranch(simpleGit(repo), {
       branchName: "feature",
       createNewCommit: false
     });
@@ -45,7 +43,7 @@ describe("mergeBranch", () => {
     git(["commit", "-m", "feature2 commit"], repo);
     git(["checkout", "main"], repo);
 
-    const result = await mergeBranch(makeGit(repo), {
+    const result = await mergeBranch(simpleGit(repo), {
       branchName: "feature2",
       createNewCommit: true
     });
@@ -56,7 +54,7 @@ describe("mergeBranch", () => {
   });
 
   it("returns error when the branch does not exist", async () => {
-    const result = await mergeBranch(makeGit(repo), {
+    const result = await mergeBranch(simpleGit(repo), {
       branchName: "nonexistent-branch",
       createNewCommit: false
     });

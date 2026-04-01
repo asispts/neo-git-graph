@@ -24,17 +24,15 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
-
 describe("revertCommit", () => {
   it("reverts a commit", async () => {
-    const result = await revertCommit(makeGit(repo), { commitHash, parentIndex: 0 });
+    const result = await revertCommit(simpleGit(repo), { commitHash, parentIndex: 0 });
     expect(result).toEqual({ error: false });
     expect(fs.existsSync(path.join(repo, "g"))).toBe(false);
   });
 
   it("returns error for a nonexistent commit hash", async () => {
-    const result = await revertCommit(makeGit(repo), {
+    const result = await revertCommit(simpleGit(repo), {
       commitHash: "0000000000000000000000000000000000000000",
       parentIndex: 0
     });

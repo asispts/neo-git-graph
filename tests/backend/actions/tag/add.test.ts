@@ -20,11 +20,9 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
-
 describe("addTag", () => {
   it("creates a lightweight tag at the given commit", async () => {
-    const result = await addTag(makeGit(repo), {
+    const result = await addTag(simpleGit(repo), {
       tagName: "v1.0-lw",
       commitHash,
       lightweight: true,
@@ -40,7 +38,7 @@ describe("addTag", () => {
   });
 
   it("creates an annotated tag at the given commit", async () => {
-    const result = await addTag(makeGit(repo), {
+    const result = await addTag(simpleGit(repo), {
       tagName: "v1.0",
       commitHash,
       lightweight: false,
@@ -56,7 +54,7 @@ describe("addTag", () => {
   });
 
   it("returns error when the tag already exists", async () => {
-    const result = await addTag(makeGit(repo), {
+    const result = await addTag(simpleGit(repo), {
       tagName: "v1.0-lw",
       commitHash,
       lightweight: true,
@@ -66,7 +64,7 @@ describe("addTag", () => {
   });
 
   it("returns error when the commit hash is invalid", async () => {
-    const result = await addTag(makeGit(repo), {
+    const result = await addTag(simpleGit(repo), {
       tagName: "v2.0",
       commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
       lightweight: true,

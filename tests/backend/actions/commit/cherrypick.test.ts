@@ -26,11 +26,9 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (path: string) => simpleGit({ baseDir: path, binary: "git" });
-
 describe("cherrypickCommit", () => {
   it("cherry-picks a commit onto the current branch", async () => {
-    const result = await cherrypickCommit(makeGit(repo), {
+    const result = await cherrypickCommit(simpleGit(repo), {
       commitHash: cherrypickHash,
       parentIndex: 0
     });
@@ -39,7 +37,7 @@ describe("cherrypickCommit", () => {
   });
 
   it("returns error for a nonexistent commit hash", async () => {
-    const result = await cherrypickCommit(makeGit(repo), {
+    const result = await cherrypickCommit(simpleGit(repo), {
       commitHash: "0000000000000000000000000000000000000000",
       parentIndex: 0
     });

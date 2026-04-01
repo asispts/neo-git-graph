@@ -29,11 +29,9 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
-
 describe("mergeCommit", () => {
   it("merges a commit hash", async () => {
-    const result = await mergeCommit(makeGit(repo), {
+    const result = await mergeCommit(simpleGit(repo), {
       commitHash: featureCommitHash,
       createNewCommit: false
     });
@@ -54,7 +52,7 @@ describe("mergeCommit", () => {
       .trim();
     git(["checkout", "main"], repo);
 
-    const result = await mergeCommit(makeGit(repo), {
+    const result = await mergeCommit(simpleGit(repo), {
       commitHash: commit2Hash,
       createNewCommit: true
     });
@@ -65,7 +63,7 @@ describe("mergeCommit", () => {
   });
 
   it("returns error when the commit hash is invalid", async () => {
-    const result = await mergeCommit(makeGit(repo), {
+    const result = await mergeCommit(simpleGit(repo), {
       commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
       createNewCommit: false
     });

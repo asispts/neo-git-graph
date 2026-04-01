@@ -29,11 +29,9 @@ afterAll(() => {
   fs.rmSync(bare, { recursive: true, force: true });
 });
 
-const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
-
 describe("pushTag", () => {
   it("pushes an existing tag to origin", async () => {
-    const result = await pushTag(makeGit(repo), { tagName: "v1.0" });
+    const result = await pushTag(simpleGit(repo), { tagName: "v1.0" });
     expect(result).toEqual({ error: false });
 
     const tags = cp.execFileSync("git", ["tag", "-l"], { cwd: bare }).toString().trim();
@@ -41,7 +39,7 @@ describe("pushTag", () => {
   });
 
   it("returns error when the tag does not exist locally", async () => {
-    const result = await pushTag(makeGit(repo), { tagName: "v99.0-nonexistent" });
+    const result = await pushTag(simpleGit(repo), { tagName: "v99.0-nonexistent" });
     expect(result).toEqual({ error: true, message: expect.any(String) });
   });
 });

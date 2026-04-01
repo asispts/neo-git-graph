@@ -18,23 +18,27 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (path: string) => simpleGit({ baseDir: path, binary: "git" });
-
 describe("checkoutBranch", () => {
   it("checks out an existing local branch", async () => {
-    const result = await checkoutBranch(makeGit(repo), { branchName: "other", remoteBranch: null });
+    const result = await checkoutBranch(simpleGit(repo), {
+      branchName: "other",
+      remoteBranch: null
+    });
     expect(result).toEqual({ error: false });
     expect(currentBranch(repo)).toBe("other");
   });
 
   it("checks back out to main", async () => {
-    const result = await checkoutBranch(makeGit(repo), { branchName: "main", remoteBranch: null });
+    const result = await checkoutBranch(simpleGit(repo), {
+      branchName: "main",
+      remoteBranch: null
+    });
     expect(result).toEqual({ error: false });
     expect(currentBranch(repo)).toBe("main");
   });
 
   it("creates and checks out a new branch from a start point", async () => {
-    const result = await checkoutBranch(makeGit(repo), {
+    const result = await checkoutBranch(simpleGit(repo), {
       branchName: "from-main",
       remoteBranch: "main"
     });
@@ -46,7 +50,7 @@ describe("checkoutBranch", () => {
   });
 
   it("returns error when checking out a nonexistent branch", async () => {
-    const result = await checkoutBranch(makeGit(repo), {
+    const result = await checkoutBranch(simpleGit(repo), {
       branchName: "nonexistent",
       remoteBranch: null
     });
@@ -54,7 +58,7 @@ describe("checkoutBranch", () => {
   });
 
   it("returns error when the new branch name already exists", async () => {
-    const result = await checkoutBranch(makeGit(repo), {
+    const result = await checkoutBranch(simpleGit(repo), {
       branchName: "other",
       remoteBranch: "main"
     });

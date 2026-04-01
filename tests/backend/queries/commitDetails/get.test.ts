@@ -21,11 +21,9 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
-
 describe("commitDetails", () => {
   it("returns commit details with expected fields", async () => {
-    const result = await commitDetails(makeGit(repo), {
+    const result = await commitDetails(simpleGit(repo), {
       commitHash,
       dateType: "Author Date"
     });
@@ -45,13 +43,13 @@ describe("commitDetails", () => {
   });
 
   it("returns file changes for the initial commit", async () => {
-    const result = await commitDetails(makeGit(repo), { commitHash, dateType: "Author Date" });
+    const result = await commitDetails(simpleGit(repo), { commitHash, dateType: "Author Date" });
     expect(result.commitDetails).not.toBeNull();
     expect(result.commitDetails!.fileChanges.length).toBeGreaterThan(0);
   });
 
   it("returns commitDetails: null for an invalid commit hash", async () => {
-    const result = await commitDetails(makeGit(repo), {
+    const result = await commitDetails(simpleGit(repo), {
       commitHash: "deadbeef1234",
       dateType: "Author Date"
     });
@@ -66,7 +64,7 @@ describe("commitDetails", () => {
       git(["commit", "-m", "mod"], repo2);
       const hash = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo2 }).toString().trim();
 
-      const result = await commitDetails(makeGit(repo2), {
+      const result = await commitDetails(simpleGit(repo2), {
         commitHash: hash,
         dateType: "Author Date"
       });
@@ -81,7 +79,7 @@ describe("commitDetails", () => {
   });
 
   it("uses commit date when dateType is Commit Date", async () => {
-    const result = await commitDetails(makeGit(repo), { commitHash, dateType: "Commit Date" });
+    const result = await commitDetails(simpleGit(repo), { commitHash, dateType: "Commit Date" });
     expect(result).toEqual({
       commitDetails: {
         hash: commitHash,
@@ -98,7 +96,7 @@ describe("commitDetails", () => {
   });
 
   it("body contains the commit message", async () => {
-    const result = await commitDetails(makeGit(repo), { commitHash, dateType: "Author Date" });
+    const result = await commitDetails(simpleGit(repo), { commitHash, dateType: "Author Date" });
     expect(result.commitDetails!.body).toContain("init");
   });
 });

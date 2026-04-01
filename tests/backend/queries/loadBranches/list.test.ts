@@ -39,11 +39,9 @@ afterAll(() => {
   fs.rmSync(repoWithRemote, { recursive: true, force: true });
 });
 
-const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
-
 describe("loadBranches", () => {
   it("head branch is first in the returned array", async () => {
-    const result = await loadBranches(makeGit(simpleRepo), {
+    const result = await loadBranches(simpleGit(simpleRepo), {
       showRemoteBranches: false,
       hard: false,
       currentRepo: simpleRepo,
@@ -59,7 +57,7 @@ describe("loadBranches", () => {
   });
 
   it("non-head branches are present", async () => {
-    const result = await loadBranches(makeGit(simpleRepo), {
+    const result = await loadBranches(simpleGit(simpleRepo), {
       showRemoteBranches: false,
       hard: false,
       currentRepo: simpleRepo,
@@ -69,7 +67,7 @@ describe("loadBranches", () => {
   });
 
   it("detached HEAD yields head: null with branches still listed", async () => {
-    const result = await loadBranches(makeGit(detachedRepo), {
+    const result = await loadBranches(simpleGit(detachedRepo), {
       showRemoteBranches: false,
       hard: false,
       currentRepo: detachedRepo,
@@ -85,7 +83,7 @@ describe("loadBranches", () => {
   });
 
   it("excludes remote-tracking branches when showRemoteBranches is false", async () => {
-    const result = await loadBranches(makeGit(PROJECT_ROOT), {
+    const result = await loadBranches(simpleGit(PROJECT_ROOT), {
       showRemoteBranches: false,
       hard: false,
       currentRepo: PROJECT_ROOT,
@@ -101,7 +99,7 @@ describe("loadBranches", () => {
   });
 
   it("includes remote-tracking branches when showRemoteBranches is true", async () => {
-    const result = await loadBranches(makeGit(repoWithRemote), {
+    const result = await loadBranches(simpleGit(repoWithRemote), {
       showRemoteBranches: true,
       hard: false,
       currentRepo: repoWithRemote,
@@ -117,7 +115,7 @@ describe("loadBranches", () => {
   });
 
   it("returns isRepo: false for a non-git directory", async () => {
-    const result = await loadBranches(makeGit(os.tmpdir()), {
+    const result = await loadBranches(simpleGit(os.tmpdir()), {
       showRemoteBranches: false,
       hard: false,
       currentRepo: os.tmpdir(),
@@ -132,7 +130,7 @@ describe("loadBranches", () => {
   });
 
   it("passes hard flag through to the result", async () => {
-    const result = await loadBranches(makeGit(simpleRepo), {
+    const result = await loadBranches(simpleGit(simpleRepo), {
       showRemoteBranches: false,
       hard: true,
       currentRepo: simpleRepo,

@@ -19,13 +19,11 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (path: string) => simpleGit({ baseDir: path, binary: "git" });
-
 describe("deleteBranch", () => {
   it("deletes an existing branch", async () => {
     git(["branch", "to-delete"], repo);
 
-    const result = await deleteBranch(makeGit(repo), {
+    const result = await deleteBranch(simpleGit(repo), {
       branchName: "to-delete",
       forceDelete: false
     });
@@ -45,7 +43,7 @@ describe("deleteBranch", () => {
     git(["commit", "-m", "unmerged commit"], repo);
     git(["checkout", "main"], repo);
 
-    const result = await deleteBranch(makeGit(repo), {
+    const result = await deleteBranch(simpleGit(repo), {
       branchName: "unmerged",
       forceDelete: false
     });
@@ -53,7 +51,10 @@ describe("deleteBranch", () => {
   });
 
   it("force-deletes a branch with unmerged changes", async () => {
-    const result = await deleteBranch(makeGit(repo), { branchName: "unmerged", forceDelete: true });
+    const result = await deleteBranch(simpleGit(repo), {
+      branchName: "unmerged",
+      forceDelete: true
+    });
     expect(result).toEqual({ error: false });
 
     const listed = cp
@@ -64,7 +65,7 @@ describe("deleteBranch", () => {
   });
 
   it("returns error when the branch does not exist", async () => {
-    const result = await deleteBranch(makeGit(repo), {
+    const result = await deleteBranch(simpleGit(repo), {
       branchName: "nonexistent",
       forceDelete: false
     });

@@ -24,11 +24,12 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
-
 describe("resetToCommit", () => {
   it("soft-resets to a previous commit", async () => {
-    const result = await resetToCommit(makeGit(repo), { commitHash: firstHash, resetMode: "soft" });
+    const result = await resetToCommit(simpleGit(repo), {
+      commitHash: firstHash,
+      resetMode: "soft"
+    });
     expect(result).toEqual({ error: false });
 
     const head = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
@@ -38,7 +39,7 @@ describe("resetToCommit", () => {
   });
 
   it("mixed-resets to a previous commit", async () => {
-    const result = await resetToCommit(makeGit(repo), {
+    const result = await resetToCommit(simpleGit(repo), {
       commitHash: firstHash,
       resetMode: "mixed"
     });
@@ -52,7 +53,10 @@ describe("resetToCommit", () => {
   });
 
   it("hard-resets to a previous commit", async () => {
-    const result = await resetToCommit(makeGit(repo), { commitHash: firstHash, resetMode: "hard" });
+    const result = await resetToCommit(simpleGit(repo), {
+      commitHash: firstHash,
+      resetMode: "hard"
+    });
     expect(result).toEqual({ error: false });
 
     const head = cp.execFileSync("git", ["rev-parse", "HEAD"], { cwd: repo }).toString().trim();
@@ -60,7 +64,7 @@ describe("resetToCommit", () => {
   });
 
   it("returns error for an invalid commit hash", async () => {
-    const result = await resetToCommit(makeGit(repo), {
+    const result = await resetToCommit(simpleGit(repo), {
       commitHash: "0000000000000000000000000000000000000000",
       resetMode: "hard"
     });

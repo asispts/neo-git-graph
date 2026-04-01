@@ -20,11 +20,9 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
-const makeGit = (path: string) => simpleGit({ baseDir: path, binary: "git" });
-
 describe("createBranch", () => {
   it("creates a new branch at the given commit", async () => {
-    const result = await createBranch(makeGit(repo), {
+    const result = await createBranch(simpleGit(repo), {
       branchName: "new-branch",
       commitHash
     });
@@ -38,12 +36,12 @@ describe("createBranch", () => {
   });
 
   it("returns error when the branch already exists", async () => {
-    const result = await createBranch(makeGit(repo), { branchName: "main", commitHash });
+    const result = await createBranch(simpleGit(repo), { branchName: "main", commitHash });
     expect(result).toEqual({ error: true, message: expect.any(String) });
   });
 
   it("returns error when the commit hash is invalid", async () => {
-    const result = await createBranch(makeGit(repo), {
+    const result = await createBranch(simpleGit(repo), {
       branchName: "bad-branch",
       commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
     });
