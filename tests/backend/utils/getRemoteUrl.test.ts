@@ -2,9 +2,9 @@ import * as fs from "node:fs";
 
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { gitRemoteFactory } from "@/backend/features/gitRemote";
+import { getRemoteUrl } from "@/backend/utils/git.util";
 
-import { git, makeRepo } from "../../helpers";
+import { git, makeRepo } from "../helpers";
 
 let repoWithRemote: string;
 let repoWithoutRemote: string;
@@ -23,17 +23,14 @@ afterAll(() => {
 
 describe("getRemoteUrl", () => {
   it("returns the remote origin URL", async () => {
-    const gitRemote = gitRemoteFactory("git");
-    expect(await gitRemote.getRemoteUrl(repoWithRemote)).toBe("https://github.com/some/repo.git");
+    expect(await getRemoteUrl(repoWithRemote, "git")).toBe("https://github.com/some/repo.git");
   });
 
   it("returns null when there is no remote", async () => {
-    const gitRemote = gitRemoteFactory("git");
-    expect(await gitRemote.getRemoteUrl(repoWithoutRemote)).toBeNull();
+    expect(await getRemoteUrl(repoWithoutRemote, "git")).toBeNull();
   });
 
   it("returns null for a non-existent path", async () => {
-    const gitRemote = gitRemoteFactory("git");
-    expect(await gitRemote.getRemoteUrl("/tmp/ngg-test-does-not-exist-xyz")).toBeNull();
+    expect(await getRemoteUrl("/tmp/ngg-test-does-not-exist-xyz", "git")).toBeNull();
   });
 });

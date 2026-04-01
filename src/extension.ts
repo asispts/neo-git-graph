@@ -1,8 +1,7 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "./avatarManager";
-import { gitClientFactory } from "./backend/features/gitClient";
-import { gitRemoteFactory } from "./backend/features/gitRemote";
+import { gitClientFactory } from "./backend/gitClient";
 import { buildExtensionUri } from "./backend/utils";
 import { config } from "./config";
 import { DiffDocProvider } from "./diffDocProvider";
@@ -17,8 +16,7 @@ import { StatusBarItem } from "./statusBarItem";
 export function activate(context: vscode.ExtensionContext) {
   const outputChannel = vscode.window.createOutputChannel("(neo) Git Graph");
   const extensionState = new ExtensionState(context);
-  const gitRemote = gitRemoteFactory(config.gitPath());
-  const avatarManager = new AvatarManager(gitRemote, extensionState);
+  const avatarManager = new AvatarManager(config.gitPath, extensionState);
   const statusBarItem = new StatusBarItem(context, config);
   const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
   const repoManager = new RepoManager(extensionState, statusBarItem, config);
@@ -87,7 +85,6 @@ export function activate(context: vscode.ExtensionContext) {
         repoManager.maxDepthOfRepoSearchChanged();
       } else if (e.affectsConfiguration("git.path")) {
         gitClient.setGitPath(config.gitPath());
-        gitRemote.setGitPath(config.gitPath());
       }
     }),
     repoManager

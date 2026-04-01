@@ -1,6 +1,6 @@
 import type { SimpleGit } from "simple-git";
 
-import { isGitRepository } from "@/backend/utils/repo.util";
+import { isGitRepository } from "@/backend/utils/git.util";
 
 type LoadBranchesInput = {
   showRemoteBranches: boolean;

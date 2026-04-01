@@ -10,6 +10,19 @@ export async function isGitRepository(repoPath: string, gitPath: string): Promis
   }
 }
 
+export async function getRemoteUrl(repoPath: string, gitPath: string): Promise<string | null> {
+  try {
+    const url = await simpleGit({ baseDir: repoPath, binary: gitPath }).raw([
+      "config",
+      "--get",
+      "remote.origin.url"
+    ]);
+    return url.trim() || null;
+  } catch {
+    return null;
+  }
+}
+
 export function isPathWithinRepos(path: string, repos: GitRepoSet) {
   const repoPaths = Object.keys(repos);
   for (let i = 0; i < repoPaths.length; i++) {

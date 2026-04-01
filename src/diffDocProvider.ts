@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { GitInstance } from "./backend/features/gitClient";
+import { GitInstance } from "./backend/gitClient";
 import { getPathFromStr } from "./backend/utils";
 
 export class DiffDocProvider implements vscode.TextDocumentContentProvider {
