@@ -2,12 +2,12 @@ import * as cp from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import simpleGit from "simple-git";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { gitClientFactory } from "@/backend/features/gitClient";
-import { gitMergeFactory } from "@/backend/features/gitMerge";
+import { mergeCommit } from "@/backend/actions/merge";
 
-import { git, makeRepo } from "../helpers";
+import { git, makeRepo } from "../../helpers";
 
 let repo: string;
 let featureCommitHash: string;
@@ -29,13 +29,15 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
+const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
+
 describe("mergeCommit", () => {
   it("merges a commit hash", async () => {
-    const client = gitClientFactory(repo, "git");
-    const merge = gitMergeFactory(client.getInstance);
-
-    const result = await merge.mergeCommit(featureCommitHash, false);
-    expect(result.error).toBe(false);
+    const result = await mergeCommit(makeGit(repo), {
+      commitHash: featureCommitHash,
+      createNewCommit: false
+    });
+    expect(result).toEqual({ error: false });
 
     const log = cp.execFileSync("git", ["log", "--oneline"], { cwd: repo }).toString();
     expect(log).toContain("feature commit");
@@ -52,24 +54,21 @@ describe("mergeCommit", () => {
       .trim();
     git(["checkout", "main"], repo);
 
-    const client2 = gitClientFactory(repo, "git");
-    const merge2 = gitMergeFactory(client2.getInstance);
-    const result = await merge2.mergeCommit(commit2Hash, true);
-    expect(result.error).toBe(false);
+    const result = await mergeCommit(makeGit(repo), {
+      commitHash: commit2Hash,
+      createNewCommit: true
+    });
+    expect(result).toEqual({ error: false });
 
     const log = cp.execFileSync("git", ["log", "--oneline"], { cwd: repo }).toString();
     expect(log).toContain("Merge commit");
   });
 
-  it("returns error:true when the commit hash is invalid", async () => {
-    const client = gitClientFactory(repo, "git");
-    const merge = gitMergeFactory(client.getInstance);
-
-    const result = await merge.mergeCommit("deadbeefdeadbeefdeadbeefdeadbeefdeadbeef", false);
-    expect(result.error).toBe(true);
-    if (result.error) {
-      expect(typeof result.message).toBe("string");
-      expect(result.message.length).toBeGreaterThan(0);
-    }
+  it("returns error when the commit hash is invalid", async () => {
+    const result = await mergeCommit(makeGit(repo), {
+      commitHash: "deadbeefdeadbeefdeadbeefdeadbeefdeadbeef",
+      createNewCommit: false
+    });
+    expect(result).toEqual({ error: true, message: expect.any(String) });
   });
 });

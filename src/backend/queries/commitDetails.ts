@@ -2,10 +2,17 @@ import type { SimpleGit } from "simple-git";
 
 import type { DateType, GitCommitDetails, GitFileChangeType } from "@/backend/types";
 
-import type { GitInstance } from "./gitClient";
-
 const eolRegex = /\r\n|\r|\n/g;
 const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
+
+type CommitDetailsInput = {
+  commitHash: string;
+  dateType: DateType;
+};
+
+type CommitDetailsOutput = {
+  commitDetails: GitCommitDetails | null;
+};
 
 function toPath(str: string) {
   return str.replace(/\\/g, "/");
@@ -63,17 +70,15 @@ async function fetchNumStat(git: SimpleGit, commitHash: string): Promise<string[
   return stdout.split(eolRegex);
 }
 
-export async function getCommitDetails(
-  gitClient: GitInstance,
-  commitHash: string,
-  dateType: DateType
-): Promise<GitCommitDetails | null> {
+export async function commitDetails(
+  git: SimpleGit,
+  input: CommitDetailsInput
+): Promise<CommitDetailsOutput> {
   try {
-    const git = gitClient();
     const [details, nameStatusLines, numStatLines] = await Promise.all([
-      fetchCommitInfo(git, commitHash, dateType),
-      fetchNameStatus(git, commitHash),
-      fetchNumStat(git, commitHash)
+      fetchCommitInfo(git, input.commitHash, input.dateType),
+      fetchNameStatus(git, input.commitHash),
+      fetchNumStat(git, input.commitHash)
     ]);
 
     const fileLookup: { [file: string]: number } = {};
@@ -102,8 +107,8 @@ export async function getCommitDetails(
       }
     }
 
-    return details;
+    return { commitDetails: details };
   } catch {
-    return null;
+    return { commitDetails: null };
   }
 }

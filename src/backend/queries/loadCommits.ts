@@ -2,10 +2,24 @@ import type { SimpleGit } from "simple-git";
 
 import type { DateType, GitCommitNode, GitLogEntry, GitRefData } from "@/backend/types";
 
-import type { GitInstance } from "./gitClient";
-
 const eolRegex = /\r\n|\r|\n/g;
 const gitLogSeparator = "XX7Nal-YARtTpjCikii9nJxER19D6diSyk-AWkPb";
+
+type LoadCommitsInput = {
+  branchName: string;
+  maxCommits: number;
+  showRemoteBranches: boolean;
+  hard: boolean;
+  dateType: DateType;
+  showUncommittedChanges: boolean;
+};
+
+type LoadCommitsOutput = {
+  commits: GitCommitNode[];
+  head: string | null;
+  moreCommitsAvailable: boolean;
+  hard: boolean;
+};
 
 async function getRefs(git: SimpleGit, showRemoteBranches: boolean): Promise<GitRefData> {
   try {
@@ -88,17 +102,15 @@ async function getUnsavedChanges(git: SimpleGit) {
   }
 }
 
-export async function listCommits(
-  gitClient: GitInstance,
-  branch: string,
-  maxCommits: number,
-  showRemoteBranches: boolean,
-  dateType: DateType,
-  showUncommittedChanges: boolean
-) {
-  const git = gitClient();
+export async function loadCommits(
+  git: SimpleGit,
+  input: LoadCommitsInput
+): Promise<LoadCommitsOutput> {
+  const { branchName, maxCommits, showRemoteBranches, hard, dateType, showUncommittedChanges } =
+    input;
+
   const [rawCommits, refData] = await Promise.all([
-    getLog(git, branch, maxCommits + 1, showRemoteBranches, dateType),
+    getLog(git, branchName, maxCommits + 1, showRemoteBranches, dateType),
     getRefs(git, showRemoteBranches)
   ]);
 
@@ -145,5 +157,5 @@ export async function listCommits(
     }
   }
 
-  return { commits: commitNodes, head: refData.head, moreCommitsAvailable };
+  return { commits: commitNodes, head: refData.head, moreCommitsAvailable, hard };
 }

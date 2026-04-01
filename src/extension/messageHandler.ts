@@ -1,18 +1,27 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "@/avatarManager";
-import { GitBranch } from "@/backend/features/gitBranch";
+import { checkoutBranch, createBranch, deleteBranch, renameBranch } from "@/backend/actions/branch";
+import {
+  checkoutCommit,
+  cherrypickCommit,
+  resetToCommit,
+  revertCommit
+} from "@/backend/actions/commit";
+import { mergeBranch, mergeCommit } from "@/backend/actions/merge";
+import { addTag, deleteTag, pushTag } from "@/backend/actions/tag";
 import { GitClient } from "@/backend/features/gitClient";
-import { GitCommit } from "@/backend/features/gitCommit";
-import { GitMerge } from "@/backend/features/gitMerge";
-import { GitTag } from "@/backend/features/gitTag";
-import { abbrevCommit, copyToClipboard, isGitRepository } from "@/backend/utils";
+import { commitDetails } from "@/backend/queries/commitDetails";
+import { loadBranches } from "@/backend/queries/loadBranches";
+import { loadCommits } from "@/backend/queries/loadCommits";
+import { ActionResult } from "@/backend/types";
+import { abbrevCommit, copyToClipboard } from "@/backend/utils";
 import { Config } from "@/config";
 import { encodeDiffDocUri } from "@/diffDocProvider";
 import { ExtensionState } from "@/extensionState";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { RepoManager } from "@/repoManager";
-import { GitFileChangeType } from "@/types";
+import { GitFileChangeType, RequestMessage, ResponseMessage } from "@/types";
 
 import { WebviewBridge } from "./webviewBridge";
 
@@ -53,105 +62,84 @@ export function registerMessageHandlers(
   deps: {
     config: Config;
     gitClient: GitClient;
-    gitBranch: GitBranch;
-    gitCommits: GitCommit;
-    gitMerge: GitMerge;
-    gitTag: GitTag;
     repoManager: RepoManager;
     extensionState: ExtensionState;
     avatarManager: AvatarManager;
     repoFileWatcher: RepoFileWatcher;
   }
 ) {
-  const {
-    config,
-    gitClient,
-    gitBranch,
-    gitCommits,
-    gitMerge,
-    gitTag,
-    repoManager,
-    extensionState,
-    avatarManager,
-    repoFileWatcher
-  } = deps;
+  const { config, gitClient, repoManager, extensionState, avatarManager, repoFileWatcher } = deps;
 
   let currentRepo: string | null = null;
 
-  bridge.onMessage("addTag", async (msg) => {
-    const result = await gitTag.add(msg.tagName, msg.commitHash, msg.lightweight, msg.message);
+  function registerAction<T extends RequestMessage["command"]>(
+    command: T,
+    handler: (msg: Extract<RequestMessage, { command: T }>) => Promise<ActionResult>
+  ) {
+    bridge.onMessage(command, async (msg) => {
+      const result = await handler(msg);
+      bridge.post({
+        command,
+        status: result.error ? result.message : null
+      } as ResponseMessage);
+    });
+  }
+
+  // --- Action handlers ---
+
+  registerAction("addTag", (msg) => addTag(gitClient.getInstance(), msg));
+  registerAction("deleteTag", (msg) => deleteTag(gitClient.getInstance(), msg));
+  registerAction("pushTag", (msg) => pushTag(gitClient.getInstance(), msg));
+  registerAction("createBranch", (msg) => createBranch(gitClient.getInstance(), msg));
+  registerAction("deleteBranch", (msg) => deleteBranch(gitClient.getInstance(), msg));
+  registerAction("renameBranch", (msg) => renameBranch(gitClient.getInstance(), msg));
+  registerAction("checkoutBranch", (msg) => checkoutBranch(gitClient.getInstance(), msg));
+  registerAction("checkoutCommit", (msg) => checkoutCommit(gitClient.getInstance(), msg));
+  registerAction("cherrypickCommit", (msg) => cherrypickCommit(gitClient.getInstance(), msg));
+  registerAction("revertCommit", (msg) => revertCommit(gitClient.getInstance(), msg));
+  registerAction("resetToCommit", (msg) => resetToCommit(gitClient.getInstance(), msg));
+  registerAction("mergeBranch", (msg) => mergeBranch(gitClient.getInstance(), msg));
+  registerAction("mergeCommit", (msg) => mergeCommit(gitClient.getInstance(), msg));
+
+  // --- Query handlers ---
+
+  bridge.onMessage("loadCommits", async (msg) => {
     bridge.post({
-      command: "addTag",
-      status: result.error ? result.message : null
+      command: "loadCommits",
+      ...(await loadCommits(gitClient.getInstance(), {
+        branchName: msg.branchName,
+        maxCommits: msg.maxCommits,
+        showRemoteBranches: msg.showRemoteBranches,
+        hard: msg.hard,
+        dateType: config.dateType(),
+        showUncommittedChanges: config.showUncommittedChanges()
+      }))
     });
   });
 
-  bridge.onMessage("fetchAvatar", (msg) => {
-    avatarManager.fetchAvatarImage(msg.email, msg.repo, msg.commits);
-  });
-
-  bridge.onMessage("checkoutBranch", async (msg) => {
-    const result = await gitBranch.checkout(msg.branchName, msg.remoteBranch);
+  bridge.onMessage("loadBranches", async (msg) => {
     bridge.post({
-      command: "checkoutBranch",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("checkoutCommit", async (msg) => {
-    const result = await gitCommits.checkout(msg.commitHash);
-    bridge.post({
-      command: "checkoutCommit",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("cherrypickCommit", async (msg) => {
-    const result = await gitCommits.cherrypick(msg.commitHash, msg.parentIndex);
-    bridge.post({
-      command: "cherrypickCommit",
-      status: result.error ? result.message : null
+      command: "loadBranches",
+      ...(await loadBranches(gitClient.getInstance(), {
+        showRemoteBranches: msg.showRemoteBranches,
+        hard: msg.hard,
+        currentRepo: currentRepo!,
+        gitPath: config.gitPath()
+      }))
     });
   });
 
   bridge.onMessage("commitDetails", async (msg) => {
     bridge.post({
       command: "commitDetails",
-      commitDetails: await gitCommits.details(msg.commitHash, config.dateType())
+      ...(await commitDetails(gitClient.getInstance(), {
+        commitHash: msg.commitHash,
+        dateType: config.dateType()
+      }))
     });
   });
 
-  bridge.onMessage("copyToClipboard", async (msg) => {
-    bridge.post({
-      command: "copyToClipboard",
-      type: msg.type,
-      success: await copyToClipboard(msg.data)
-    });
-  });
-
-  bridge.onMessage("createBranch", async (msg) => {
-    const result = await gitBranch.create(msg.branchName, msg.commitHash);
-    bridge.post({
-      command: "createBranch",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("deleteBranch", async (msg) => {
-    const result = await gitBranch.delete(msg.branchName, msg.forceDelete);
-    bridge.post({
-      command: "deleteBranch",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("deleteTag", async (msg) => {
-    const result = await gitTag.delete(msg.tagName);
-    bridge.post({
-      command: "deleteTag",
-      status: result.error ? result.message : null
-    });
-  });
+  // --- Infrastructure handlers ---
 
   bridge.onMessage("selectRepo", (msg) => {
     if (msg.repo === currentRepo) return;
@@ -159,32 +147,6 @@ export function registerMessageHandlers(
     gitClient.setRepo(msg.repo);
     extensionState.setLastActiveRepo(msg.repo);
     repoFileWatcher.start(msg.repo);
-  });
-
-  bridge.onMessage("loadBranches", async (msg) => {
-    const branchData = await gitBranch.list(msg.showRemoteBranches);
-    const isRepo = branchData.error ? await isGitRepository(currentRepo!, config.gitPath()) : true;
-    bridge.post({
-      command: "loadBranches",
-      branches: branchData.branches,
-      head: branchData.head,
-      hard: msg.hard,
-      isRepo
-    });
-  });
-
-  bridge.onMessage("loadCommits", async (msg) => {
-    bridge.post({
-      command: "loadCommits",
-      ...(await gitCommits.list(
-        msg.branchName,
-        msg.maxCommits,
-        msg.showRemoteBranches,
-        config.dateType(),
-        config.showUncommittedChanges()
-      )),
-      hard: msg.hard
-    });
   });
 
   bridge.onMessage("loadRepos", async (msg) => {
@@ -197,56 +159,20 @@ export function registerMessageHandlers(
     }
   });
 
-  bridge.onMessage("mergeBranch", async (msg) => {
-    const result = await gitMerge.mergeBranch(msg.branchName, msg.createNewCommit);
-    bridge.post({
-      command: "mergeBranch",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("mergeCommit", async (msg) => {
-    const result = await gitMerge.mergeCommit(msg.commitHash, msg.createNewCommit);
-    bridge.post({
-      command: "mergeCommit",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("pushTag", async (msg) => {
-    const result = await gitTag.push(msg.tagName);
-    bridge.post({
-      command: "pushTag",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("renameBranch", async (msg) => {
-    const result = await gitBranch.rename(msg.oldName, msg.newName);
-    bridge.post({
-      command: "renameBranch",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("resetToCommit", async (msg) => {
-    const result = await gitCommits.reset(msg.commitHash, msg.resetMode);
-    bridge.post({
-      command: "resetToCommit",
-      status: result.error ? result.message : null
-    });
-  });
-
-  bridge.onMessage("revertCommit", async (msg) => {
-    const result = await gitCommits.revert(msg.commitHash, msg.parentIndex);
-    bridge.post({
-      command: "revertCommit",
-      status: result.error ? result.message : null
-    });
+  bridge.onMessage("fetchAvatar", (msg) => {
+    avatarManager.fetchAvatarImage(msg.email, msg.repo, msg.commits);
   });
 
   bridge.onMessage("saveRepoState", (msg) => {
     repoManager.setRepoState(msg.repo, msg.state);
+  });
+
+  bridge.onMessage("copyToClipboard", async (msg) => {
+    bridge.post({
+      command: "copyToClipboard",
+      type: msg.type,
+      success: await copyToClipboard(msg.data)
+    });
   });
 
   bridge.onMessage("viewDiff", async (msg) => {

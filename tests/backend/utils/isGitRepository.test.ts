@@ -5,7 +5,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { isGitRepository } from "@/backend/utils/repo.util";
 
-import { makeRepo } from "../features/helpers";
+import { makeRepo } from "../helpers";
 
 let repo: string;
 let nonGitDir: string;

@@ -2,12 +2,12 @@ import * as cp from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 
+import simpleGit from "simple-git";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
-import { gitClientFactory } from "@/backend/features/gitClient";
-import { gitMergeFactory } from "@/backend/features/gitMerge";
+import { mergeBranch } from "@/backend/actions/merge";
 
-import { git, makeRepo } from "../helpers";
+import { git, makeRepo } from "../../helpers";
 
 let repo: string;
 
@@ -24,13 +24,15 @@ afterAll(() => {
   fs.rmSync(repo, { recursive: true, force: true });
 });
 
+const makeGit = (p: string) => simpleGit({ baseDir: p, binary: "git" });
+
 describe("mergeBranch", () => {
   it("merges a branch with fast-forward by default", async () => {
-    const client = gitClientFactory(repo, "git");
-    const merge = gitMergeFactory(client.getInstance);
-
-    const result = await merge.mergeBranch("feature", false);
-    expect(result.error).toBe(false);
+    const result = await mergeBranch(makeGit(repo), {
+      branchName: "feature",
+      createNewCommit: false
+    });
+    expect(result).toEqual({ error: false });
 
     const log = cp.execFileSync("git", ["log", "--oneline"], { cwd: repo }).toString();
     expect(log).toContain("feature commit");
@@ -43,24 +45,21 @@ describe("mergeBranch", () => {
     git(["commit", "-m", "feature2 commit"], repo);
     git(["checkout", "main"], repo);
 
-    const client2 = gitClientFactory(repo, "git");
-    const merge2 = gitMergeFactory(client2.getInstance);
-    const result = await merge2.mergeBranch("feature2", true);
-    expect(result.error).toBe(false);
+    const result = await mergeBranch(makeGit(repo), {
+      branchName: "feature2",
+      createNewCommit: true
+    });
+    expect(result).toEqual({ error: false });
 
     const log = cp.execFileSync("git", ["log", "--oneline"], { cwd: repo }).toString();
     expect(log).toContain("Merge branch");
   });
 
-  it("returns error:true when the branch does not exist", async () => {
-    const client = gitClientFactory(repo, "git");
-    const merge = gitMergeFactory(client.getInstance);
-
-    const result = await merge.mergeBranch("nonexistent-branch", false);
-    expect(result.error).toBe(true);
-    if (result.error) {
-      expect(typeof result.message).toBe("string");
-      expect(result.message.length).toBeGreaterThan(0);
-    }
+  it("returns error when the branch does not exist", async () => {
+    const result = await mergeBranch(makeGit(repo), {
+      branchName: "nonexistent-branch",
+      createNewCommit: false
+    });
+    expect(result).toEqual({ error: true, message: expect.any(String) });
   });
 });
