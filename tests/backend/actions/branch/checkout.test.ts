@@ -1,3 +1,4 @@
+import * as cp from "node:child_process";
 import * as fs from "node:fs";
 
 import simpleGit from "simple-git";
@@ -5,9 +6,13 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { checkoutBranch } from "@/backend/actions/branch";
 
-import { currentBranch, git, makeRepo } from "../../helpers";
+import { git, makeRepo } from "../../helpers";
 
 let repo: string;
+
+function currentBranch(cwd: string): string {
+  return cp.execFileSync("git", ["branch", "--show-current"], { cwd }).toString().trim();
+}
 
 beforeAll(() => {
   repo = makeRepo();

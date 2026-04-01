@@ -6,10 +6,6 @@ export function git(args: string[], cwd: string) {
   cp.execFileSync("git", args, { cwd, stdio: "pipe" });
 }
 
-export function currentBranch(cwd: string): string {
-  return cp.execFileSync("git", ["branch", "--show-current"], { cwd }).toString().trim();
-}
-
 export function makeRepo(): string {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "ngg-test-"));
   try {
