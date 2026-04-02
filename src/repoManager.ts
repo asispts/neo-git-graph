@@ -1,9 +1,7 @@
-import * as fs from "node:fs";
-
 import * as vscode from "vscode";
 
 import { isGitRepository, isPathWithinRepos, sortRepos } from "./backend/utils/git.util";
-import { doesPathExist, getPathFromUri, isDirectory } from "./backend/utils/path.util";
+import { getPathFromUri } from "./backend/utils/path.util";
 import { evalPromises } from "./backend/utils/promise.util";
 import { Config } from "./config";
 import { ExtensionState } from "./extensionState";
@@ -15,57 +13,13 @@ export class RepoManager {
   private readonly statusBarItem: StatusBarItem;
   private readonly config: Config;
   private repos: GitRepoSet;
-  private maxDepthOfRepoSearch: number;
-  private folderWatchers: { [workspace: string]: vscode.FileSystemWatcher } = {};
   private viewCallback: ((repos: GitRepoSet, numRepos: number) => void) | null = null;
-  private folderChangeHandler: vscode.Disposable | null;
-
-  private createEventPaths: string[] = [];
-  private changeEventPaths: string[] = [];
-  private processCreateEventsTimeout: NodeJS.Timeout | null = null;
-  private processChangeEventsTimeout: NodeJS.Timeout | null = null;
 
   constructor(extensionState: ExtensionState, statusBarItem: StatusBarItem, config: Config) {
     this.extensionState = extensionState;
     this.statusBarItem = statusBarItem;
     this.config = config;
     this.repos = extensionState.getRepos();
-    this.maxDepthOfRepoSearch = config.maxDepthOfRepoSearch();
-    this.startupTasks();
-
-    this.folderChangeHandler = vscode.workspace.onDidChangeWorkspaceFolders(async (e) => {
-      if (e.added.length > 0) {
-        let path,
-          changes = false;
-        for (let i = 0; i < e.added.length; i++) {
-          path = getPathFromUri(e.added[i].uri);
-          if (await this.searchDirectoryForRepos(path, this.maxDepthOfRepoSearch)) changes = true;
-          this.startWatchingFolder(path);
-        }
-        if (changes) this.sendRepos();
-      }
-      if (e.removed.length > 0) {
-        let changes = false,
-          path;
-        for (let i = 0; i < e.removed.length; i++) {
-          path = getPathFromUri(e.removed[i].uri);
-          if (this.removeReposWithinFolder(path)) changes = true;
-          this.stopWatchingFolder(path);
-        }
-        if (changes) this.sendRepos();
-      }
-    });
-  }
-
-  public dispose() {
-    if (this.folderChangeHandler !== null) {
-      this.folderChangeHandler.dispose();
-      this.folderChangeHandler = null;
-    }
-    let folders = Object.keys(this.folderWatchers);
-    for (let i = 0; i < folders.length; i++) {
-      this.stopWatchingFolder(folders[i]);
-    }
   }
 
   public registerViewCallback(viewCallback: (repos: GitRepoSet, numRepos: number) => void) {
@@ -76,32 +30,57 @@ export class RepoManager {
     this.viewCallback = null;
   }
 
-  public maxDepthOfRepoSearchChanged() {
-    let newDepth = this.config.maxDepthOfRepoSearch();
-    if (newDepth > this.maxDepthOfRepoSearch) {
-      this.maxDepthOfRepoSearch = newDepth;
-      this.searchWorkspaceForRepos();
-    } else {
-      this.maxDepthOfRepoSearch = newDepth;
+  public getRepos() {
+    return sortRepos(this.repos);
+  }
+
+  public isDirectoryWithinRepos(path: string) {
+    return isPathWithinRepos(path, this.repos);
+  }
+
+  public sendRepos() {
+    const repos = this.getRepos();
+    const numRepos = Object.keys(repos).length;
+    this.statusBarItem.setNumRepos(numRepos);
+    if (this.viewCallback !== null) this.viewCallback(repos, numRepos);
+  }
+
+  public addRepo(repo: string) {
+    this.repos[repo] = { columnWidths: null };
+    this.extensionState.saveRepos(this.repos);
+  }
+
+  public removeRepo(repo: string) {
+    delete this.repos[repo];
+    this.extensionState.saveRepos(this.repos);
+  }
+
+  public removeReposWithinFolder(path: string) {
+    const pathFolder = path + "/";
+    const repoPaths = Object.keys(this.repos);
+    let changes = false;
+    for (let i = 0; i < repoPaths.length; i++) {
+      if (repoPaths[i] === path || repoPaths[i].startsWith(pathFolder)) {
+        this.removeRepo(repoPaths[i]);
+        changes = true;
+      }
     }
+    return changes;
   }
 
-  private async startupTasks() {
-    this.removeReposNotInWorkspace();
-    if (!(await this.checkReposExist())) this.sendRepos();
-    await this.searchWorkspaceForRepos();
-    this.startWatchingFolders();
+  public setRepoState(repo: string, state: GitRepoState) {
+    this.repos[repo] = state;
+    this.extensionState.saveRepos(this.repos);
   }
 
-  private removeReposNotInWorkspace() {
-    let rootsExact = [],
-      rootsFolder = [],
-      workspaceFolders = vscode.workspace.workspaceFolders,
-      repoPaths = Object.keys(this.repos),
-      path;
+  public removeReposNotInWorkspace() {
+    const rootsExact: string[] = [];
+    const rootsFolder: string[] = [];
+    const workspaceFolders = vscode.workspace.workspaceFolders;
+    const repoPaths = Object.keys(this.repos);
     if (typeof workspaceFolders !== "undefined") {
       for (let i = 0; i < workspaceFolders.length; i++) {
-        path = getPathFromUri(workspaceFolders[i].uri);
+        const path = getPathFromUri(workspaceFolders[i].uri);
         rootsExact.push(path);
         rootsFolder.push(path + "/");
       }
@@ -115,43 +94,10 @@ export class RepoManager {
     }
   }
 
-  /* Repo Management */
-  public getRepos() {
-    return sortRepos(this.repos);
-  }
-  private addRepo(repo: string) {
-    this.repos[repo] = { columnWidths: null };
-    this.extensionState.saveRepos(this.repos);
-  }
-  private removeRepo(repo: string) {
-    delete this.repos[repo];
-    this.extensionState.saveRepos(this.repos);
-  }
-  private removeReposWithinFolder(path: string) {
-    let pathFolder = path + "/",
-      repoPaths = Object.keys(this.repos),
-      changes = false;
-    for (let i = 0; i < repoPaths.length; i++) {
-      if (repoPaths[i] === path || repoPaths[i].startsWith(pathFolder)) {
-        this.removeRepo(repoPaths[i]);
-        changes = true;
-      }
-    }
-    return changes;
-  }
-  private isDirectoryWithinRepos(path: string) {
-    return isPathWithinRepos(path, this.repos);
-  }
-  private sendRepos() {
-    let repos = this.getRepos();
-    let numRepos = Object.keys(repos).length;
-    this.statusBarItem.setNumRepos(numRepos);
-    if (this.viewCallback !== null) this.viewCallback(repos, numRepos);
-  }
   public checkReposExist() {
     return new Promise<boolean>((resolve) => {
-      let repoPaths = Object.keys(this.repos),
-        changes = false;
+      const repoPaths = Object.keys(this.repos);
+      let changes = false;
       evalPromises(repoPaths, 3, (path) => isGitRepository(path, this.config.gitPath())).then(
         (results) => {
           for (let i = 0; i < repoPaths.length; i++) {
@@ -165,139 +111,5 @@ export class RepoManager {
         }
       );
     });
-  }
-  public setRepoState(repo: string, state: GitRepoState) {
-    this.repos[repo] = state;
-    this.extensionState.saveRepos(this.repos);
-  }
-
-  /* Repo Searching */
-  private async searchWorkspaceForRepos() {
-    let rootFolders = vscode.workspace.workspaceFolders,
-      changes = false;
-    if (typeof rootFolders !== "undefined") {
-      for (let i = 0; i < rootFolders.length; i++) {
-        if (
-          await this.searchDirectoryForRepos(
-            getPathFromUri(rootFolders[i].uri),
-            this.maxDepthOfRepoSearch
-          )
-        )
-          changes = true;
-      }
-    }
-    if (changes) this.sendRepos();
-  }
-  private searchDirectoryForRepos(directory: string, maxDepth: number) {
-    // Returns a promise resolving to a boolean, that indicates if new repositories were found.
-    return new Promise<boolean>((resolve) => {
-      if (this.isDirectoryWithinRepos(directory)) {
-        resolve(false);
-        return;
-      }
-
-      isGitRepository(directory, this.config.gitPath())
-        .then((isRepo) => {
-          if (isRepo) {
-            this.addRepo(directory);
-            resolve(true);
-          } else if (maxDepth > 0) {
-            fs.readdir(directory, async (err, dirContents) => {
-              if (err) {
-                resolve(false);
-              } else {
-                let dirs = [];
-                for (let i = 0; i < dirContents.length; i++) {
-                  if (
-                    dirContents[i] !== ".git" &&
-                    (await isDirectory(directory + "/" + dirContents[i]))
-                  ) {
-                    dirs.push(directory + "/" + dirContents[i]);
-                  }
-                }
-                resolve(
-                  (
-                    await evalPromises(dirs, 2, (dir) =>
-                      this.searchDirectoryForRepos(dir, maxDepth - 1)
-                    )
-                  ).indexOf(true) > -1
-                );
-              }
-            });
-          } else {
-            resolve(false);
-          }
-        })
-        .catch(() => resolve(false));
-    });
-  }
-
-  /* Workspace Folder Watching */
-  private startWatchingFolders() {
-    let rootFolders = vscode.workspace.workspaceFolders;
-    if (typeof rootFolders !== "undefined") {
-      for (let i = 0; i < rootFolders.length; i++) {
-        this.startWatchingFolder(getPathFromUri(rootFolders[i].uri));
-      }
-    }
-  }
-  private startWatchingFolder(path: string) {
-    let watcher = vscode.workspace.createFileSystemWatcher(path + "/**");
-    watcher.onDidCreate((uri) => this.onWatcherCreate(uri));
-    watcher.onDidChange((uri) => this.onWatcherChange(uri));
-    watcher.onDidDelete((uri) => this.onWatcherDelete(uri));
-    this.folderWatchers[path] = watcher;
-  }
-  private stopWatchingFolder(path: string) {
-    this.folderWatchers[path].dispose();
-    delete this.folderWatchers[path];
-  }
-  private async onWatcherCreate(uri: vscode.Uri) {
-    let path = getPathFromUri(uri);
-    if (path.indexOf("/.git/") > -1) return;
-    if (path.endsWith("/.git")) path = path.slice(0, -5);
-    if (this.createEventPaths.indexOf(path) > -1) return;
-
-    this.createEventPaths.push(path);
-    if (this.processCreateEventsTimeout !== null) clearTimeout(this.processCreateEventsTimeout);
-    this.processCreateEventsTimeout = setTimeout(() => this.processCreateEvents(), 1000);
-  }
-  private onWatcherChange(uri: vscode.Uri) {
-    let path = getPathFromUri(uri);
-    if (path.indexOf("/.git/") > -1) return;
-    if (path.endsWith("/.git")) path = path.slice(0, -5);
-    if (this.changeEventPaths.indexOf(path) > -1) return;
-
-    this.changeEventPaths.push(path);
-    if (this.processChangeEventsTimeout !== null) clearTimeout(this.processChangeEventsTimeout);
-    this.processChangeEventsTimeout = setTimeout(() => this.processChangeEvents(), 1000);
-  }
-  private onWatcherDelete(uri: vscode.Uri) {
-    let path = getPathFromUri(uri);
-    if (path.indexOf("/.git/") > -1) return;
-    if (path.endsWith("/.git")) path = path.slice(0, -5);
-    if (this.removeReposWithinFolder(path)) this.sendRepos();
-  }
-  private async processCreateEvents() {
-    let path,
-      changes = false;
-    while ((path = this.createEventPaths.shift())) {
-      if (await isDirectory(path)) {
-        if (await this.searchDirectoryForRepos(path, this.maxDepthOfRepoSearch)) changes = true;
-      }
-    }
-    this.processCreateEventsTimeout = null;
-    if (changes) this.sendRepos();
-  }
-  private async processChangeEvents() {
-    let path,
-      changes = false;
-    while ((path = this.changeEventPaths.shift())) {
-      if (!(await doesPathExist(path))) {
-        if (this.removeReposWithinFolder(path)) changes = true;
-      }
-    }
-    this.processChangeEventsTimeout = null;
-    if (changes) this.sendRepos();
   }
 }
