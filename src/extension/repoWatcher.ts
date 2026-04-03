@@ -6,7 +6,8 @@ import { isGitRepository } from "@/backend/utils/git.util";
 import { doesPathExist, getPathFromUri, isDirectory } from "@/backend/utils/path.util";
 import { evalPromises } from "@/backend/utils/promise.util";
 import { Config } from "@/config";
-import { RepoManager } from "@/repoManager";
+
+import { RepoManager } from "./repoManager";
 
 export function createRepoWatcher(repoManager: RepoManager, config: Config) {
   let maxDepthOfRepoSearch = config.maxDepthOfRepoSearch();

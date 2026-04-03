@@ -6,12 +6,12 @@ import { buildExtensionUri } from "./backend/utils/path.util";
 import { config } from "./config";
 import { DiffDocProvider } from "./diffDocProvider";
 import { registerMessageHandlers } from "./extension/messageHandler";
+import { createRepoManager } from "./extension/repoManager";
 import { createRepoWatcher } from "./extension/repoWatcher";
 import { WebviewBridge, webviewBridgeFactory } from "./extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "./extension/webviewPanel";
 import { ExtensionState } from "./extensionState";
 import { RepoFileWatcher } from "./repoFileWatcher";
-import { RepoManager } from "./repoManager";
 import { StatusBarItem } from "./statusBarItem";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext) {
   const avatarManager = new AvatarManager(config.gitPath, extensionState);
   const statusBarItem = new StatusBarItem(context, config);
   const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
-  const repoManager = new RepoManager(extensionState, statusBarItem, config);
+  const repoManager = createRepoManager(extensionState, statusBarItem, config);
   const repoWatcher = createRepoWatcher(repoManager, config);
   let currentPanel: WebviewPanel | undefined;
 

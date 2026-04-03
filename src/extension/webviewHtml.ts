@@ -4,8 +4,9 @@ import { getNonce } from "@/backend/utils/nonce.util";
 import { buildExtensionUri } from "@/backend/utils/path.util";
 import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
-import { RepoManager } from "@/repoManager";
 import { GitGraphViewState } from "@/types";
+
+import { RepoManager } from "./repoManager";
 
 export function buildWebviewHtml(opts: {
   webview: vscode.Webview;
