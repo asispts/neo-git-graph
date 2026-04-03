@@ -1,12 +1,21 @@
 import * as vscode from "vscode";
 
-import { isGitRepository, isPathWithinRepos, sortRepos } from "./backend/utils/git.util";
+import { isGitRepository } from "./backend/utils/git.util";
 import { getPathFromUri } from "./backend/utils/path.util";
 import { evalPromises } from "./backend/utils/promise.util";
 import { Config } from "./config";
 import { ExtensionState } from "./extensionState";
 import { StatusBarItem } from "./statusBarItem";
 import { GitRepoSet, GitRepoState } from "./types";
+
+function sortRepos(repos: GitRepoSet) {
+  const repoPaths = Object.keys(repos).sort();
+  const sorted: GitRepoSet = {};
+  for (let i = 0; i < repoPaths.length; i++) {
+    sorted[repoPaths[i]] = repos[repoPaths[i]];
+  }
+  return sorted;
+}
 
 export class RepoManager {
   private readonly extensionState: ExtensionState;
@@ -35,7 +44,11 @@ export class RepoManager {
   }
 
   public isDirectoryWithinRepos(path: string) {
-    return isPathWithinRepos(path, this.repos);
+    const repoPaths = Object.keys(this.repos);
+    for (let i = 0; i < repoPaths.length; i++) {
+      if (path === repoPaths[i] || path.startsWith(repoPaths[i] + "/")) return true;
+    }
+    return false;
   }
 
   public sendRepos() {
