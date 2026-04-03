@@ -7,6 +7,7 @@ import { config } from "./config";
 import { DiffDocProvider } from "./diffDocProvider";
 import { registerMessageHandlers } from "./extension/messageHandler";
 import { createRepoManager } from "./extension/repoManager";
+import { createRepoSearch } from "./extension/repoSearch";
 import { createRepoWatcher } from "./extension/repoWatcher";
 import { WebviewBridge, webviewBridgeFactory } from "./extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "./extension/webviewPanel";
@@ -21,13 +22,14 @@ export function activate(context: vscode.ExtensionContext) {
   const statusBarItem = new StatusBarItem(context, config);
   const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
   const repoManager = createRepoManager(extensionState, statusBarItem, config);
-  const repoWatcher = createRepoWatcher(repoManager, config);
+  const repoSearch = createRepoSearch(repoManager, config);
+  const repoWatcher = createRepoWatcher(repoManager, config, repoSearch);
   let currentPanel: WebviewPanel | undefined;
 
   void (async () => {
     repoManager.removeReposNotInWorkspace();
     if (!(await repoManager.checkReposExist())) repoManager.sendRepos();
-    await repoWatcher.searchWorkspaceForRepos();
+    await repoSearch.searchWorkspaceForRepos();
     repoWatcher.startWatching();
   })();
 
@@ -91,7 +93,7 @@ export function activate(context: vscode.ExtensionContext) {
       if (e.affectsConfiguration("neo-git-graph.showStatusBarItem")) {
         statusBarItem.refresh();
       } else if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
-        repoWatcher.maxDepthChanged();
+        repoSearch.maxDepthChanged();
       } else if (e.affectsConfiguration("git.path")) {
         gitClient.setGitPath(config.gitPath());
       }
