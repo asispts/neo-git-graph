@@ -15,6 +15,9 @@
     "restriction": "off" // Rules under development that may change
   },
   "rules": {
+    // Additional
+    "no-relative-parent-imports": "warn",
+
     // suspicious
     "no-shadow": "off",
     "no-named-as-default": "off",

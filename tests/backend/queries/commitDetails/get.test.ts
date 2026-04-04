@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { commitDetails } from "@/backend/queries/commitDetails";
 
-import { git, makeRepo } from "../../helpers";
+import { git, makeRepo } from "@tests/backend/helpers";
 
 let repo: string;
 let commitHash: string;

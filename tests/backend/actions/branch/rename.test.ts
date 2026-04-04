@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { renameBranch } from "@/backend/actions/branch";
 
-import { git, makeRepo } from "../../helpers";
+import { git, makeRepo } from "@tests/backend/helpers";
 
 let repo: string;
 
