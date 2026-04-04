@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { loadCommits } from "@/backend/queries/loadCommits";
 
-import { git, makeRepo } from "../../helpers";
+import { git, makeRepo } from "@tests/backend/helpers";
 
 let repo: string;
 let repoWithRemote: string;

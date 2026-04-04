@@ -7,7 +7,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { loadBranches } from "@/backend/queries/loadBranches";
 
-import { git, makeRepo } from "../../helpers";
+import { git, makeRepo } from "@tests/backend/helpers";
 
 let simpleRepo: string;
 let detachedRepo: string;

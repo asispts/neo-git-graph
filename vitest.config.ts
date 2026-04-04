@@ -2,7 +2,10 @@ import path from "node:path";
 
 import { defineConfig } from "vitest/config";
 
-const alias = [{ find: /^@\//, replacement: path.resolve(__dirname, "src") + "/" }];
+const alias = [
+  { find: /^@\//, replacement: path.resolve(__dirname, "src") + "/" },
+  { find: /^@tests\//, replacement: path.resolve(__dirname, "tests") + "/" }
+];
 
 export default defineConfig({
   test: {
