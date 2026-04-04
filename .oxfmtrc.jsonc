@@ -2,6 +2,6 @@
   "printWidth": 100,
   "useTabs": false,
   "tabWidth": 2,
-  "ignorePatterns": [".pnpm-store/**", ".idea/**", "out/**", "node_modules/**"],
+  "ignorePatterns": [".pnpm-store/**", ".idea/**", "out/**", "node_modules/**", "**/*.ctx.md"],
   "trailingComma": "none"
 }

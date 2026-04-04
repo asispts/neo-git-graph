@@ -1,54 +1,29 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "jsPlugins": ["eslint-plugin-simple-import-sort"],
+  "ignorePatterns": [".pnpm-store/**", ".idea/**", "out/**", "node_modules/**", "*.config.js"],
   "env": {
     "node": true
   },
-  "ignorePatterns": [".pnpm-store/**", ".idea/**", "out/**", "node_modules/**", "*.config.js"],
-  "plugins": ["import", "typescript", "unicorn"],
+  "plugins": ["typescript", "node", "oxc", "import", "unicorn"],
+  "categories": {
+    "correctness": "error", // Code that is definitely wrong or useless
+    "suspicious": "warn", // Code that is likely to be wrong or useless,
+    "pedantic": "off", // Extra strict rules that may have false positives
+    "perf": "off", // Rules that aim to improve runtime performance
+    "style": "off", // Idiomatic and consistent style rules
+    "nursery": "off", // Rules that ban specific patterns or features,
+    "restriction": "off" // Rules under development that may change
+  },
   "rules": {
-    "unicorn/prefer-node-protocol": "error",
-    "no-console": "off",
-    "no-unused-vars": [
-      "warn",
-      {
-        "argsIgnorePattern": "^_",
-        "varsIgnorePattern": "^_"
-      }
-    ],
-    "simple-import-sort/imports": "error",
-    "simple-import-sort/exports": "error",
-    "typescript/no-explicit-any": "warn",
-    "no-constant-condition": "error",
-    "no-self-compare": "error",
-    "no-template-curly-in-string": "error",
-    "no-unsafe-negation": "error",
-    "no-loss-of-precision": "error",
-    "no-constant-binary-expression": "error",
-    "no-constructor-return": "error",
-    "typescript/no-unnecessary-type-assertion": "warn",
-    "typescript/prefer-ts-expect-error": "error",
-    "import/no-duplicates": "error",
-    "import/no-self-import": "error",
-    // "typescript/no-non-null-assertion": "warn",
-    // Should have
-    "no-var": "error",
-    // "prefer-const": "warn",
-    "eqeqeq": "error",
-    "no-throw-literal": "error",
-    "no-eval": "error",
-    "no-implied-eval": "error",
-    "unicorn/prefer-string-starts-ends-with": "warn",
-    "unicorn/prefer-array-flat-map": "warn",
-    "unicorn/no-unnecessary-await": "warn"
-    // Nice to have
-    // "typescript/consistent-type-imports": "warn"
-    // "no-nested-ternary": "warn",
-    // "max-params": ["warn", { "max": 4 }]
+    // suspicious
+    "no-shadow": "off",
+    "no-named-as-default": "off",
+    "require-post-message-target-origin": "off",
+    "no-array-sort": "off"
   },
   "overrides": [
     {
-      "files": ["web/**/*.ts"],
+      "files": ["src/webview/**/*.ts"],
       "env": {
         "node": false,
         "browser": true
