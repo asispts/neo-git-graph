@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "jsPlugins": [{ "name": "import-js", "specifier": "eslint-plugin-import" }],
   "ignorePatterns": [".pnpm-store/**", ".idea/**", "out/**", "node_modules/**", "*.config.js"],
   "env": {
     "node": true
@@ -16,6 +17,30 @@
   },
   "rules": {
     // Additional
+    "import-js/order": [
+      "error",
+      {
+        "groups": ["builtin", "external", "internal", ["parent", "sibling", "index"]],
+        "pathGroups": [
+          {
+            "pattern": "@/**",
+            "group": "internal",
+            "position": "before"
+          },
+          {
+            "pattern": "@tests/**",
+            "group": "internal",
+            "position": "after"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["builtin"],
+        "newlines-between": "always",
+        "alphabetize": {
+          "order": "asc",
+          "caseInsensitive": true
+        }
+      }
+    ],
     "no-relative-parent-imports": "warn",
 
     // suspicious
