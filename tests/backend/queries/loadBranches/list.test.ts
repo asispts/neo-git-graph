@@ -14,6 +14,7 @@ let detachedRepo: string;
 let repoWithRemote: string;
 
 beforeAll(() => {
+  process.env["LANG"] = "en_US.UTF-8";
   simpleRepo = makeRepo();
   git(["branch", "feature/foo"], simpleRepo);
 

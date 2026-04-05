@@ -1,8 +1,8 @@
 {
   "name": "neo-git-graph",
-  "displayName": "(neo) Git Graph",
+  "displayName": "%displayName%",
   "version": "0.3.0",
-  "description": "A clean MIT fork of Git Graph. Visual history, branch actions, and devcontainer support.",
+  "description": "%description%",
   "categories": [
     "SCM Providers",
     "Visualization"
@@ -49,7 +49,8 @@
     "format": "oxfmt --check",
     "format:fix": "oxfmt .",
     "lint": "oxlint",
-    "lint:fix": "oxlint --fix"
+    "lint:fix": "oxlint --fix",
+    "l10n:check": "node ./scripts/check-l10n.js"
   },
   "dependencies": {
     "simple-git": "^3.33.0"
@@ -58,6 +59,7 @@
     "@types/mocha": "^10.0.10",
     "@types/node": "^20.19.37",
     "@types/vscode": "~1.98.0",
+    "@vscode/l10n-dev": "^0.0.35",
     "@vscode/test-cli": "^0.0.12",
     "@vscode/test-electron": "^2.5.2",
     "esbuild": "^0.27.4",
@@ -68,27 +70,28 @@
     "typescript": "^5.9.3",
     "vitest": "^4.1.2"
   },
+  "l10n": "./l10n",
   "contributes": {
     "commands": [
       {
         "category": "(neo) Git Graph",
         "command": "neo-git-graph.view",
-        "title": "View Git Graph (git log)"
+        "title": "%command.view%"
       },
       {
         "category": "(neo) Git Graph",
         "command": "neo-git-graph.clearAvatarCache",
-        "title": "Clear Avatar Cache"
+        "title": "%command.clearAvatarCache%"
       }
     ],
     "configuration": {
       "type": "object",
-      "title": "(neo) Git Graph",
+      "title": "%config.title%",
       "properties": {
         "neo-git-graph.autoCenterCommitDetailsView": {
           "type": "boolean",
           "default": true,
-          "description": "Automatically center the commit details view when it is opened."
+          "description": "%config.autoCenterCommitDetailsView%"
         },
         "neo-git-graph.dateFormat": {
           "type": "string",
@@ -98,12 +101,12 @@
             "Relative"
           ],
           "enumDescriptions": [
-            "Show the date and time, for example \"19 Mar 2019 21:34\"",
-            "Show the date only, for example \"19 Mar 2019\"",
-            "Show relative times, for example \"5 minutes ago\""
+            "%config.dateFormat.dateTime%",
+            "%config.dateFormat.dateOnly%",
+            "%config.dateFormat.relative%"
           ],
           "default": "Date & Time",
-          "description": "Specifies the date format to be used in the date column of Git Graph."
+          "description": "%config.dateFormat%"
         },
         "neo-git-graph.dateType": {
           "type": "string",
@@ -112,16 +115,16 @@
             "Commit Date"
           ],
           "enumDescriptions": [
-            "Use the author date of a commit",
-            "Use the committer date of a commit"
+            "%config.dateType.authorDate%",
+            "%config.dateType.commitDate%"
           ],
           "default": "Author Date",
-          "description": "Specifies the date type to be displayed throughout Git Graph."
+          "description": "%config.dateType%"
         },
         "neo-git-graph.fetchAvatars": {
           "type": "boolean",
           "default": false,
-          "description": "Fetch avatars of commit authors and committers. By enabling this setting, you consent to commit author and committer email addresses being sent GitHub, GitLab or Gravatar, depending on the repositories remote origin."
+          "description": "%config.fetchAvatars%"
         },
         "neo-git-graph.graphColours": {
           "type": "array",
@@ -144,7 +147,7 @@
             "#6f24d6",
             "#ffcc00"
           ],
-          "description": "Specifies the colours used on the graph."
+          "description": "%config.graphColours%"
         },
         "neo-git-graph.graphStyle": {
           "type": "string",
@@ -153,41 +156,41 @@
             "angular"
           ],
           "enumDescriptions": [
-            "Use smooth curves when transitioning between branches on the graph",
-            "Use angular lines when transitioning between branches on the graph"
+            "%config.graphStyle.rounded%",
+            "%config.graphStyle.angular%"
           ],
           "default": "rounded",
-          "description": "Specifies the style of the graph."
+          "description": "%config.graphStyle%"
         },
         "neo-git-graph.initialLoadCommits": {
           "type": "number",
           "default": 300,
-          "description": "Specifies the number of commits to initially load."
+          "description": "%config.initialLoadCommits%"
         },
         "neo-git-graph.loadMoreCommits": {
           "type": "number",
           "default": 100,
-          "description": "Specifies the number of commits to load when the \"Load More Commits\" button is pressed (only shown when more commits are available)."
+          "description": "%config.loadMoreCommits%"
         },
         "neo-git-graph.maxDepthOfRepoSearch": {
           "type": "number",
           "default": 0,
-          "description": "Specifies the maximum depth of subfolders to search when discovering repositories in the workspace."
+          "description": "%config.maxDepthOfRepoSearch%"
         },
         "neo-git-graph.showCurrentBranchByDefault": {
           "type": "boolean",
           "default": false,
-          "description": "Show the current branch by default when Git Graph is opened. Default: false (show all branches)"
+          "description": "%config.showCurrentBranchByDefault%"
         },
         "neo-git-graph.showStatusBarItem": {
           "type": "boolean",
           "default": true,
-          "description": "Show a Status Bar item which opens Git Graph when clicked."
+          "description": "%config.showStatusBarItem%"
         },
         "neo-git-graph.showUncommittedChanges": {
           "type": "boolean",
           "default": true,
-          "description": "Show uncommitted changes (set to false to decrease load time on large repositories)."
+          "description": "%config.showUncommittedChanges%"
         },
         "neo-git-graph.tabIconColourTheme": {
           "type": "string",
@@ -196,11 +199,11 @@
             "grey"
           ],
           "enumDescriptions": [
-            "Show a colour icon which suits most Visual Studio Code colour themes",
-            "Show a grey icon which suits Visual Studio Code colour themes that are predominantly grayscale"
+            "%config.tabIconColourTheme.colour%",
+            "%config.tabIconColourTheme.grey%"
           ],
           "default": "colour",
-          "description": "Specifies the colour theme of the icon displayed on the Git Graph tab."
+          "description": "%config.tabIconColourTheme%"
         }
       }
     }

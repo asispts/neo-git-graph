@@ -33,7 +33,7 @@ export class Dropdown {
     filter.className = "dropdownFilter";
     this.filterInput = document.createElement("input");
     this.filterInput.className = "dropdownFilterInput";
-    this.filterInput.placeholder = "Filter " + dropdownType + "...";
+    this.filterInput.placeholder = l10n.filterPlaceholder.replace("{0}", dropdownType);
     filter.appendChild(this.filterInput);
     this.menuElem = document.createElement("div");
     this.menuElem.className = "dropdownMenu";
@@ -43,7 +43,7 @@ export class Dropdown {
     this.menuElem.appendChild(this.optionsElem);
     this.noResultsElem = document.createElement("div");
     this.noResultsElem.className = "dropdownNoResults";
-    this.noResultsElem.innerHTML = "No results found.";
+    this.noResultsElem.innerHTML = l10n.noResultsFound;
     this.menuElem.appendChild(this.noResultsElem);
     this.currentValueElem = document.createElement("div");
     this.currentValueElem.className = "dropdownCurrentValue";

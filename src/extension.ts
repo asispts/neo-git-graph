@@ -9,12 +9,13 @@ import { registerMessageHandlers } from "./extension/messageHandler";
 import { WebviewBridge, webviewBridgeFactory } from "./extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "./extension/webviewPanel";
 import { ExtensionState } from "./extensionState";
+import * as l10n from "./l10n";
 import { RepoFileWatcher } from "./repoFileWatcher";
 import { RepoManager } from "./repoManager";
 import { StatusBarItem } from "./statusBarItem";
 
 export function activate(context: vscode.ExtensionContext) {
-  const outputChannel = vscode.window.createOutputChannel("(neo) Git Graph");
+  const outputChannel = vscode.window.createOutputChannel(l10n.t("outputChannel.text"));
   const extensionState = new ExtensionState(context);
   const avatarManager = new AvatarManager(config.gitPath, extensionState);
   const statusBarItem = new StatusBarItem(context, config);
@@ -32,7 +33,7 @@ export function activate(context: vscode.ExtensionContext) {
       }
       const panel = vscode.window.createWebviewPanel(
         "neo-git-graph",
-        "(neo) Git Graph",
+        l10n.t("outputChannel.text"),
         column ?? vscode.ViewColumn.One,
         {
           enableScripts: true,

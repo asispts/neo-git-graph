@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+### Added
+
+- Full internationalization (i18n) support with multiple languages
+- Language support: English (default), Simplified Chinese (简体中文), Traditional Chinese (繁體中文)
+
 ## [0.3.0] - 2026-03-26
 
 ### Added

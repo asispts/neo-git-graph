@@ -15,7 +15,15 @@ export default defineConfig({
         }
       },
       {
-        resolve: { alias },
+        resolve: {
+          alias: [
+            ...alias,
+            {
+              find: "vscode",
+              replacement: path.resolve(__dirname, "tests/webview/__mocks__/vscode.ts")
+            }
+          ]
+        },
         test: {
           name: "webview",
           environment: "jsdom",

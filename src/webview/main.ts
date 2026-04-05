@@ -15,9 +15,9 @@ import {
   blinkHeadRow,
   ELLIPSIS,
   escapeHtml,
+  getMonth,
   getVSCodeStyle,
   insertAfter,
-  months,
   pad2,
   refInvalid,
   sendMessage,
@@ -66,7 +66,7 @@ class GitGraphView {
     this.graph = new Graph("commitGraph", this.config);
     this.tableElem = document.getElementById("commitTable")!;
     this.footerElem = document.getElementById("footer")!;
-    this.repoDropdown = new Dropdown("repoSelect", true, "Repos", (value) => {
+    this.repoDropdown = new Dropdown("repoSelect", true, l10n.repo, (value) => {
       this.currentRepo = value;
       this.maxCommits = this.config.initialLoadCommits;
       this.expandedCommit = null;
@@ -75,7 +75,7 @@ class GitGraphView {
       sendMessage({ command: "selectRepo", repo: value });
       this.refresh(true);
     });
-    this.branchDropdown = new Dropdown("branchSelect", false, "Branches", (value) => {
+    this.branchDropdown = new Dropdown("branchSelect", false, l10n.branch, (value) => {
       this.currentBranch = value;
       this.maxCommits = this.config.initialLoadCommits;
       this.expandedCommit = null;
@@ -192,7 +192,7 @@ class GitGraphView {
     }
     this.saveState();
 
-    let options = [{ name: "Show All", value: "" }];
+    let options = [{ name: l10n.showAll, value: "" }];
     for (let i = 0; i < this.gitBranches.length; i++) {
       options.push({
         name:
@@ -404,8 +404,7 @@ class GitGraphView {
     this.graph.render(this.expandedCommit);
   }
   private renderTable() {
-    let html =
-        '<tr id="tableColHeaders"><th id="tableHeaderGraphCol" class="tableColHeader">Graph</th><th class="tableColHeader">Description</th><th class="tableColHeader">Date</th><th class="tableColHeader">Author</th><th class="tableColHeader">Commit</th></tr>',
+    let html = `<tr id="tableColHeaders"><th id="tableHeaderGraphCol" class="tableColHeader">${l10n.graph}</th><th class="tableColHeader">${l10n.description}</th><th class="tableColHeader">${l10n.date}</th><th class="tableColHeader">${l10n.author}</th><th class="tableColHeader">${l10n.commit}</th></tr>`,
       i,
       currentHash = this.commits.length > 0 && this.commits[0].hash === "*" ? "*" : this.commitHead;
     for (i = 0; i < this.commits.length; i++) {
@@ -471,14 +470,14 @@ class GitGraphView {
     }
     this.tableElem.innerHTML = "<table>" + html + "</table>";
     this.footerElem.innerHTML = this.moreCommitsAvailable
-      ? '<div id="loadMoreCommitsBtn" class="roundedBtn">Load More Commits</div>'
+      ? '<div id="loadMoreCommitsBtn" class="roundedBtn">' + l10n.loadMore + "</div>"
       : "";
     this.makeTableResizable();
 
     if (this.moreCommitsAvailable) {
       document.getElementById("loadMoreCommitsBtn")!.addEventListener("click", () => {
         (<HTMLElement>document.getElementById("loadMoreCommitsBtn")!.parentNode!).innerHTML =
-          '<h2 id="loadingHeader">' + svgIcons.loading + "Loading ...</h2>";
+          '<h2 id="loadingHeader">' + svgIcons.loading + l10n.loading + "</h2>";
         this.maxCommits += this.config.loadMoreCommits;
         this.hideCommitDetails();
         this.saveState();
@@ -518,29 +517,29 @@ class GitGraphView {
         <MouseEvent>e,
         [
           {
-            title: "Add Tag" + ELLIPSIS,
+            title: l10n.addTag + ELLIPSIS,
             onClick: () => {
               showFormDialog(
-                "Add tag to commit <b><i>" + abbrevCommit(hash) + "</i></b>:",
+                l10n.dialogAddTagTitle.replace("{0}", "<b><i>" + abbrevCommit(hash) + "</i></b>"),
                 [
-                  { type: "text-ref" as const, name: "Name: ", default: "" },
+                  { type: "text-ref" as const, name: l10n.dialogAddTagName, default: "" },
                   {
                     type: "select" as const,
-                    name: "Type: ",
+                    name: l10n.dialogAddTagType,
                     default: "annotated",
                     options: [
-                      { name: "Annotated", value: "annotated" },
-                      { name: "Lightweight", value: "lightweight" }
+                      { name: l10n.dialogAddTagTypeAnnotated, value: "annotated" },
+                      { name: l10n.dialogAddTagTypeLightweight, value: "lightweight" }
                     ]
                   },
                   {
                     type: "text" as const,
-                    name: "Message: ",
+                    name: l10n.dialogAddTagMessage,
                     default: "",
-                    placeholder: "Optional"
+                    placeholder: l10n.dialogAddTagOptional
                   }
                 ],
-                "Add Tag",
+                l10n.dialogAddTagSubmit,
                 (values) => {
                   sendMessage({
                     command: "addTag",
@@ -556,14 +555,15 @@ class GitGraphView {
             }
           },
           {
-            title: "Create Branch" + ELLIPSIS,
+            title: l10n.createBranch + ELLIPSIS,
             onClick: () => {
               showRefInputDialog(
-                "Enter the name of the branch you would like to create from commit <b><i>" +
-                  abbrevCommit(hash) +
-                  "</i></b>:",
+                l10n.dialogCreateBranchTitle.replace(
+                  "{0}",
+                  "<b><i>" + abbrevCommit(hash) + "</i></b>"
+                ),
                 "",
-                "Create Branch",
+                l10n.dialogCreateBranchSubmit,
                 (name) => {
                   sendMessage({
                     command: "createBranch",
@@ -578,12 +578,13 @@ class GitGraphView {
           },
           null,
           {
-            title: "Checkout" + ELLIPSIS,
+            title: l10n.checkout + ELLIPSIS,
             onClick: () => {
               showConfirmationDialog(
-                "Are you sure you want to checkout commit <b><i>" +
-                  abbrevCommit(hash) +
-                  "</i></b>? This will result in a 'detached HEAD' state.",
+                l10n.dialogCheckoutConfirm.replace(
+                  "{0}",
+                  "<b><i>" + abbrevCommit(hash) + "</i></b>"
+                ),
                 () => {
                   sendMessage({
                     command: "checkoutCommit",
@@ -596,13 +597,14 @@ class GitGraphView {
             }
           },
           {
-            title: "Cherry Pick" + ELLIPSIS,
+            title: l10n.cherryPick + ELLIPSIS,
             onClick: () => {
               if (this.commits[this.commitLookup[hash]].parentHashes.length === 1) {
                 showConfirmationDialog(
-                  "Are you sure you want to cherry pick commit <b><i>" +
-                    abbrevCommit(hash) +
-                    "</i></b>?",
+                  l10n.dialogCherryPickConfirm.replace(
+                    "{0}",
+                    "<b><i>" + abbrevCommit(hash) + "</i></b>"
+                  ),
                   () => {
                     sendMessage({
                       command: "cherrypickCommit",
@@ -625,12 +627,13 @@ class GitGraphView {
                   })
                 );
                 showSelectDialog(
-                  "Are you sure you want to cherry pick merge commit <b><i>" +
-                    abbrevCommit(hash) +
-                    "</i></b>? Choose the parent hash on the main branch, to cherry pick the commit relative to:",
+                  l10n.dialogCherryPickConfirm.replace(
+                    "{0}",
+                    "<b><i>" + abbrevCommit(hash) + "</i></b>"
+                  ),
                   "1",
                   options,
-                  "Yes, cherry pick commit",
+                  l10n.dialogYesCherryPick,
                   (parentIndex) => {
                     sendMessage({
                       command: "cherrypickCommit",
@@ -645,13 +648,14 @@ class GitGraphView {
             }
           },
           {
-            title: "Revert" + ELLIPSIS,
+            title: l10n.revert + ELLIPSIS,
             onClick: () => {
               if (this.commits[this.commitLookup[hash]].parentHashes.length === 1) {
                 showConfirmationDialog(
-                  "Are you sure you want to revert commit <b><i>" +
-                    abbrevCommit(hash) +
-                    "</i></b>?",
+                  l10n.dialogRevertConfirm.replace(
+                    "{0}",
+                    "<b><i>" + abbrevCommit(hash) + "</i></b>"
+                  ),
                   () => {
                     sendMessage({
                       command: "revertCommit",
@@ -674,12 +678,13 @@ class GitGraphView {
                   })
                 );
                 showSelectDialog(
-                  "Are you sure you want to revert merge commit <b><i>" +
-                    abbrevCommit(hash) +
-                    "</i></b>? Choose the parent hash on the main branch, to revert the commit relative to:",
+                  l10n.dialogRevertConfirm.replace(
+                    "{0}",
+                    "<b><i>" + abbrevCommit(hash) + "</i></b>"
+                  ),
                   "1",
                   options,
-                  "Yes, revert commit",
+                  l10n.dialogYesRevert,
                   (parentIndex) => {
                     sendMessage({
                       command: "revertCommit",
@@ -695,15 +700,15 @@ class GitGraphView {
           },
           null,
           {
-            title: "Merge into current branch" + ELLIPSIS,
+            title: l10n.merge + ELLIPSIS,
             onClick: () => {
               showCheckboxDialog(
-                "Are you sure you want to merge commit <b><i>" +
-                  abbrevCommit(hash) +
-                  "</i></b> into the current branch?",
-                "Create a new commit even if fast-forward is possible",
+                l10n.dialogMergeConfirm
+                  .replace("{0}", `<b><i>${abbrevCommit(hash)}</i></b>`)
+                  .replace("{1}", `<b>${l10n.labelCurrentBranch}</b>`),
+                l10n.dialogMergeNoFastForward,
                 true,
-                "Yes, merge",
+                l10n.dialogYesMerge,
                 (createNewCommit) => {
                   sendMessage({
                     command: "mergeCommit",
@@ -717,19 +722,19 @@ class GitGraphView {
             }
           },
           {
-            title: "Reset current branch to this Commit" + ELLIPSIS,
+            title: l10n.reset + ELLIPSIS,
             onClick: () => {
               showSelectDialog(
-                "Are you sure you want to reset the <b>current branch</b> to commit <b><i>" +
-                  abbrevCommit(hash) +
-                  "</i></b>?",
+                l10n.dialogResetConfirm
+                  .replace("{0}", `<b>${l10n.labelCurrentBranch}</b>`)
+                  .replace("{1}", "<b><i>" + abbrevCommit(hash) + "</i></b>"),
                 "mixed",
                 [
-                  { name: "Soft - Keep all changes, but reset head", value: "soft" },
-                  { name: "Mixed - Keep working tree, but reset index", value: "mixed" },
-                  { name: "Hard - Discard all changes", value: "hard" }
+                  { name: l10n.dialogResetSoft, value: "soft" },
+                  { name: l10n.dialogResetMixed, value: "mixed" },
+                  { name: l10n.dialogResetHard, value: "hard" }
                 ],
-                "Yes, reset",
+                l10n.dialogYesReset,
                 (mode) => {
                   sendMessage({
                     command: "resetToCommit",
@@ -744,7 +749,7 @@ class GitGraphView {
           },
           null,
           {
-            title: "Copy Commit Hash to Clipboard",
+            title: l10n.copyCommitHash,
             onClick: () => {
               sendMessage({ command: "copyToClipboard", type: "Commit Hash", data: hash });
             }
@@ -770,12 +775,12 @@ class GitGraphView {
       if (sourceElem.classList.contains("tag")) {
         menu = [
           {
-            title: "Delete Tag" + ELLIPSIS,
+            title: l10n.deleteTag + ELLIPSIS,
             onClick: () => {
               showConfirmationDialog(
-                "Are you sure you want to delete the tag <b><i>" +
-                  escapeHtml(refName) +
-                  "</i></b>?",
+                l10n.dialogDeleteConfirm
+                  .replace("{0}", l10n.labelTag)
+                  .replace("{1}", "<b><i>" + escapeHtml(refName) + "</i></b>"),
                 () => {
                   sendMessage({ command: "deleteTag", repo: this.currentRepo!, tagName: refName });
                 },
@@ -784,13 +789,16 @@ class GitGraphView {
             }
           },
           {
-            title: "Push Tag" + ELLIPSIS,
+            title: l10n.pushTag + ELLIPSIS,
             onClick: () => {
               showConfirmationDialog(
-                "Are you sure you want to push the tag <b><i>" + escapeHtml(refName) + "</i></b>?",
+                l10n.dialogPushTagConfirm.replace(
+                  "{0}",
+                  "<b><i>" + escapeHtml(refName) + "</i></b>"
+                ),
                 () => {
                   sendMessage({ command: "pushTag", repo: this.currentRepo!, tagName: refName });
-                  showActionRunningDialog("Pushing Tag");
+                  showActionRunningDialog(l10n.pushingTag);
                 },
                 null
               );
@@ -803,17 +811,20 @@ class GitGraphView {
           menu = [];
           if (this.gitBranchHead !== refName) {
             menu.push({
-              title: "Checkout Branch",
+              title: l10n.checkoutBranch,
               onClick: () => this.checkoutBranchAction(sourceElem, refName)
             });
           }
           menu.push({
-            title: "Rename Branch" + ELLIPSIS,
+            title: l10n.renameBranch + ELLIPSIS,
             onClick: () => {
               showRefInputDialog(
-                "Enter the new name for branch <b><i>" + escapeHtml(refName) + "</i></b>:",
+                l10n.dialogRenameBranchTitle.replace(
+                  "{0}",
+                  "<b><i>" + escapeHtml(refName) + "</i></b>"
+                ),
                 refName,
-                "Rename Branch",
+                l10n.dialogRenameBranchSubmit,
                 (newName) => {
                   sendMessage({
                     command: "renameBranch",
@@ -829,15 +840,15 @@ class GitGraphView {
           if (this.gitBranchHead !== refName) {
             menu.push(
               {
-                title: "Delete Branch" + ELLIPSIS,
+                title: l10n.deleteBranch + ELLIPSIS,
                 onClick: () => {
                   showCheckboxDialog(
-                    "Are you sure you want to delete the branch <b><i>" +
-                      escapeHtml(refName) +
-                      "</i></b>?",
-                    "Force Delete",
+                    l10n.dialogDeleteConfirm
+                      .replace("{0}", l10n.labelBranch)
+                      .replace("{1}", "<b><i>" + escapeHtml(refName) + "</i></b>"),
+                    l10n.dialogDeleteForceDelete,
                     false,
-                    "Delete Branch",
+                    l10n.deleteBranch,
                     (forceDelete) => {
                       sendMessage({
                         command: "deleteBranch",
@@ -851,15 +862,16 @@ class GitGraphView {
                 }
               },
               {
-                title: "Merge into current branch" + ELLIPSIS,
+                title: l10n.merge + ELLIPSIS,
                 onClick: () => {
                   showCheckboxDialog(
-                    "Are you sure you want to merge branch <b><i>" +
-                      escapeHtml(refName) +
-                      "</i></b> into the current branch?",
-                    "Create a new commit even if fast-forward is possible",
+                    l10n.dialogMergeConfirm.replace(
+                      "{0}",
+                      "<b><i>" + escapeHtml(refName) + "</i></b>"
+                    ),
+                    l10n.dialogMergeNoFastForward,
                     true,
-                    "Yes, merge",
+                    l10n.dialogYesMerge,
                     (createNewCommit) => {
                       sendMessage({
                         command: "mergeBranch",
@@ -877,7 +889,7 @@ class GitGraphView {
         } else {
           menu = [
             {
-              title: "Checkout Branch" + ELLIPSIS,
+              title: l10n.checkoutBranch + ELLIPSIS,
               onClick: () => this.checkoutBranchAction(sourceElem, refName)
             }
           ];
@@ -914,7 +926,8 @@ class GitGraphView {
   private renderShowLoading() {
     hideDialogAndContextMenu();
     this.graph.clear();
-    this.tableElem.innerHTML = '<h2 id="loadingHeader">' + svgIcons.loading + "Loading ...</h2>";
+    this.tableElem.innerHTML =
+      '<h2 id="loadingHeader">' + svgIcons.loading + l10n.loading + "</h2>";
     this.footerElem.innerHTML = "";
   }
   private checkoutBranchAction(sourceElem: HTMLElement, refName: string) {
@@ -928,11 +941,12 @@ class GitGraphView {
     } else if (sourceElem.classList.contains("remote")) {
       let refNameComps = refName.split("/");
       showRefInputDialog(
-        "Enter the name of the new branch you would like to create when checking out <b><i>" +
-          escapeHtml(sourceElem.dataset.name!) +
-          "</i></b>:",
+        l10n.dialogCreateBranchTitle.replace(
+          "{0}",
+          "<b><i>" + escapeHtml(sourceElem.dataset.name!) + "</i></b>"
+        ),
         refNameComps[refNameComps.length - 1],
-        "Checkout Branch",
+        l10n.checkoutBranch,
         (newBranch) => {
           sendMessage({
             command: "checkoutBranch",
@@ -1233,21 +1247,21 @@ window.addEventListener("message", (event) => {
   const msg: GG.ResponseMessage = event.data;
   switch (msg.command) {
     case "addTag":
-      refreshGraphOrDisplayError(msg.status, "Unable to Add Tag");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToAddTag);
       break;
     case "checkoutBranch":
-      refreshGraphOrDisplayError(msg.status, "Unable to Checkout Branch");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToCheckoutBranch);
       break;
     case "checkoutCommit":
-      refreshGraphOrDisplayError(msg.status, "Unable to Checkout Commit");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToCheckoutCommit);
       break;
     case "cherrypickCommit":
-      refreshGraphOrDisplayError(msg.status, "Unable to Cherry Pick Commit");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToCherryPick);
       break;
     case "commitDetails":
       if (msg.commitDetails === null) {
         gitGraph.hideCommitDetails();
-        showErrorDialog("Unable to load commit details", null, null);
+        showErrorDialog(l10n.unableToLoadCommitDetails, null, null);
       } else {
         gitGraph.showCommitDetails(
           msg.commitDetails,
@@ -1257,16 +1271,16 @@ window.addEventListener("message", (event) => {
       break;
     case "copyToClipboard":
       if (msg.success === false)
-        showErrorDialog("Unable to Copy " + msg.type + " to Clipboard", null, null);
+        showErrorDialog(l10n.unableToCopyToClipboard.replace("{0}", msg.type), null, null);
       break;
     case "createBranch":
-      refreshGraphOrDisplayError(msg.status, "Unable to Create Branch");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToCreateBranch);
       break;
     case "deleteBranch":
-      refreshGraphOrDisplayError(msg.status, "Unable to Delete Branch");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToDeleteBranch);
       break;
     case "deleteTag":
-      refreshGraphOrDisplayError(msg.status, "Unable to Delete Tag");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToDeleteTag);
       break;
     case "fetchAvatar":
       gitGraph.loadAvatar(msg.email, msg.image);
@@ -1281,28 +1295,28 @@ window.addEventListener("message", (event) => {
       gitGraph.loadRepos(msg.repos, msg.lastActiveRepo);
       break;
     case "mergeBranch":
-      refreshGraphOrDisplayError(msg.status, "Unable to Merge Branch");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToMergeBranch);
       break;
     case "mergeCommit":
-      refreshGraphOrDisplayError(msg.status, "Unable to Merge Commit");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToMergeCommit);
       break;
     case "pushTag":
-      refreshGraphOrDisplayError(msg.status, "Unable to Push Tag");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToPushTag);
       break;
     case "renameBranch":
-      refreshGraphOrDisplayError(msg.status, "Unable to Rename Branch");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToRenameBranch);
       break;
     case "refresh":
       gitGraph.refresh(false);
       break;
     case "resetToCommit":
-      refreshGraphOrDisplayError(msg.status, "Unable to Reset to Commit");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToReset);
       break;
     case "revertCommit":
-      refreshGraphOrDisplayError(msg.status, "Unable to Revert Commit");
+      refreshGraphOrDisplayError(msg.status, l10n.unableToRevert);
       break;
     case "viewDiff":
-      if (msg.success === false) showErrorDialog("Unable to view diff of file", null, null);
+      if (msg.success === false) showErrorDialog(l10n.unableToViewDiff, null, null);
       break;
   }
 });
@@ -1318,7 +1332,16 @@ function refreshGraphOrDisplayError(status: GitCommandStatus, errorMessage: stri
 function getCommitDate(dateVal: number) {
   let date = new Date(dateVal * 1000),
     value;
-  let dateStr = date.getDate() + " " + months[date.getMonth()] + " " + date.getFullYear();
+
+  let dateStr = l10n.timeDateFormat
+    .replace("DD", String(date.getDate()))
+    .replace(
+      "MM",
+      l10n.timeNeedFormatMonth === "true"
+        ? getMonth()[date.getMonth()]
+        : String(date.getMonth() + 1)
+    )
+    .replace("YYYY", String(date.getFullYear()));
   let timeStr = pad2(date.getHours()) + ":" + pad2(date.getMinutes());
 
   switch (viewState.dateFormat) {
@@ -1327,30 +1350,38 @@ function getCommitDate(dateVal: number) {
       break;
     case "Relative":
       let diff = Math.round(new Date().getTime() / 1000) - dateVal,
-        unit;
+        unit,
+        unitPlural;
       if (diff < 60) {
-        unit = "second";
+        unit = l10n.timeSecond;
+        unitPlural = l10n.timeSeconds;
       } else if (diff < 3600) {
-        unit = "minute";
+        unit = l10n.timeMinute;
+        unitPlural = l10n.timeMinutes;
         diff /= 60;
       } else if (diff < 86400) {
-        unit = "hour";
+        unit = l10n.timeHour;
+        unitPlural = l10n.timeHours;
         diff /= 3600;
       } else if (diff < 604800) {
-        unit = "day";
+        unit = l10n.timeDay;
+        unitPlural = l10n.timeDays;
         diff /= 86400;
       } else if (diff < 2629800) {
-        unit = "week";
+        unit = l10n.timeWeek;
+        unitPlural = l10n.timeWeeks;
         diff /= 604800;
       } else if (diff < 31557600) {
-        unit = "month";
+        unit = l10n.timeMonth;
+        unitPlural = l10n.timeMonths;
         diff /= 2629800;
       } else {
-        unit = "year";
+        unit = l10n.timeYear;
+        unitPlural = l10n.timeYears;
         diff /= 31557600;
       }
       diff = Math.round(diff);
-      value = diff + " " + unit + (diff !== 1 ? "s" : "") + " ago";
+      value = diff + " " + (diff !== 1 ? unitPlural : unit) + " " + l10n.timeAgo;
       break;
     default:
       value = dateStr + " " + timeStr;
@@ -1556,8 +1587,8 @@ function showConfirmationDialog(
 ) {
   showDialog(
     message,
-    "Yes",
-    "No",
+    l10n.dialogYes,
+    l10n.dialogCancel,
     () => {
       hideDialog();
       confirmed();
@@ -1667,7 +1698,7 @@ function showFormDialog(
   showDialog(
     html,
     actionName,
-    "Cancel",
+    l10n.dialogCancel,
     () => {
       if (dialog.className === "active noInput" || dialog.className === "active inputInvalid")
         return;
@@ -1700,9 +1731,7 @@ function showFormDialog(
       let newClassName = "active" + (noInput ? " noInput" : invalidInput ? " inputInvalid" : "");
       if (dialog.className !== newClassName) {
         dialog.className = newClassName;
-        dialogAction.title = invalidInput
-          ? "Unable to " + actionName + ", one or more invalid characters entered."
-          : "";
+        dialogAction.title = invalidInput ? l10n.invalidCharacters.replace("{0}", actionName) : "";
       }
     });
   }
@@ -1710,13 +1739,12 @@ function showFormDialog(
 function showErrorDialog(message: string, reason: string | null, sourceElem: HTMLElement | null) {
   showDialog(
     svgIcons.alert +
-      "Error: " +
       message +
       (reason !== null
         ? '<br><span class="errorReason">' + escapeHtml(reason).split("\n").join("<br>") + "</span>"
         : ""),
     null,
-    "Dismiss",
+    l10n.dialogDismiss,
     null,
     sourceElem
   );
@@ -1725,7 +1753,7 @@ function showActionRunningDialog(command: string) {
   showDialog(
     '<span id="actionRunning">' + svgIcons.loading + command + " ...</span>",
     null,
-    "Dismiss",
+    l10n.dialogDismiss,
     null,
     null
   );
