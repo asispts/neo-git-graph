@@ -1,0 +1,26 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    // perf
+    "eslint/no-await-in-loop": "off",
+    // suspicious
+    "import/no-named-as-default": "off",
+    "eslint/no-shadow": "off",
+    "unicorn/require-post-message-target-origin": "off",
+    "unicorn/no-array-sort": "off"
+  },
+  "overrides": [
+    {
+      "files": ["src/webview/**/*.ts"],
+      "rules": {
+        "eslint/no-undef": "off"
+      }
+    },
+    {
+      "files": ["tests/**/*.ts"],
+      "rules": {
+        "eslint/no-undef": "off"
+      }
+    }
+  ]
+}

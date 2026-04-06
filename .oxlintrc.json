@@ -1,5 +1,6 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "extends": ["baseline.config.json"],
   "jsPlugins": [{ "name": "import-js", "specifier": "eslint-plugin-import" }],
   "ignorePatterns": [".pnpm-store/**", ".idea/**", "out/**", "node_modules/**", "*.config.js"],
   "env": {
@@ -8,12 +9,12 @@
   "plugins": ["typescript", "node", "oxc", "import", "unicorn"],
   "categories": {
     "correctness": "error", // Code that is definitely wrong or useless
+    "perf": "error", // Rules that aim to improve runtime performance
     "suspicious": "warn", // Code that is likely to be wrong or useless,
+    "nursery": "warn", // Rules that ban specific patterns or features,
     "pedantic": "off", // Extra strict rules that may have false positives
-    "perf": "off", // Rules that aim to improve runtime performance
-    "style": "off", // Idiomatic and consistent style rules
-    "nursery": "off", // Rules that ban specific patterns or features,
-    "restriction": "off" // Rules under development that may change
+    "restriction": "off", // Rules under development that may change
+    "style": "off" // Idiomatic and consistent style rules
   },
   "rules": {
     // Additional
@@ -41,15 +42,15 @@
         }
       }
     ],
-    "no-relative-parent-imports": "warn",
-
-    // suspicious
-    "no-shadow": "off",
-    "no-named-as-default": "off",
-    "require-post-message-target-origin": "off",
-    "no-array-sort": "off"
+    "import/no-relative-parent-imports": "warn"
   },
   "overrides": [
+    {
+      "files": [".vscode-test.mjs"],
+      "rules": {
+        "import/named": "off"
+      }
+    },
     {
       "files": ["src/webview/**/*.ts"],
       "env": {
