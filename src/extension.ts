@@ -9,12 +9,14 @@ import { registerMessageHandlers } from "./extension/messageHandler";
 import { WebviewBridge, webviewBridgeFactory } from "./extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "./extension/webviewPanel";
 import { ExtensionState } from "./extensionState";
+import { initL10n } from "./l10n";
 import * as l10n from "./l10n";
 import { RepoFileWatcher } from "./repoFileWatcher";
 import { RepoManager } from "./repoManager";
 import { StatusBarItem } from "./statusBarItem";
 
 export function activate(context: vscode.ExtensionContext) {
+  initL10n(context.extensionPath);
   const outputChannel = vscode.window.createOutputChannel(l10n.t("outputChannel.text"));
   const extensionState = new ExtensionState(context);
   const avatarManager = new AvatarManager(config.gitPath, extensionState);

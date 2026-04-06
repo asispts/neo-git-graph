@@ -3,6 +3,12 @@ import * as path from "node:path";
 
 import { l10n } from "vscode";
 
+let _extensionPath: string | undefined;
+
+export function initL10n(extensionPath: string) {
+  _extensionPath = extensionPath;
+}
+
 /**
  * Cache for loaded translation files
  */
@@ -54,7 +60,11 @@ export function t(
 
   if (result !== key) return result;
 
-  const translationPath = l10n.uri?.fsPath ? path.dirname(l10n.uri.fsPath) : undefined;
+  const translationPath = l10n.uri?.fsPath
+    ? path.dirname(l10n.uri.fsPath)
+    : _extensionPath
+      ? path.join(_extensionPath, "l10n")
+      : undefined;
   if (!translationPath) return result;
   const enTranslations = loadEnglishTranslations(translationPath);
   const fallback = enTranslations[key];
