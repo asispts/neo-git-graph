@@ -63,6 +63,10 @@ export function getWebviewLocalizedStrings() {
     renameBranch: l10n.t("action.renameBranch"),
     deleteBranch: l10n.t("action.deleteBranch"),
 
+    typeCommitHash: l10n.t("type.commitHash"),
+    typeTagName: l10n.t("type.tagName"),
+    typeBranchName: l10n.t("type.branchName"),
+
     // label
     labelTag: l10n.t("label.tag"),
     labelBranch: l10n.t("label.branch"),

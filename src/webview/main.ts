@@ -1273,8 +1273,18 @@ window.addEventListener("message", (event) => {
       }
       break;
     case "copyToClipboard":
-      if (msg.success === false)
-        showErrorDialog(l10n.unableToCopyToClipboard.replace("{0}", msg.type), null, null);
+      if (msg.success === false) {
+        let typeLabel: Record<string, string> = {
+          "Commit Hash": l10n.typeCommitHash,
+          "Tag Name": l10n.typeTagName,
+          "Branch Name": l10n.typeBranchName
+        };
+        showErrorDialog(
+          l10n.unableToCopyToClipboard.replace("{0}", typeLabel[msg.type] ?? msg.type),
+          null,
+          null
+        );
+      }
       break;
     case "createBranch":
       refreshGraphOrDisplayError(msg.status, l10n.unableToCreateBranch);
