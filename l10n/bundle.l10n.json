@@ -118,5 +118,7 @@
   "month.sep": "Sep",
   "month.oct": "Oct",
   "month.nov": "Nov",
-  "month.dec": "Dec"
+  "month.dec": "Dec",
+  "diff.addedIn": "Added in {0}",
+  "diff.deletedIn": "Deleted in {0}"
 }

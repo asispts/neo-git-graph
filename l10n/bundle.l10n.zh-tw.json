@@ -118,5 +118,7 @@
   "month.sep": "",
   "month.oct": "",
   "month.nov": "",
-  "month.dec": ""
+  "month.dec": "",
+  "diff.addedIn": "在 {0} 中新增",
+  "diff.deletedIn": "在 {0} 中刪除"
 }
