@@ -5,8 +5,10 @@
 # Whitelist files
 !LICENSE
 !CHANGELOG.md
+!package.nls*.json
 !out/
 !media/
+!l10n/
 
 !resources/icon.png
 !resources/webview-icon.svg
