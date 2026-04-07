@@ -120,5 +120,10 @@
   "month.nov": "Nov",
   "month.dec": "Dec",
   "diff.addedIn": "Added in {0}",
-  "diff.deletedIn": "Deleted in {0}"
+  "diff.deletedIn": "Deleted in {0}",
+  "detail.commit": "Commit: ",
+  "detail.parents": "Parents: ",
+  "detail.author": "Author: ",
+  "detail.date": "Date: ",
+  "detail.committer": "Committer: "
 }

@@ -139,7 +139,13 @@ export function getWebviewLocalizedStrings() {
     monthSep: l10n.t("month.sep"),
     monthOct: l10n.t("month.oct"),
     monthNov: l10n.t("month.nov"),
-    monthDec: l10n.t("month.dec")
+    monthDec: l10n.t("month.dec"),
+
+    detailCommit: l10n.t("detail.commit"),
+    detailParents: l10n.t("detail.parents"),
+    detailAuthor: l10n.t("detail.author"),
+    detailDate: l10n.t("detail.date"),
+    detailCommitter: l10n.t("detail.committer")
   };
 }
 

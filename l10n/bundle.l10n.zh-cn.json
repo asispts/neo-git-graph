@@ -120,5 +120,10 @@
   "month.nov": "",
   "month.dec": "",
   "diff.addedIn": "在 {0} 中添加",
-  "diff.deletedIn": "在 {0} 中删除"
+  "diff.deletedIn": "在 {0} 中删除",
+  "detail.commit": "提交：",
+  "detail.parents": "父提交：",
+  "detail.author": "作者：",
+  "detail.date": "日期：",
+  "detail.committer": "提交者："
 }

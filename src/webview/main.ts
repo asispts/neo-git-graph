@@ -1141,18 +1141,21 @@ class GitGraphView {
       '<span class="commitDetailsSummaryTop' +
       (typeof this.avatars[commitDetails.email] === "string" ? " withAvatar" : "") +
       '"><span class="commitDetailsSummaryTopRow"><span class="commitDetailsSummaryKeyValues">';
-    html += "<b>Commit: </b>" + escapeHtml(commitDetails.hash) + "<br>";
-    html += "<b>Parents: </b>" + commitDetails.parents.join(", ") + "<br>";
+    html += "<b>" + l10n.detailCommit + "</b>" + escapeHtml(commitDetails.hash) + "<br>";
+    html += "<b>" + l10n.detailParents + "</b>" + commitDetails.parents.join(", ") + "<br>";
     html +=
-      "<b>Author: </b>" +
+      "<b>" +
+      l10n.detailAuthor +
+      "</b>" +
       escapeHtml(commitDetails.author) +
       ' &lt;<a href="mailto:' +
       encodeURIComponent(commitDetails.email) +
       '">' +
       escapeHtml(commitDetails.email) +
       "</a>&gt;<br>";
-    html += "<b>Date: </b>" + new Date(commitDetails.date * 1000).toString() + "<br>";
-    html += "<b>Committer: </b>" + escapeHtml(commitDetails.committer) + "</span>";
+    html +=
+      "<b>" + l10n.detailDate + "</b>" + new Date(commitDetails.date * 1000).toString() + "<br>";
+    html += "<b>" + l10n.detailCommitter + "</b>" + escapeHtml(commitDetails.committer) + "</span>";
     if (typeof this.avatars[commitDetails.email] === "string")
       html +=
         '<span class="commitDetailsSummaryAvatar"><img src="' +
