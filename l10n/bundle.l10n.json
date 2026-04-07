@@ -28,6 +28,8 @@
   "action.merge": "Merge into current branch",
   "action.reset": "Reset current branch to this Commit",
   "action.copyCommitHash": "Copy Commit Hash to Clipboard",
+  "action.copyTagName": "Copy Tag Name to Clipboard",
+  "action.copyBranchName": "Copy Branch Name to Clipboard",
   "action.deleteTag": "Delete Tag",
   "action.pushTag": "Push Tag",
   "action.checkoutBranch": "Checkout Branch",

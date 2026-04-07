@@ -28,6 +28,8 @@
   "action.merge": "合併到目前分支",
   "action.reset": "重設目前分支到此提交",
   "action.copyCommitHash": "複製提交雜湊到剪貼簿",
+  "action.copyTagName": "複製標籤名稱到剪貼簿",
+  "action.copyBranchName": "複製分支名稱到剪貼簿",
   "action.deleteTag": "刪除標籤",
   "action.pushTag": "推送標籤",
   "action.checkoutBranch": "檢出分支",

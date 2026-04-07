@@ -771,7 +771,8 @@ class GitGraphView {
       let sourceElem = <HTMLElement>(<Element>e.target).closest(".gitRef")!;
       let refName = unescapeHtml(sourceElem.dataset.name!),
         menu: ContextMenuElement[],
-        copyType: string;
+        copyType: string,
+        copyTitle: string;
       if (sourceElem.classList.contains("tag")) {
         menu = [
           {
@@ -806,6 +807,7 @@ class GitGraphView {
           }
         ];
         copyType = "Tag Name";
+        copyTitle = l10n.copyTagName;
       } else {
         if (sourceElem.classList.contains("head")) {
           menu = [];
@@ -895,9 +897,10 @@ class GitGraphView {
           ];
         }
         copyType = "Branch Name";
+        copyTitle = l10n.copyBranchName;
       }
       menu.push(null, {
-        title: "Copy " + copyType + " to Clipboard",
+        title: copyTitle,
         onClick: () => {
           sendMessage({ command: "copyToClipboard", type: copyType, data: refName });
         }
