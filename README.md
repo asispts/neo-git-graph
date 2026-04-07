@@ -14,6 +14,8 @@
 
 ![demo](resources/demo.gif)
 
+![Internationalization support — context menu shown in Chinese](resources/screenshot-i18n.png)
+
 <p>&nbsp;</p>
 
 ## Why this fork
