@@ -125,5 +125,6 @@
   "detail.parents": "Parents: ",
   "detail.author": "Author: ",
   "detail.date": "Date: ",
-  "detail.committer": "Committer: "
+  "detail.committer": "Committer: ",
+  "uncommittedChanges": "Uncommitted Changes ({0})"
 }

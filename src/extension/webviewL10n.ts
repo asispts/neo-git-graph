@@ -145,7 +145,9 @@ export function getWebviewLocalizedStrings() {
     detailParents: l10n.t("detail.parents"),
     detailAuthor: l10n.t("detail.author"),
     detailDate: l10n.t("detail.date"),
-    detailCommitter: l10n.t("detail.committer")
+    detailCommitter: l10n.t("detail.committer"),
+
+    uncommittedChanges: l10n.t("uncommittedChanges")
   };
 }
 

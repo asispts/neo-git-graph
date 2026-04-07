@@ -244,6 +244,11 @@ class GitGraphView {
     this.moreCommitsAvailable = moreAvailable;
     this.commits = commits;
     this.commitHead = commitHead;
+    if (this.commits.length > 0 && this.commits[0].hash === "*") {
+      const match = this.commits[0].message.match(/\((\d+)\)$/);
+      const count = match ? match[1] : "?";
+      this.commits[0].message = l10n.uncommittedChanges.replace("{0}", count);
+    }
     this.commitLookup = {};
     this.saveState();
 

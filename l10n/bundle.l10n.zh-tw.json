@@ -125,5 +125,6 @@
   "detail.parents": "父提交：",
   "detail.author": "作者：",
   "detail.date": "日期：",
-  "detail.committer": "提交者："
+  "detail.committer": "提交者：",
+  "uncommittedChanges": "未提交的變更（{0}）"
 }
