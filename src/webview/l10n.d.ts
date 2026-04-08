@@ -12,5 +12,3 @@ declare global {
    */
   var l10n: LocalizedStrings;
 }
-
-export {};

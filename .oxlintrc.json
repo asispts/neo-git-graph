@@ -10,8 +10,8 @@
   "categories": {
     "correctness": "error", // Code that is definitely wrong or useless
     "perf": "error", // Rules that aim to improve runtime performance
-    "suspicious": "warn", // Code that is likely to be wrong or useless,
-    "nursery": "warn", // Rules that ban specific patterns or features,
+    "suspicious": "error", // Code that is likely to be wrong or useless,
+    "nursery": "error", // Rules that ban specific patterns or features,
     "pedantic": "off", // Extra strict rules that may have false positives
     "restriction": "off", // Rules under development that may change
     "style": "off" // Idiomatic and consistent style rules
@@ -42,7 +42,7 @@
         }
       }
     ],
-    "import/no-relative-parent-imports": "warn"
+    "import/no-relative-parent-imports": "error"
   },
   "overrides": [
     {

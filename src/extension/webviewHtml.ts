@@ -4,10 +4,10 @@ import { getNonce } from "@/backend/utils/nonce.util";
 import { buildExtensionUri } from "@/backend/utils/path.util";
 import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
+import * as l10n from "@/l10n";
 import { RepoManager } from "@/repoManager";
 import { GitGraphViewState } from "@/types";
 
-import * as l10n from "../l10n";
 import { getWebviewLocalizedStrings } from "./webviewL10n";
 
 /**

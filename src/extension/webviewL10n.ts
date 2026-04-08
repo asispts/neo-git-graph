@@ -1,4 +1,4 @@
-import * as l10n from "../l10n";
+import * as l10n from "@/l10n";
 
 /**
  * Get all localized strings for the webview.
