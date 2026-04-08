@@ -126,5 +126,11 @@
   "detail.author": "作者：",
   "detail.date": "日期：",
   "detail.committer": "提交者：",
-  "uncommittedChanges": "未提交的變更（{0}）"
+  "uncommittedChanges": "未提交的變更（{0})",
+  "tooltip.binaryFile": "此為二進位檔案，無法檢視差異。",
+  "tooltip.renamedTo": " 重新命名為 ",
+  "tooltip.addition": " 處新增",
+  "tooltip.additions": " 處新增",
+  "tooltip.deletion": " 處刪除",
+  "tooltip.deletions": " 處刪除"
 }

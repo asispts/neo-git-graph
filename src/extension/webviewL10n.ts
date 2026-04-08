@@ -147,7 +147,14 @@ export function getWebviewLocalizedStrings() {
     detailDate: l10n.t("detail.date"),
     detailCommitter: l10n.t("detail.committer"),
 
-    uncommittedChanges: l10n.t("uncommittedChanges")
+    uncommittedChanges: l10n.t("uncommittedChanges"),
+
+    tooltipBinaryFile: l10n.t("tooltip.binaryFile"),
+    tooltipRenamedTo: l10n.t("tooltip.renamedTo"),
+    tooltipAddition: l10n.t("tooltip.addition"),
+    tooltipAdditions: l10n.t("tooltip.additions"),
+    tooltipDeletion: l10n.t("tooltip.deletion"),
+    tooltipDeletions: l10n.t("tooltip.deletions")
   };
 }
 

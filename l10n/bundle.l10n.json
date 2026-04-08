@@ -126,5 +126,11 @@
   "detail.author": "Author: ",
   "detail.date": "Date: ",
   "detail.committer": "Committer: ",
-  "uncommittedChanges": "Uncommitted Changes ({0})"
+  "uncommittedChanges": "Uncommitted Changes ({0})",
+  "tooltip.binaryFile": "This is a binary file, unable to view diff.",
+  "tooltip.renamedTo": " was renamed to ",
+  "tooltip.addition": " addition",
+  "tooltip.additions": " additions",
+  "tooltip.deletion": " deletion",
+  "tooltip.deletions": " deletions"
 }

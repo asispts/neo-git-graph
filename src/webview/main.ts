@@ -1499,7 +1499,7 @@ function generateGitFileTreeHtml(folder: GitFolder, gitFiles: GitFileChange[]) {
         gitFile.type +
         '"' +
         (gitFile.additions === null || gitFile.deletions === null
-          ? ' title="This is a binary file, unable to view diff."'
+          ? ' title="' + l10n.tooltipBinaryFile + '"'
           : "") +
         '><span class="gitFileIcon">' +
         svgIcons.file +
@@ -1507,7 +1507,7 @@ function generateGitFileTreeHtml(folder: GitFolder, gitFiles: GitFileChange[]) {
         folder.contents[keys[i]].name +
         (gitFile.type === "R"
           ? ' <span class="gitFileRename" title="' +
-            escapeHtml(gitFile.oldFilePath + " was renamed to " + gitFile.newFilePath) +
+            escapeHtml(gitFile.oldFilePath + l10n.tooltipRenamedTo + gitFile.newFilePath) +
             '">R</span>'
           : "") +
         (gitFile.type !== "A" &&
@@ -1516,14 +1516,12 @@ function generateGitFileTreeHtml(folder: GitFolder, gitFiles: GitFileChange[]) {
         gitFile.deletions !== null
           ? '<span class="gitFileAddDel">(<span class="gitFileAdditions" title="' +
             gitFile.additions +
-            " addition" +
-            (gitFile.additions !== 1 ? "s" : "") +
+            (gitFile.additions !== 1 ? l10n.tooltipAdditions : l10n.tooltipAddition) +
             '">+' +
             gitFile.additions +
             '</span>|<span class="gitFileDeletions" title="' +
             gitFile.deletions +
-            " deletion" +
-            (gitFile.deletions !== 1 ? "s" : "") +
+            (gitFile.deletions !== 1 ? l10n.tooltipDeletions : l10n.tooltipDeletion) +
             '">-' +
             gitFile.deletions +
             "</span>)</span>"
