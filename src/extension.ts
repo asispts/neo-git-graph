@@ -6,13 +6,15 @@ import { buildExtensionUri } from "./backend/utils/path.util";
 import { config } from "./config";
 import { DiffDocProvider } from "./diffDocProvider";
 import { registerMessageHandlers } from "./extension/messageHandler";
+import { createRepoManager } from "./extension/repoManager";
 import { WebviewBridge, webviewBridgeFactory } from "./extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "./extension/webviewPanel";
+import { createRepoSearch } from "./extension/workspaceSearch";
+import { createRepoWatcher } from "./extension/workspaceWatcher";
 import { ExtensionState } from "./extensionState";
 import * as l10n from "./l10n";
 import { initL10n } from "./l10n";
 import { RepoFileWatcher } from "./repoFileWatcher";
-import { RepoManager } from "./repoManager";
 import { StatusBarItem } from "./statusBarItem";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -22,8 +24,17 @@ export function activate(context: vscode.ExtensionContext) {
   const avatarManager = new AvatarManager(config.gitPath, extensionState);
   const statusBarItem = new StatusBarItem(context, config);
   const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
-  const repoManager = new RepoManager(extensionState, statusBarItem, config);
+  const repoManager = createRepoManager(extensionState, statusBarItem, config);
+  const repoSearch = createRepoSearch(repoManager, config);
+  const repoWatcher = createRepoWatcher(repoManager, config, repoSearch);
   let currentPanel: WebviewPanel | undefined;
+
+  void (async () => {
+    repoManager.removeReposNotInWorkspace();
+    if (!(await repoManager.checkReposExist())) repoManager.sendRepos();
+    await repoSearch.searchWorkspaceForRepos();
+    repoWatcher.startWatching();
+  })();
 
   context.subscriptions.push(
     outputChannel,
@@ -85,12 +96,12 @@ export function activate(context: vscode.ExtensionContext) {
       if (e.affectsConfiguration("neo-git-graph.showStatusBarItem")) {
         statusBarItem.refresh();
       } else if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
-        repoManager.maxDepthOfRepoSearchChanged();
+        repoSearch.maxDepthChanged();
       } else if (e.affectsConfiguration("git.path")) {
         gitClient.setGitPath(config.gitPath());
       }
     }),
-    repoManager
+    repoWatcher
   );
 
   outputChannel.appendLine("Extension activated successfully");

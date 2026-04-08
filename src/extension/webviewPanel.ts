@@ -5,9 +5,9 @@ import { buildExtensionUri } from "@/backend/utils/path.util";
 import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
 import { RepoFileWatcher } from "@/repoFileWatcher";
-import { RepoManager } from "@/repoManager";
 import { GitRepoSet } from "@/types";
 
+import { RepoManager } from "./repoManager";
 import { WebviewBridge } from "./webviewBridge";
 import { buildWebviewHtml } from "./webviewHtml";
 

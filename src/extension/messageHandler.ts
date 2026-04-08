@@ -22,9 +22,9 @@ import { encodeDiffDocUri } from "@/diffDocProvider";
 import { ExtensionState } from "@/extensionState";
 import * as l10n from "@/l10n";
 import { RepoFileWatcher } from "@/repoFileWatcher";
-import { RepoManager } from "@/repoManager";
 import { RequestMessage, ResponseMessage } from "@/types";
 
+import { RepoManager } from "./repoManager";
 import { WebviewBridge } from "./webviewBridge";
 
 function viewDiff(

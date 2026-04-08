@@ -43,7 +43,7 @@
     "compile": "pnpm run clean && node esbuild.js",
     "test": "vitest run --project backend && vitest run --project webview",
     "test:ext": "pnpm run compile && pnpm run compile-tests && vscode-test",
-    "compile-tests": "tsc -p tests/extension/tsconfig.json",
+    "compile-tests": "tsc -p tests/extension/tsconfig.json && tsc-alias -p tests/extension/tsconfig.json",
     "watch:esbuild": "node esbuild.js --watch",
     "watch:tsc": "tsc -p ./src --noEmit --watch",
     "format": "oxfmt --check",
@@ -67,6 +67,7 @@
     "jsdom": "^29.0.2",
     "oxfmt": "^0.44.0",
     "oxlint": "^1.59.0",
+    "tsc-alias": "^1.8.16",
     "typescript": "^5.9.3",
     "vitest": "^4.1.3"
   },
