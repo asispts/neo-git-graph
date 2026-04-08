@@ -7,6 +7,20 @@ import { ExtensionState } from "@/extensionState";
 import { RepoManager } from "@/repoManager";
 import { GitGraphViewState } from "@/types";
 
+import * as l10n from "../l10n";
+import { getWebviewLocalizedStrings } from "./webviewL10n";
+
+/**
+ * Safely escape JSON for embedding in HTML script tags.
+ * Prevents XSS by escaping characters that could break out of script context.
+ */
+function escapeJsonForHtml(obj: object): string {
+  return JSON.stringify(obj)
+    .replace(/</g, "\\u003c")
+    .replace(/>/g, "\\u003e")
+    .replace(/&/g, "\\u0026");
+}
+
 export function buildWebviewHtml(opts: {
   webview: vscode.Webview;
   config: Config;
@@ -16,6 +30,7 @@ export function buildWebviewHtml(opts: {
 }): { html: string; isGraphLoaded: boolean } {
   const { webview, config, extensionPath, extensionState, repoManager } = opts;
   const nonce = getNonce();
+  const l10nStrings = getWebviewLocalizedStrings();
   const viewState: GitGraphViewState = {
     autoCenterCommitDetailsView: config.autoCenterCommitDetailsView(),
     dateFormat: config.dateFormat(),
@@ -46,11 +61,11 @@ export function buildWebviewHtml(opts: {
   if (numRepos > 0) {
     body = `<body style="${colorVars}">
 		<div id="controls">
-			<span id="repoControl"><span class="unselectable">Repo: </span><div id="repoSelect" class="dropdown"></div></span>
-			<span id="branchControl"><span class="unselectable">Branch: </span><div id="branchSelect" class="dropdown"></div></span>
-			<label id="showRemoteBranchesControl"><input type="checkbox" id="showRemoteBranchesCheckbox" value="1" checked>Show Remote Branches</label>
-      <div id="refreshBtn" class="roundedBtn">Refresh</div>
-      <div id="blinkHeadBtn" class="roundedBtn">Locate HEAD</div>
+			<span id="repoControl"><span class="unselectable">${l10nStrings.repo}: </span><div id="repoSelect" class="dropdown"></div></span>
+			<span id="branchControl"><span class="unselectable">${l10nStrings.branch}: </span><div id="branchSelect" class="dropdown"></div></span>
+			<label id="showRemoteBranchesControl"><input type="checkbox" id="showRemoteBranchesCheckbox" value="1" checked>${l10nStrings.showRemoteBranches}</label>
+      <div id="refreshBtn" class="roundedBtn">${l10nStrings.refresh}</div>
+      <div id="blinkHeadBtn" class="roundedBtn">${l10nStrings.locateHead}</div>
 		</div>
 		<div id="content">
 			<div id="commitGraph"></div>
@@ -61,14 +76,15 @@ export function buildWebviewHtml(opts: {
 		<div id="dialogBacking"></div>
 		<div id="dialog"></div>
 		<div id="scrollShadow"></div>
-		<script nonce="${nonce}">var viewState = ${JSON.stringify(viewState)};</script>
+		<script nonce="${nonce}">var viewState = ${escapeJsonForHtml(viewState)};</script>
+		<script nonce="${nonce}">var l10n = ${escapeJsonForHtml(l10nStrings)};</script>
 		<script src="${compiledOutputUri("web.min.js")}"></script>
 		</body>`;
   } else {
     body = `<body class="unableToLoad" style="${colorVars}">
-		<h2>Unable to load Git Graph</h2>
-		<p>Either the current workspace does not contain a Git repository, or the Git executable could not be found.</p>
-		<p>If you are using a portable Git installation, make sure you have set the Visual Studio Code Setting "git.path" to the path of your portable installation (e.g. "C:\\Program Files\\Git\\bin\\git.exe" on Windows).</p>
+		<h2>${l10nStrings.unableToLoadGitGraph}</h2>
+		<p>${l10nStrings.noGitRepository}</p>
+		<p>${l10nStrings.noGit}</p>
 		</body>`;
   }
 
@@ -80,7 +96,7 @@ export function buildWebviewHtml(opts: {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<link rel="stylesheet" type="text/css" href="${mediaUri("main.css")}">
 			<link rel="stylesheet" type="text/css" href="${mediaUri("dropdown.css")}">
-			<title>(neo) Git Graph</title>
+			<title>${l10n.t("outputChannel.text")}</title>
 			<style>${colorParams}"</style>
 		</head>
 		${body}

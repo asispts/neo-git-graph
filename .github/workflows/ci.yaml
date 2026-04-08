@@ -41,6 +41,9 @@ jobs:
       - name: Run typecheck
         run: pnpm run typecheck
 
+      - name: Check l10n
+        run: pnpm run l10n:check
+
   test:
     runs-on: ubuntu-latest
     strategy:

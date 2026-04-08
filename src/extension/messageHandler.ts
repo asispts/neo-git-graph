@@ -20,6 +20,7 @@ import { abbrevCommit } from "@/backend/utils/string.util";
 import { Config } from "@/config";
 import { encodeDiffDocUri } from "@/diffDocProvider";
 import { ExtensionState } from "@/extensionState";
+import * as l10n from "@/l10n";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { RepoManager } from "@/repoManager";
 import { RequestMessage, ResponseMessage } from "@/types";
@@ -39,9 +40,9 @@ function viewDiff(
     pathComponents[pathComponents.length - 1] +
     " (" +
     (type === "A"
-      ? "Added in " + abbrevHash
+      ? l10n.t("diff.addedIn", abbrevHash)
       : type === "D"
-        ? "Deleted in " + abbrevHash
+        ? l10n.t("diff.deletedIn", abbrevHash)
         : abbrevCommit(commitHash) + "^ ↔ " + abbrevCommit(commitHash)) +
     ")";
   return new Promise<boolean>((resolve) => {
