@@ -14,8 +14,6 @@
 
 ![demo](resources/demo.gif)
 
-![Internationalization support — context menu shown in Chinese](resources/screenshot-i18n.png)
-
 <p>&nbsp;</p>
 
 ## Why this fork
@@ -27,6 +25,7 @@ This fork is based on the last MIT commit and:
 
 - Keeps MIT license
 - Adds devcontainer support
+- Adds internationalization support (English, zh-CN, zh-TW)
 - Improves codebase, tooling, and maintainability
 
 ## Features
@@ -39,7 +38,6 @@ This fork is based on the last MIT commit and:
 - **Avatar support**: Optional avatars from GitHub, GitLab, or Gravatar
 - **Multi-repo**: Work with multiple repositories in one workspace
 - **Devcontainer ready**: Works in remote and container environments
-- **Internationalization**: Full support for multiple languages
 
 ## Configuration
 
