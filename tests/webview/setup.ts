@@ -1,3 +1,4 @@
+import { getWebviewLocalizedStrings } from "@/extension/webviewL10n";
 import type * as GG from "@/types";
 
 export function createVscodeMock() {
@@ -45,6 +46,7 @@ export function setupHtml(viewState: GG.GitGraphViewState) {
   `;
 
   (global as unknown as { viewState: GG.GitGraphViewState }).viewState = viewState;
+  global["l10n"] = getWebviewLocalizedStrings();
 }
 
 export function receive(msg: GG.ResponseMessage) {

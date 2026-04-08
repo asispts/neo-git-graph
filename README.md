@@ -25,6 +25,7 @@ This fork is based on the last MIT commit and:
 
 - Keeps MIT license
 - Adds devcontainer support
+- Adds internationalization support (English, zh-CN, zh-TW)
 - Improves codebase, tooling, and maintainability
 
 ## Features
