@@ -4,12 +4,19 @@ import { doesPathExist, getPathFromUri, isDirectory } from "@/backend/utils/path
 import { Config } from "@/config";
 
 import { RepoManager } from "./repoManager";
-import { RepoSearch } from "./repoSearch";
+import { RepoSearch } from "./workspaceSearch";
+
+type WorkspaceApi = Pick<
+  typeof vscode.workspace,
+  "createFileSystemWatcher" | "onDidChangeWorkspaceFolders" | "workspaceFolders"
+>;
 
 export function createRepoWatcher(
   repoManager: RepoManager,
   config: Config,
-  repoSearch: RepoSearch
+  repoSearch: RepoSearch,
+  workspace: WorkspaceApi = vscode.workspace,
+  debounceDelay = 1000
 ) {
   const folderWatchers: { [workspace: string]: vscode.FileSystemWatcher } = {};
   const createEventPaths: string[] = [];
@@ -50,7 +57,7 @@ export function createRepoWatcher(
 
     createEventPaths.push(path);
     if (processCreateEventsTimeout !== null) clearTimeout(processCreateEventsTimeout);
-    processCreateEventsTimeout = setTimeout(() => processCreateEvents(), 1000);
+    processCreateEventsTimeout = setTimeout(() => processCreateEvents(), debounceDelay);
   }
 
   function onWatcherChange(uri: vscode.Uri) {
@@ -61,7 +68,7 @@ export function createRepoWatcher(
 
     changeEventPaths.push(path);
     if (processChangeEventsTimeout !== null) clearTimeout(processChangeEventsTimeout);
-    processChangeEventsTimeout = setTimeout(() => processChangeEvents(), 1000);
+    processChangeEventsTimeout = setTimeout(() => processChangeEvents(), debounceDelay);
   }
 
   function onWatcherDelete(uri: vscode.Uri) {
@@ -72,7 +79,7 @@ export function createRepoWatcher(
   }
 
   function startWatchingFolder(path: string) {
-    const watcher = vscode.workspace.createFileSystemWatcher(path + "/**");
+    const watcher = workspace.createFileSystemWatcher(path + "/**");
     watcher.onDidCreate((uri) => onWatcherCreate(uri));
     watcher.onDidChange((uri) => onWatcherChange(uri));
     watcher.onDidDelete((uri) => onWatcherDelete(uri));
@@ -84,7 +91,7 @@ export function createRepoWatcher(
     delete folderWatchers[path];
   }
 
-  const folderChangeHandler = vscode.workspace.onDidChangeWorkspaceFolders(async (e) => {
+  const folderChangeHandler = workspace.onDidChangeWorkspaceFolders(async (e) => {
     if (e.added.length > 0) {
       let path: string;
       let changes = false;
@@ -110,7 +117,7 @@ export function createRepoWatcher(
 
   return {
     startWatching() {
-      const rootFolders = vscode.workspace.workspaceFolders;
+      const rootFolders = workspace.workspaceFolders;
       if (typeof rootFolders !== "undefined") {
         for (let i = 0; i < rootFolders.length; i++) {
           startWatchingFolder(getPathFromUri(rootFolders[i].uri));

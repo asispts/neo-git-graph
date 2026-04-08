@@ -25,16 +25,28 @@ export function createRepoManager(
   let repos = extensionState.getRepos();
   let viewCallback: ((repos: GitRepoSet, numRepos: number) => void) | null = null;
 
+  function getRepos() {
+    return sortRepos(repos);
+  }
+
+  function sendRepos() {
+    const sorted = getRepos();
+    const numRepos = Object.keys(sorted).length;
+    statusBarItem.setNumRepos(numRepos);
+    if (viewCallback !== null) viewCallback(sorted, numRepos);
+  }
+
+  function removeRepo(repo: string) {
+    delete repos[repo];
+    extensionState.saveRepos(repos);
+  }
+
   function registerViewCallback(cb: (repos: GitRepoSet, numRepos: number) => void) {
     viewCallback = cb;
   }
 
   function deregisterViewCallback() {
     viewCallback = null;
-  }
-
-  function getRepos() {
-    return sortRepos(repos);
   }
 
   function isDirectoryWithinRepos(path: string) {
@@ -45,20 +57,8 @@ export function createRepoManager(
     return false;
   }
 
-  function sendRepos() {
-    const sorted = getRepos();
-    const numRepos = Object.keys(sorted).length;
-    statusBarItem.setNumRepos(numRepos);
-    if (viewCallback !== null) viewCallback(sorted, numRepos);
-  }
-
   function addRepo(repo: string) {
     repos[repo] = { columnWidths: null };
-    extensionState.saveRepos(repos);
-  }
-
-  function removeRepo(repo: string) {
-    delete repos[repo];
     extensionState.saveRepos(repos);
   }
 
