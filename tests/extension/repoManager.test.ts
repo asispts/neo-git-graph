@@ -1,12 +1,13 @@
 import * as assert from "node:assert";
 import * as fs from "node:fs";
 
-import { Config } from "../../src/config";
-import { createRepoManager } from "../../src/extension/repoManager";
-import { ExtensionState } from "../../src/extensionState";
-import { StatusBarItem } from "../../src/statusBarItem";
-import { GitRepoSet } from "../../src/types";
-import { makeRepo } from "../backend/helpers";
+import { Config } from "@/config";
+import { createRepoManager } from "@/extension/repoManager";
+import { ExtensionState } from "@/extensionState";
+import { StatusBarItem } from "@/statusBarItem";
+import { GitRepoSet } from "@/types";
+
+import { makeRepo } from "@tests/backend/helpers";
 
 function makeManager(initialRepos: GitRepoSet = {}) {
   const store = { repos: { ...initialRepos } };

@@ -1,10 +1,11 @@
 import * as assert from "node:assert";
 import * as fs from "node:fs";
 
-import { Config } from "../../src/config";
-import { RepoManager } from "../../src/extension/repoManager";
-import { createRepoSearch } from "../../src/extension/workspaceSearch";
-import { makeRepo } from "../backend/helpers";
+import { Config } from "@/config";
+import { RepoManager } from "@/extension/repoManager";
+import { createRepoSearch } from "@/extension/workspaceSearch";
+
+import { makeRepo } from "@tests/backend/helpers";
 
 function makeStubs(initialRepoPaths: string[] = [], maxDepth = 2, gitPath = "git") {
   const repos: Record<string, { columnWidths: null }> = {};

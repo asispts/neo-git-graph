@@ -6,7 +6,7 @@ import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { searchDirectoryForRepos } from "@/backend/utils/repoSearch.util";
 
-import { git } from "../helpers";
+import { git } from "@tests/backend/helpers";
 
 // Directory layout created in beforeAll:
 //   tmpDir/

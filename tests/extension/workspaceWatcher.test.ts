@@ -1,10 +1,10 @@
 import * as assert from "node:assert";
 import * as fs from "node:fs";
 
-import { Config } from "../../src/config";
-import { RepoManager } from "../../src/extension/repoManager";
-import { RepoSearch } from "../../src/extension/workspaceSearch";
-import { createRepoWatcher } from "../../src/extension/workspaceWatcher";
+import { Config } from "@/config";
+import { RepoManager } from "@/extension/repoManager";
+import { RepoSearch } from "@/extension/workspaceSearch";
+import { createRepoWatcher } from "@/extension/workspaceWatcher";
 
 type StubUri = { fsPath: string };
 type StubFolder = { uri: StubUri };
@@ -19,6 +19,8 @@ function makeUri(fsPath: string): StubUri {
 function makeFolder(fsPath: string): StubFolder {
   return { uri: makeUri(fsPath) };
 }
+
+const tick = () => new Promise<void>((r) => setTimeout(r, 10));
 
 function makeStubs(initialFolders: string[] = []) {
   const searched: string[] = [];
@@ -99,7 +101,6 @@ function makeStubs(initialFolders: string[] = []) {
     0 // debounceDelay=0 so timers fire after a single tick
   );
 
-  const tick = () => new Promise<void>((r) => setTimeout(r, 10));
   const fireFolderChange = (e: FolderChangeEvent) => folderChangeCallback!(e);
 
   return {
