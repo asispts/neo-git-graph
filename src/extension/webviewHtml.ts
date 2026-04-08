@@ -6,8 +6,8 @@ import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
 import { GitGraphViewState } from "@/types";
 
-import { RepoManager } from "./repoManager";
 import * as l10n from "../l10n";
+import { RepoManager } from "./repoManager";
 import { getWebviewLocalizedStrings } from "./webviewL10n";
 
 /**
