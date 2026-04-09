@@ -1,0 +1,10 @@
+{
+  "$schema": "../node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "eslint/no-self-compare": "error",
+    "eslint/no-constructor-return": "error",
+    "typescript/prefer-ts-expect-error": "error",
+    "eslint/eqeqeq": "error",
+    "typescript/only-throw-error": "error"
+  }
+}

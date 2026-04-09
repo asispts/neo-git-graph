@@ -1,0 +1,17 @@
+{
+  "$schema": "../node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "import/no-relative-parent-imports": "error",
+    "eslint/no-console": "error",
+    "typescript/no-explicit-any": "error",
+    "eslint/no-var": "error"
+  },
+  "overrides": [
+    {
+      "files": ["scripts/check-l10n.js", "esbuild.js"],
+      "rules": {
+        "eslint/no-console": "allow"
+      }
+    }
+  ]
+}

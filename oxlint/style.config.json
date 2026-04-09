@@ -1,0 +1,7 @@
+{
+  "$schema": "../node_modules/oxlint/configuration_schema.json",
+  "rules": {
+    "eslint/no-template-curly-in-string": "error",
+    "import/no-duplicates": "error"
+  }
+}
