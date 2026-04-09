@@ -27,8 +27,7 @@ function loadEnglishTranslations(translationPath: string): Record<string, string
     const content = fs.readFileSync(l10nPath, "utf8");
     englishTranslations = JSON.parse(content);
     return englishTranslations as Record<string, string>;
-  } catch (error) {
-    console.error("Failed to load English translations:", error);
+  } catch {
     englishTranslations = {};
     return englishTranslations;
   }
