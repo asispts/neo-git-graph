@@ -191,7 +191,9 @@ suite("workspaceWatcher / onWatcherCreate (debounced)", () => {
       watcherHandles[0].fireCreate(makeUri(tmp));
       watcherHandles[0].fireCreate(makeUri(tmp));
       watcherHandles[0].fireCreate(makeUri(tmp));
-      await new Promise<void>((r) => setTimeout(r, 10));
+      // Use a longer timeout: the 0ms debounce fires, then processCreateEvents suspends
+      // on await isDirectory() (real fs.stat I/O), which can be slow on loaded CI runners.
+      await new Promise<void>((r) => setTimeout(r, 500));
       assert.strictEqual(
         searched.filter((p) => p === tmp).length,
         1,
