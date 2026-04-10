@@ -23,6 +23,21 @@ export default defineConfig({
             ...alias,
             {
               find: "vscode",
+              replacement: path.resolve(__dirname, "tests/extension/__mocks__/vscode.ts")
+            }
+          ]
+        },
+        test: {
+          name: "extension",
+          include: ["tests/extension/**/*.test.ts"]
+        }
+      },
+      {
+        resolve: {
+          alias: [
+            ...alias,
+            {
+              find: "vscode",
               replacement: path.resolve(__dirname, "tests/webview/__mocks__/vscode.ts")
             }
           ]
