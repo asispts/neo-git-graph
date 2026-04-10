@@ -115,7 +115,7 @@ export class Dropdown {
 
   private render() {
     this.elem.classList.add("loaded");
-    this.currentValueElem.innerHTML = this.options[this.selectedOption].name;
+    this.currentValueElem.innerHTML = escapeHtml(this.options[this.selectedOption].name);
     let html = "";
     for (let i = 0; i < this.options.length; i++) {
       html +=

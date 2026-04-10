@@ -1454,7 +1454,7 @@ function generateGitFileTreeHtml(folder: GitFolder, gitFiles: GitFileChange[]) {
           '"><span class="gitFolderIcon">' +
           (folder.open ? svgIcons.openFolder : svgIcons.closedFolder) +
           '</span><span class="gitFolderName">' +
-          folder.name +
+          escapeHtml(folder.name) +
           "</span></span>"
         : "") +
       '<ul class="gitFolderContents' +
@@ -1503,7 +1503,7 @@ function generateGitFileTreeHtml(folder: GitFolder, gitFiles: GitFileChange[]) {
         '><span class="gitFileIcon">' +
         svgIcons.file +
         "</span>" +
-        folder.contents[keys[i]].name +
+        escapeHtml(folder.contents[keys[i]].name) +
         (gitFile.type === "R"
           ? ' <span class="gitFileRename" title="' +
             escapeHtml(gitFile.oldFilePath + l10n.tooltipRenamedTo + gitFile.newFilePath) +
@@ -1684,7 +1684,7 @@ function showFormDialog(
           '"' +
           (input.options[j].value === input.default ? " selected" : "") +
           ">" +
-          input.options[j].name +
+          escapeHtml(input.options[j].name) +
           "</option>";
       }
       html += "</select>";
@@ -1702,10 +1702,10 @@ function showFormDialog(
         '<input id="dialogInput' +
         i +
         '" type="text" value="' +
-        input.default +
+        escapeHtml(input.default) +
         '"' +
         (input.type === "text" && input.placeholder !== null
-          ? ' placeholder="' + input.placeholder + '"'
+          ? ' placeholder="' + escapeHtml(input.placeholder) + '"'
           : "") +
         "/>";
       if (input.type === "text-ref") textRefInput = i;
