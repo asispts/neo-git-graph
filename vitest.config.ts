@@ -18,6 +18,13 @@ export default defineConfig({
         }
       },
       {
+        resolve: { alias },
+        test: {
+          name: "extension",
+          include: ["tests/extension/bootstrap.test.ts"]
+        }
+      },
+      {
         resolve: {
           alias: [
             ...alias,
