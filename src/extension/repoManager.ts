@@ -25,6 +25,13 @@ export function createRepoManager(
   let repos = extensionState.getRepos();
   let viewCallback: ((repos: GitRepoSet, numRepos: number) => void) | null = null;
 
+  function setRepos(repos: string[]) {
+    repos.length = 0;
+    repos.forEach((repo) => {
+      addRepo(repo);
+    });
+  }
+
   function getRepos() {
     return sortRepos(repos);
   }
@@ -123,9 +130,10 @@ export function createRepoManager(
   return {
     registerViewCallback,
     deregisterViewCallback,
-    getRepos,
     isDirectoryWithinRepos,
+    getRepos,
     sendRepos,
+    setRepos,
     addRepo,
     removeRepo,
     removeReposWithinFolder,

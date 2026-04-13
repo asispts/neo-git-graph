@@ -1,101 +1,88 @@
 import * as vscode from "vscode";
 
 import { AvatarManager } from "@/avatarManager";
-import { gitClientFactory } from "@/backend/gitClient";
+import { GitClient, gitClientFactory } from "@/backend/gitClient";
 import { buildExtensionUri } from "@/backend/utils/path";
 import { config } from "@/config";
 import { DiffDocProvider } from "@/diffDocProvider";
+import { registerMessageHandlers } from "@/extension/messageHandler";
+import { createRepoManager } from "@/extension/repoManager";
+import { WebviewBridge, webviewBridgeFactory } from "@/extension/webviewBridge";
+import { createWebviewPanel, WebviewPanel } from "@/extension/webviewPanel";
 import { ExtensionState } from "@/extensionState";
-import { initL10n } from "@/l10n";
 import * as l10n from "@/l10n";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { StatusBarItem } from "@/statusBarItem";
 
-import { registerMessageHandlers } from "./messageHandler";
-import { createRepoManager } from "./repoManager";
-import { webviewBridgeFactory, WebviewBridge } from "./webviewBridge";
-import { createWebviewPanel } from "./webviewPanel";
+function registerViewCommand(
+  ctx: vscode.ExtensionContext,
+  repos: string[],
+  extensionState: ExtensionState,
+  avatarManager: AvatarManager,
+  gitClient: GitClient
+) {
+  const statusBarItem = new StatusBarItem(ctx, config);
+  const repoManager = createRepoManager(extensionState, statusBarItem, config);
+  repoManager.setRepos(repos);
 
-export type PanelHandle = {
-  reveal(): void;
-};
+  let currentPanel: WebviewPanel | undefined;
+  ctx.subscriptions.push(
+    vscode.commands.registerCommand("neo-git-graph.view", () => {
+      if (currentPanel) {
+        currentPanel.reveal(vscode.window.activeTextEditor?.viewColumn);
+        return;
+      }
 
-export function viewGitGraphCommand(
-  panelFactory: (onDispose: () => void) => PanelHandle
-): () => void {
-  let currentPanel: PanelHandle | undefined;
+      const vsPanel = vscode.window.createWebviewPanel(
+        "neo-git-graph",
+        l10n.t("outputChannel.text"),
+        vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
+        {
+          enableScripts: true,
+          localResourceRoots: [
+            buildExtensionUri(ctx.extensionPath, "media"),
+            buildExtensionUri(ctx.extensionPath, "out")
+          ]
+        }
+      );
 
-  return () => {
-    if (currentPanel) {
-      currentPanel.reveal();
-      return;
-    }
-    currentPanel = panelFactory(() => {
-      currentPanel = undefined;
-    });
-  };
+      let bridge!: WebviewBridge;
+      const repoFileWatcher = new RepoFileWatcher(() => {
+        if (vsPanel.visible) bridge.post({ command: "refresh" });
+      });
+      bridge = webviewBridgeFactory(vsPanel.webview, repoFileWatcher);
+      avatarManager.registerBridge(bridge.post.bind(bridge));
+
+      const { onPanelShown } = registerMessageHandlers(bridge, {
+        config,
+        gitClient,
+        repoManager,
+        extensionState,
+        avatarManager,
+        repoFileWatcher
+      });
+
+      currentPanel = createWebviewPanel({
+        panel: vsPanel,
+        bridge,
+        config,
+        repoFileWatcher,
+        extensionPath: ctx.extensionPath,
+        extensionState,
+        avatarManager,
+        repoManager,
+        onDispose: () => {
+          currentPanel = undefined;
+        },
+        onPanelShown
+      });
+    })
+  );
 }
 
-export function bootstrap(ctx: vscode.ExtensionContext, repos: string[]): void {
-  initL10n(ctx.extensionPath);
+export function bootstrap(ctx: vscode.ExtensionContext, repos: string[]) {
   const extensionState = new ExtensionState(ctx);
-  const statusBarItem = new StatusBarItem(ctx, config);
-  const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
   const avatarManager = new AvatarManager(config.gitPath, extensionState);
-  const repoManager = createRepoManager(extensionState, statusBarItem, config);
-
-  for (const repo of repos) {
-    repoManager.addRepo(repo);
-  }
-
-  ctx.subscriptions.push(
-    vscode.commands.registerCommand(
-      "neo-git-graph.view",
-      viewGitGraphCommand((onDispose) => {
-        const column = vscode.window.activeTextEditor?.viewColumn;
-        const vsPanel = vscode.window.createWebviewPanel(
-          "neo-git-graph",
-          l10n.t("outputChannel.text"),
-          column ?? vscode.ViewColumn.One,
-          {
-            enableScripts: true,
-            localResourceRoots: [
-              buildExtensionUri(ctx.extensionPath, "media"),
-              buildExtensionUri(ctx.extensionPath, "out")
-            ]
-          }
-        );
-
-        let bridge!: WebviewBridge;
-        const repoFileWatcher = new RepoFileWatcher(() => {
-          if (vsPanel.visible) bridge.post({ command: "refresh" });
-        });
-        bridge = webviewBridgeFactory(vsPanel.webview, repoFileWatcher);
-        avatarManager.registerBridge(bridge.post.bind(bridge));
-        const { onPanelShown } = registerMessageHandlers(bridge, {
-          config,
-          gitClient,
-          repoManager,
-          extensionState,
-          avatarManager,
-          repoFileWatcher
-        });
-
-        return createWebviewPanel({
-          panel: vsPanel,
-          bridge,
-          config,
-          repoFileWatcher,
-          extensionPath: ctx.extensionPath,
-          extensionState,
-          avatarManager,
-          repoManager,
-          onDispose,
-          onPanelShown
-        });
-      })
-    )
-  );
 
   ctx.subscriptions.push(
     vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", () => {
@@ -103,10 +90,13 @@ export function bootstrap(ctx: vscode.ExtensionContext, repos: string[]): void {
     })
   );
 
+  const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
   ctx.subscriptions.push(
     vscode.workspace.registerTextDocumentContentProvider(
       DiffDocProvider.scheme,
       new DiffDocProvider(gitClient.getInstance)
     )
   );
+
+  registerViewCommand(ctx, repos, extensionState, avatarManager, gitClient);
 }
