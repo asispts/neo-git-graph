@@ -2,11 +2,12 @@ import * as vscode from "vscode";
 
 import { AvatarManager } from "@/avatarManager";
 import { GitClient, gitClientFactory } from "@/backend/gitClient";
+import { findGitRepos } from "@/backend/queries/repoSearch";
 import { buildExtensionUri } from "@/backend/utils/path";
 import { config } from "@/config";
 import { DiffDocProvider } from "@/diffDocProvider";
 import { registerMessageHandlers } from "@/extension/messageHandler";
-import { createRepoManager } from "@/extension/repoManager";
+import { createRepoManager, RepoManager } from "@/extension/repoManager";
 import { WebviewBridge, webviewBridgeFactory } from "@/extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "@/extension/webviewPanel";
 import { ExtensionState } from "@/extensionState";
@@ -16,15 +17,11 @@ import { StatusBarItem } from "@/statusBarItem";
 
 function registerViewCommand(
   ctx: vscode.ExtensionContext,
-  repos: string[],
+  repoManager: RepoManager,
   extensionState: ExtensionState,
-  statusBarItem: StatusBarItem,
   avatarManager: AvatarManager,
   gitClient: GitClient
 ) {
-  const repoManager = createRepoManager(extensionState, statusBarItem, config);
-  repoManager.setRepos(repos);
-
   let currentPanel: WebviewPanel | undefined;
   ctx.subscriptions.push(
     vscode.commands.registerCommand("neo-git-graph.view", () => {
@@ -99,7 +96,9 @@ export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
   );
 
   const statusBarItem = new StatusBarItem(ctx, config);
-  registerViewCommand(ctx, repos, extensionState, statusBarItem, avatarManager, gitClient);
+  const repoManager = createRepoManager(extensionState, statusBarItem, config);
+  repoManager.setRepos(repos);
+  registerViewCommand(ctx, repoManager, extensionState, avatarManager, gitClient);
 
   ctx.subscriptions.push(
     vscode.workspace.onDidChangeConfiguration((e) => {
@@ -107,6 +106,13 @@ export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
         statusBarItem.refresh();
       } else if (e.affectsConfiguration("git.path")) {
         gitClient.setGitPath(config.gitPath());
+      } else if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
+        const paths = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
+        void findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch()).then(
+          (repoDirs) => {
+            if (repoDirs.length > 0) repoManager.setRepos(repoDirs);
+          }
+        );
       }
     })
   );
