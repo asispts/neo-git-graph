@@ -56,7 +56,8 @@
           "variables": "suggestion"
         }
       }
-    ]
+    ],
+    "unicorn/require-post-message-target-origin": "allow" // false-positive
   },
   "overrides": [
     {

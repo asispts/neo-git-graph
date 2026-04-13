@@ -4,8 +4,7 @@
     // perf
     "eslint/no-await-in-loop": "off",
     // suspicious
-    "eslint/no-shadow": "off",
-    "unicorn/require-post-message-target-origin": "off"
+    "eslint/no-shadow": "off"
   },
   "overrides": [
     {
@@ -34,7 +33,6 @@
         // "eslint/no-await-in-loop": "error",
         // suspicious
         "eslint/no-shadow": "error"
-        // "unicorn/require-post-message-target-origin": "error"
       }
     }
   ]
