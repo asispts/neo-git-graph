@@ -40,7 +40,7 @@ function extractPlaceholders(text) {
   }
 
   // Return sorted array for consistent comparison
-  return placeholders.sort();
+  return placeholders.toSorted();
 }
 
 /**
@@ -84,13 +84,13 @@ function checkFileSet(baseDir, baseFileName, filePattern, sectionTitle) {
     files = fs
       .readdirSync(baseDir)
       .filter((file) => file.startsWith(filePattern) && file !== baseFileName)
-      .sort();
+      .toSorted();
   } else {
     // For bundle.l10n files, look in l10n directory
     files = fs
       .readdirSync(baseDir)
       .filter((file) => file.startsWith(filePattern) && file !== baseFileName)
-      .sort();
+      .toSorted();
   }
 
   if (files.length === 0) {
@@ -208,7 +208,7 @@ function printCoverageSummary(allStats) {
   });
 
   Object.keys(localeMap)
-    .sort()
+    .toSorted()
     .forEach((locale) => {
       const bundleCov =
         localeMap[locale]["bundle"] !== undefined ? `${localeMap[locale]["bundle"]}%` : "N/A";

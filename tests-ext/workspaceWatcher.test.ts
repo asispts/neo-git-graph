@@ -47,7 +47,6 @@ function makeStubs(initialFolders: string[] = []) {
   const config = { maxDepthOfRepoSearch: () => 2 };
 
   // Capture watcher handles and folder-change handler so tests can fire events
-  type StubUri = { fsPath: string };
   type WatcherHandle = {
     pattern: string;
     fireCreate: (uri: StubUri) => void;

@@ -26,8 +26,8 @@ export class ExtensionState {
         this.avatarStorageAvailable = true;
       } else {
         fs.mkdir(this.globalStoragePath, () => {
-          fs.mkdir(this.globalStoragePath + AVATAR_STORAGE_FOLDER, (err) => {
-            if (!err) this.avatarStorageAvailable = true;
+          fs.mkdir(this.globalStoragePath + AVATAR_STORAGE_FOLDER, (mkdirErr) => {
+            if (!mkdirErr) this.avatarStorageAvailable = true;
           });
         });
       }

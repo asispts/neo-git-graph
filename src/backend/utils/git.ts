@@ -1,4 +1,4 @@
-import simpleGit from "simple-git";
+import { simpleGit } from "simple-git";
 
 export async function isGitRepository(repoPath: string, gitPath: string): Promise<boolean> {
   try {

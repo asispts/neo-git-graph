@@ -37,9 +37,9 @@ export class DiffDocProvider implements vscode.TextDocumentContentProvider {
       .show([`${request.commit}:${request.filePath}`])
       .catch(() => "")
       .then((data) => {
-        let document = new DiffDocument(data);
-        this.docs.set(uri.toString(), document);
-        return document.value;
+        let doc = new DiffDocument(data);
+        this.docs.set(uri.toString(), doc);
+        return doc.value;
       });
   }
 }

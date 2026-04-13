@@ -1,14 +1,6 @@
 {
   "$schema": "../node_modules/oxlint/configuration_schema.json",
-  "rules": {
-    // perf
-    "eslint/no-await-in-loop": "off",
-    // suspicious
-    "import/no-named-as-default": "off",
-    "eslint/no-shadow": "off",
-    "unicorn/require-post-message-target-origin": "off",
-    "unicorn/no-array-sort": "off"
-  },
+  "rules": {},
   "overrides": [
     {
       "files": ["src/webview/**/*.ts"],
@@ -20,6 +12,20 @@
       "files": ["tests/**/*.ts"],
       "rules": {
         "eslint/no-undef": "off"
+      }
+    },
+
+    // needs refactor
+    {
+      "files": [
+        "src/extension/workspaceSearch.ts",
+        "src/backend/queries/loadCommits.ts",
+        "src/backend/utils/repoSearch.ts",
+        "src/extension/workspaceWatcher.ts"
+      ],
+      "rules": {
+        // perf
+        "eslint/no-await-in-loop": "allow"
       }
     }
   ]

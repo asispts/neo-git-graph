@@ -1,18 +1,6 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "../..",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-    "lib": ["es2020", "dom"],
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "removeComments": true,
-    "strict": true,
-    "target": "es6"
+    "lib": ["es2023", "dom"]
   }
 }

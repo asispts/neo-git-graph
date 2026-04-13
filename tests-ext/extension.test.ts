@@ -27,7 +27,7 @@ suite("GitGraphPanel", () => {
     await vscode.commands.executeCommand("neo-git-graph.view");
     const deadline = Date.now() + 2000;
     while (!isPanelOpen() && Date.now() < deadline) {
-      await new Promise((r) => setTimeout(r, 50));
+      await new Promise((r) => setTimeout(r, 50)); // eslint-disable-line no-await-in-loop
     }
   }
 
