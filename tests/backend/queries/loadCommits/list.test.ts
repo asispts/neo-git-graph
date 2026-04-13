@@ -1,7 +1,7 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 
-import simpleGit from "simple-git";
+import { simpleGit } from "simple-git";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { loadCommits } from "@/backend/queries/loadCommits";

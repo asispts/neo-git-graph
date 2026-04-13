@@ -4,7 +4,6 @@
     // perf
     "eslint/no-await-in-loop": "off",
     // suspicious
-    "import/no-named-as-default": "off",
     "eslint/no-shadow": "off",
     "unicorn/require-post-message-target-origin": "off",
     "unicorn/no-array-sort": "off"
@@ -20,6 +19,24 @@
       "files": ["tests/**/*.ts"],
       "rules": {
         "eslint/no-undef": "off"
+      }
+    },
+
+    // new directory should be strict by default
+    {
+      "files": [
+        "src/backend/**/*.ts",
+        "src/extension/**/*.ts",
+        "src/webview/**/*.ts",
+        "tests/**/*.ts"
+      ],
+      "rules": {
+        // perf
+        // "eslint/no-await-in-loop": "error",
+        // suspicious
+        // "eslint/no-shadow": "error",
+        // "unicorn/require-post-message-target-origin": "error",
+        // "unicorn/no-array-sort": "error"
       }
     }
   ]

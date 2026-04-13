@@ -1,7 +1,7 @@
 import * as cp from "node:child_process";
 import * as fs from "node:fs";
 
-import simpleGit from "simple-git";
+import { simpleGit } from "simple-git";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 
 import { deleteTag } from "@/backend/actions/tag";
