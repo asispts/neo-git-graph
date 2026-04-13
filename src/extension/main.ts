@@ -17,21 +17,7 @@ export async function activate(ctx: vscode.ExtensionContext) {
     return;
   }
 
-  ctx.subscriptions.push(
-    waitForRepo(ctx),
-    vscode.commands.registerCommand("neo-git-graph.view", async () => {
-      await vscode.window.showErrorMessage(l10n.t("statusBar.text"), {
-        detail: l10n.t("error.noGitRepository"),
-        modal: true
-      });
-    }),
-    vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", async () => {
-      await vscode.window.showErrorMessage(l10n.t("statusBar.text"), {
-        detail: l10n.t("error.noGitRepository"),
-        modal: true
-      });
-    })
-  );
+  ctx.subscriptions.push(waitForRepo(ctx));
 }
 
 export function deactivate() {}

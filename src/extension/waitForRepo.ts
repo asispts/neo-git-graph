@@ -3,6 +3,7 @@ import * as vscode from "vscode";
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { config } from "@/config";
 import { bootstrap } from "@/extension/bootstrap";
+import * as l10n from "@/l10n";
 
 export type WorkspaceApi = Pick<
   typeof vscode.workspace,
@@ -38,13 +39,25 @@ export function waitForRepo(
   const gitWatcher = workspace.createFileSystemWatcher("**/.git");
   const state: WatcherState = { disposed: false, disposables: [gitWatcher] };
 
-  state.disposables.push(gitWatcher.onDidCreate(() => check(ctx, workspace, state)));
-  state.disposables.push(workspace.onDidChangeWorkspaceFolders(() => check(ctx, workspace, state)));
   state.disposables.push(
+    gitWatcher.onDidCreate(() => check(ctx, workspace, state)),
+    workspace.onDidChangeWorkspaceFolders(() => check(ctx, workspace, state)),
     workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
         void check(ctx, workspace, state);
       }
+    }),
+    vscode.commands.registerCommand("neo-git-graph.view", async () => {
+      await vscode.window.showErrorMessage(l10n.t("statusBar.text"), {
+        detail: l10n.t("error.noGitRepository"),
+        modal: true
+      });
+    }),
+    vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", async () => {
+      await vscode.window.showErrorMessage(l10n.t("statusBar.text"), {
+        detail: l10n.t("error.noGitRepository"),
+        modal: true
+      });
     })
   );
 

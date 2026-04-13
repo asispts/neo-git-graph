@@ -5,5 +5,14 @@ export const workspace = {
     onDidCreate: () => ({ dispose: () => {} }),
     dispose: () => {}
   }),
-  onDidChangeWorkspaceFolders: () => ({ dispose: () => {} })
+  onDidChangeWorkspaceFolders: () => ({ dispose: () => {} }),
+  onDidChangeConfiguration: () => ({ dispose: () => {} })
+};
+
+export const commands = {
+  registerCommand: () => ({ dispose: () => {} })
+};
+
+export const window = {
+  showErrorMessage: () => Promise.resolve(undefined)
 };
