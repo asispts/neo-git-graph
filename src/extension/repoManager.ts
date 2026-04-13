@@ -25,9 +25,11 @@ export function createRepoManager(
   let repos = extensionState.getRepos();
   let viewCallback: ((repos: GitRepoSet, numRepos: number) => void) | null = null;
 
-  function setRepos(repos: string[]) {
-    repos.length = 0;
-    repos.forEach((repo) => {
+  function setRepos(repoDirs: string[]) {
+    for (const key of Object.keys(repos)) {
+      delete repos[key];
+    }
+    repoDirs.forEach((repo) => {
       addRepo(repo);
     });
 

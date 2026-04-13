@@ -81,7 +81,7 @@ describe("findGitRepos", () => {
   it("aggregates repos across multiple workspace paths", async () => {
     const nestedDir = path.join(tmpDir, "nested");
     const result = await findGitRepos([repoA, nestedDir], "git", 1);
-    expect(result.sort()).toEqual([repoA, repoB].sort());
+    expect(result.toSorted()).toEqual([repoA, repoB].toSorted());
   });
 
   it("does not report .git directories as repos", async () => {
