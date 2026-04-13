@@ -5,17 +5,17 @@ import * as vscode from "vscode";
 
 const FS_REGEX = /\\/g;
 
-export function isDirectory(path: string) {
+export function isDirectory(filePath: string) {
   return new Promise<boolean>((resolve) => {
-    fs.stat(path, (err, stats) => {
+    fs.stat(filePath, (err, stats) => {
       resolve(err ? false : stats.isDirectory());
     });
   });
 }
 
-export function doesPathExist(path: string) {
+export function doesPathExist(filePath: string) {
   return new Promise<boolean>((resolve) => {
-    fs.stat(path, (err) => resolve(!err));
+    fs.stat(filePath, (err) => resolve(!err));
   });
 }
 

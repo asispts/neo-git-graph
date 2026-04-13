@@ -218,8 +218,8 @@ class GitGraphView {
         commits,
         (a, b) =>
           a.hash === b.hash &&
-          arraysEqual(a.refs, b.refs, (a, b) => a.name === b.name && a.type === b.type) &&
-          arraysEqual(a.parentHashes, b.parentHashes, (a, b) => a === b)
+          arraysEqual(a.refs, b.refs, (ra, rb) => ra.name === rb.name && ra.type === rb.type) &&
+          arraysEqual(a.parentHashes, b.parentHashes, (pa, pb) => pa === pb)
       )
     ) {
       if (this.commits.length > 0 && this.commits[0].hash === "*") {
@@ -612,11 +612,11 @@ class GitGraphView {
                 );
               } else {
                 let options = this.commits[this.commitLookup[hash]].parentHashes.map(
-                  (hash, index) => ({
+                  (parentHash, index) => ({
                     name:
-                      abbrevCommit(hash) +
-                      (typeof this.commitLookup[hash] === "number"
-                        ? ": " + this.commits[this.commitLookup[hash]].message
+                      abbrevCommit(parentHash) +
+                      (typeof this.commitLookup[parentHash] === "number"
+                        ? ": " + this.commits[this.commitLookup[parentHash]].message
                         : ""),
                     value: (index + 1).toString()
                   })
@@ -663,11 +663,11 @@ class GitGraphView {
                 );
               } else {
                 let options = this.commits[this.commitLookup[hash]].parentHashes.map(
-                  (hash, index) => ({
+                  (parentHash, index) => ({
                     name:
-                      abbrevCommit(hash) +
-                      (typeof this.commitLookup[hash] === "number"
-                        ? ": " + this.commits[this.commitLookup[hash]].message
+                      abbrevCommit(parentHash) +
+                      (typeof this.commitLookup[parentHash] === "number"
+                        ? ": " + this.commits[this.commitLookup[parentHash]].message
                         : ""),
                     value: (index + 1).toString()
                   })
@@ -1567,10 +1567,10 @@ function showContextMenu(e: MouseEvent, items: ContextMenuElement[], sourceElem:
       : event.pageY - bounds.height + 2) + "px";
   contextMenu.style.opacity = "1";
 
-  addListenerToClass("contextMenuItem", "click", (e) => {
-    e.stopPropagation();
+  addListenerToClass("contextMenuItem", "click", (ev) => {
+    ev.stopPropagation();
     hideContextMenu();
-    items[parseInt((<HTMLElement>e.target).dataset.index!)]!.onClick();
+    items[parseInt((<HTMLElement>ev.target).dataset.index!)]!.onClick();
   });
 
   contextMenuSource = sourceElem;
