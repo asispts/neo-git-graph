@@ -11,6 +11,8 @@
     "removeComments": true,
     "sourceMap": true,
     "skipLibCheck": true,
+    "isolatedModules": true,
+    "esModuleInterop": true,
     "outDir": "out",
     "baseUrl": ".",
     "paths": {
