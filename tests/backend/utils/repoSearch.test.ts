@@ -96,7 +96,7 @@ describe("searchDirectoryForRepos", () => {
 
   it("finds nested repos when depth allows", async () => {
     const result = await searchDirectoryForRepos(tmpDir, 2, "git", []);
-    expect(result.sort()).toEqual([repoA, repoB].sort());
+    expect(result.toSorted()).toEqual([repoA, repoB].toSorted());
   });
 
   it("does not return .git subdirectory as a repo", async () => {

@@ -9,7 +9,7 @@ import { StatusBarItem } from "@/statusBarItem";
 import { GitRepoSet, GitRepoState } from "@/types";
 
 function sortRepos(repos: GitRepoSet) {
-  const repoPaths = Object.keys(repos).sort();
+  const repoPaths = Object.keys(repos).toSorted();
   const sorted: GitRepoSet = {};
   for (let i = 0; i < repoPaths.length; i++) {
     sorted[repoPaths[i]] = repos[repoPaths[i]];
