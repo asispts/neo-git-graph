@@ -1,6 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
+    "noEmit": false,
     "module": "commonjs",
     "moduleResolution": "node",
     "outDir": "../out/extension"
