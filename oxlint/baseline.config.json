@@ -1,8 +1,6 @@
 {
   "$schema": "../node_modules/oxlint/configuration_schema.json",
   "rules": {
-    // perf
-    "eslint/no-await-in-loop": "off",
     // suspicious
     "eslint/no-shadow": "off"
   },
@@ -29,10 +27,22 @@
         "tests/**/*.ts"
       ],
       "rules": {
-        // perf
-        // "eslint/no-await-in-loop": "error",
         // suspicious
         "eslint/no-shadow": "error"
+      }
+    },
+
+    // needs refactor
+    {
+      "files": [
+        "src/extension/workspaceSearch.ts",
+        "src/backend/queries/loadCommits.ts",
+        "src/backend/utils/repoSearch.ts",
+        "src/extension/workspaceWatcher.ts"
+      ],
+      "rules": {
+        // perf
+        "eslint/no-await-in-loop": "allow"
       }
     }
   ]
