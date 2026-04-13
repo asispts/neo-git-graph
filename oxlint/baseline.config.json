@@ -1,9 +1,6 @@
 {
   "$schema": "../node_modules/oxlint/configuration_schema.json",
-  "rules": {
-    // suspicious
-    "eslint/no-shadow": "off"
-  },
+  "rules": {},
   "overrides": [
     {
       "files": ["src/webview/**/*.ts"],
@@ -15,20 +12,6 @@
       "files": ["tests/**/*.ts"],
       "rules": {
         "eslint/no-undef": "off"
-      }
-    },
-
-    // new directory should be strict by default
-    {
-      "files": [
-        "src/backend/**/*.ts",
-        "src/extension/**/*.ts",
-        "src/webview/**/*.ts",
-        "tests/**/*.ts"
-      ],
-      "rules": {
-        // suspicious
-        "eslint/no-shadow": "error"
       }
     },
 
