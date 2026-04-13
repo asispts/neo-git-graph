@@ -1,8 +1,9 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "outDir": "../out/extension",
-    "sourceMap": true
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": "../out/extension"
   },
   "include": ["./**/*.ts"]
 }

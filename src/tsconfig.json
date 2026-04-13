@@ -1,20 +1,4 @@
 {
-  "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": ["./*"]
-    },
-    "lib": ["es2023"],
-    "module": "commonjs",
-    "outDir": "../out",
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitAny": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "removeComments": true,
-    "sourceMap": true,
-    "strict": true,
-    "target": "es6"
-  },
+  "extends": "../tsconfig.json",
   "exclude": ["webview"]
 }

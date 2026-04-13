@@ -1,16 +1,7 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "..",
-    "paths": {
-      "@/*": ["src/*"],
-      "@tests/*": ["tests/*"]
-    },
-    "module": "commonjs",
-    "target": "es6",
-    "lib": ["es2023", "dom"],
-    "strict": true,
-    "noImplicitAny": true,
-    "skipLibCheck": true
+    "lib": ["es2023", "dom"]
   },
   "include": [
     "./backend/**/*.ts",
