@@ -6,11 +6,11 @@ import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import type * as vscode from "vscode";
 
-vi.mock("@/extension/bootstrap");
+vi.mock("@/extension/initExtension");
 
-import { bootstrap } from "@/extension/bootstrap";
-import { waitForRepo } from "@/extension/waitForRepo";
-import type { WorkspaceApi } from "@/extension/waitForRepo";
+import { initExtension } from "@/extension/initExtension";
+import { watchForRepos } from "@/extension/watchForRepos";
+import type { WorkspaceApi } from "@/extension/watchForRepos";
 
 function makeFakeWorkspace(folderPaths: string[] = []): {
   workspace: WorkspaceApi;
@@ -61,8 +61,8 @@ const fakeCtx = {} as unknown as vscode.ExtensionContext;
 let tmpDir: string;
 
 beforeEach(() => {
-  tmpDir = mkdtempSync(join(tmpdir(), "ngg-waitForRepo-test-"));
-  vi.mocked(bootstrap).mockReturnValue(undefined);
+  tmpDir = mkdtempSync(join(tmpdir(), "ngg-watchForRepos-test-"));
+  vi.mocked(initExtension).mockReturnValue(undefined);
 });
 
 afterEach(() => {
@@ -71,74 +71,74 @@ afterEach(() => {
   rmSync(tmpDir, { recursive: true, force: true });
 });
 
-describe("waitForRepo", () => {
+describe("watchForRepos", () => {
   it("watches **/.git for creation events", () => {
     const { workspace } = makeFakeWorkspace();
-    waitForRepo(fakeCtx, workspace);
+    watchForRepos(fakeCtx, workspace);
     expect(workspace.createFileSystemWatcher).toHaveBeenCalledWith("**/.git");
   });
 
-  it("calls bootstrap when a .git is created and repos are found", async () => {
+  it("calls initExtension when a .git is created and repos are found", async () => {
     execSync("git init", { cwd: tmpDir });
     const { workspace, triggerGitCreate } = makeFakeWorkspace([tmpDir]);
 
-    waitForRepo(fakeCtx, workspace);
+    watchForRepos(fakeCtx, workspace);
     triggerGitCreate();
-    await vi.waitFor(() => expect(bootstrap).toHaveBeenCalledWith(fakeCtx, [tmpDir]));
+    await vi.waitFor(() => expect(initExtension).toHaveBeenCalledWith(fakeCtx, [tmpDir]));
   });
 
-  it("calls bootstrap when workspace folders change and repos are found", async () => {
+  it("calls initExtension when workspace folders change and repos are found", async () => {
     execSync("git init", { cwd: tmpDir });
     const { workspace, triggerFolderChange } = makeFakeWorkspace([tmpDir]);
 
-    waitForRepo(fakeCtx, workspace);
+    watchForRepos(fakeCtx, workspace);
     triggerFolderChange();
-    await vi.waitFor(() => expect(bootstrap).toHaveBeenCalledWith(fakeCtx, [tmpDir]));
+    await vi.waitFor(() => expect(initExtension).toHaveBeenCalledWith(fakeCtx, [tmpDir]));
   });
 
-  it("does not call bootstrap when no repos are found after detection", async () => {
+  it("does not call initExtension when no repos are found after detection", async () => {
     const { workspace, triggerGitCreate } = makeFakeWorkspace([tmpDir]);
 
-    waitForRepo(fakeCtx, workspace);
+    watchForRepos(fakeCtx, workspace);
     triggerGitCreate();
     await new Promise((r) => setTimeout(r, 50));
-    expect(bootstrap).not.toHaveBeenCalled();
+    expect(initExtension).not.toHaveBeenCalled();
   });
 
   it("disposes watchers after repos are found", async () => {
     execSync("git init", { cwd: tmpDir });
     const { workspace, gitWatcher, triggerGitCreate } = makeFakeWorkspace([tmpDir]);
 
-    waitForRepo(fakeCtx, workspace);
+    watchForRepos(fakeCtx, workspace);
     triggerGitCreate();
-    await vi.waitFor(() => expect(bootstrap).toHaveBeenCalled());
+    await vi.waitFor(() => expect(initExtension).toHaveBeenCalled());
     expect(gitWatcher.dispose).toHaveBeenCalled();
   });
 
   it("dispose() is idempotent", () => {
     const { workspace, gitWatcher } = makeFakeWorkspace();
-    const detector = waitForRepo(fakeCtx, workspace);
+    const detector = watchForRepos(fakeCtx, workspace);
     detector.dispose();
     detector.dispose();
     expect(gitWatcher.dispose).toHaveBeenCalledTimes(1);
   });
 
-  it("does not double-bootstrap when both events fire before check resolves", async () => {
+  it("does not double-initExtension when both events fire before check resolves", async () => {
     execSync("git init", { cwd: tmpDir });
     const { workspace, triggerGitCreate, triggerFolderChange } = makeFakeWorkspace([tmpDir]);
 
-    waitForRepo(fakeCtx, workspace);
+    watchForRepos(fakeCtx, workspace);
     triggerGitCreate();
     triggerFolderChange();
 
-    await vi.waitFor(() => expect(bootstrap).toHaveBeenCalled());
+    await vi.waitFor(() => expect(initExtension).toHaveBeenCalled());
     await new Promise((r) => setTimeout(r, 20));
-    expect(bootstrap).toHaveBeenCalledTimes(1);
+    expect(initExtension).toHaveBeenCalledTimes(1);
   });
 });
 
-describe("waitForRepo — mocked findGitRepos for timing control", () => {
-  it("does not bootstrap after external dispose while check is in-flight", async () => {
+describe("watchForRepos — mocked findGitRepos for timing control", () => {
+  it("does not initExtension after external dispose while check is in-flight", async () => {
     const { workspace, triggerGitCreate } = makeFakeWorkspace([tmpDir]);
 
     let resolveFindGitRepos!: (v: string[]) => void;
@@ -146,12 +146,12 @@ describe("waitForRepo — mocked findGitRepos for timing control", () => {
       () => new Promise((r) => (resolveFindGitRepos = r))
     );
 
-    const detector = waitForRepo(fakeCtx, workspace);
+    const detector = watchForRepos(fakeCtx, workspace);
     triggerGitCreate();
     detector.dispose();
     resolveFindGitRepos([tmpDir]);
 
     await new Promise((r) => setTimeout(r, 20));
-    expect(bootstrap).not.toHaveBeenCalled();
+    expect(initExtension).not.toHaveBeenCalled();
   });
 });

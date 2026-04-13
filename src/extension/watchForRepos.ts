@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { config } from "@/config";
-import { bootstrap } from "@/extension/bootstrap";
+import { initExtension } from "@/extension/initExtension";
 import * as l10n from "@/l10n";
 
 export type WorkspaceApi = Pick<
@@ -29,10 +29,10 @@ async function check(ctx: vscode.ExtensionContext, workspace: WorkspaceApi, stat
   const repoDirs = await findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch());
   if (repoDirs.length === 0 || state.disposed) return;
   dispose(state);
-  bootstrap(ctx, repoDirs);
+  initExtension(ctx, repoDirs);
 }
 
-export function waitForRepo(
+export function watchForRepos(
   ctx: vscode.ExtensionContext,
   workspace: WorkspaceApi = vscode.workspace
 ): { dispose(): void } {

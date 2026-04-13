@@ -80,7 +80,7 @@ function registerViewCommand(
   );
 }
 
-export function bootstrap(ctx: vscode.ExtensionContext, repos: string[]) {
+export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
   const extensionState = new ExtensionState(ctx);
   const avatarManager = new AvatarManager(config.gitPath, extensionState);
 
