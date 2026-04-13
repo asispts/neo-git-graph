@@ -12,6 +12,12 @@ export async function activate(ctx: vscode.ExtensionContext) {
   const paths = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
   const repoDirs = await findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch());
 
+  vscode.workspace.onDidChangeConfiguration(async (e) => {
+    if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
+      // const repoDirs = await findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch());
+    }
+  });
+
   if (repoDirs.length > 0) {
     bootstrap(ctx, repoDirs);
     return;

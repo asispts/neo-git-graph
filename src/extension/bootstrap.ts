@@ -18,10 +18,10 @@ function registerViewCommand(
   ctx: vscode.ExtensionContext,
   repos: string[],
   extensionState: ExtensionState,
+  statusBarItem: StatusBarItem,
   avatarManager: AvatarManager,
   gitClient: GitClient
 ) {
-  const statusBarItem = new StatusBarItem(ctx, config);
   const repoManager = createRepoManager(extensionState, statusBarItem, config);
   repoManager.setRepos(repos);
 
@@ -98,5 +98,16 @@ export function bootstrap(ctx: vscode.ExtensionContext, repos: string[]) {
     )
   );
 
-  registerViewCommand(ctx, repos, extensionState, avatarManager, gitClient);
+  const statusBarItem = new StatusBarItem(ctx, config);
+  registerViewCommand(ctx, repos, extensionState, statusBarItem, avatarManager, gitClient);
+
+  ctx.subscriptions.push(
+    vscode.workspace.onDidChangeConfiguration((e) => {
+      if (e.affectsConfiguration("neo-git-graph.showStatusBarItem")) {
+        statusBarItem.refresh();
+      } else if (e.affectsConfiguration("git.path")) {
+        gitClient.setGitPath(config.gitPath());
+      }
+    })
+  );
 }
