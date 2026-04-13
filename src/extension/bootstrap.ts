@@ -98,6 +98,12 @@ export function bootstrap(ctx: vscode.ExtensionContext, repos: string[]): void {
   );
 
   ctx.subscriptions.push(
+    vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", () => {
+      avatarManager.clearCache();
+    })
+  );
+
+  ctx.subscriptions.push(
     vscode.workspace.registerTextDocumentContentProvider(
       DiffDocProvider.scheme,
       new DiffDocProvider(gitClient.getInstance)
