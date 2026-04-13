@@ -1,18 +1,8 @@
 {
+  "extends": "../tsconfig.json",
   "compilerOptions": {
-    "baseUrl": "..",
-    "paths": {
-      "@/*": ["src/*"],
-      "@tests/*": ["tests/*"]
-    },
-    "module": "commonjs",
-    "target": "es6",
-    "lib": ["es2020"],
-    "strict": true,
-    "noImplicitAny": true,
-    "skipLibCheck": true,
-    "outDir": "./out",
-    "sourceMap": true
+    "noEmit": false,
+    "outDir": "./out"
   },
   "include": ["./**/*.ts"]
 }
