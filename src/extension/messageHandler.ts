@@ -146,7 +146,9 @@ export function registerMessageHandlers(
   // --- Infrastructure handlers ---
 
   bridge.onMessage("selectRepo", (msg) => {
-    if (msg.repo === currentRepo) return;
+    if (msg.repo === currentRepo) {
+      return;
+    }
     currentRepo = msg.repo;
     gitClient.setRepo(msg.repo);
     extensionState.setLastActiveRepo(msg.repo);

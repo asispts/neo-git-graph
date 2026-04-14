@@ -31,7 +31,9 @@ export function activate(context: vscode.ExtensionContext) {
 
   void (async () => {
     repoManager.removeReposNotInWorkspace();
-    if (!(await repoManager.checkReposExist())) repoManager.sendRepos();
+    if (!(await repoManager.checkReposExist())) {
+      repoManager.sendRepos();
+    }
     await repoSearch.searchWorkspaceForRepos();
     repoWatcher.startWatching();
   })();
@@ -58,7 +60,9 @@ export function activate(context: vscode.ExtensionContext) {
       );
       let bridge!: WebviewBridge;
       const repoFileWatcher = new RepoFileWatcher(() => {
-        if (panel.visible) bridge.post({ command: "refresh" });
+        if (panel.visible) {
+          bridge.post({ command: "refresh" });
+        }
       });
       bridge = webviewBridgeFactory(panel.webview, repoFileWatcher);
       avatarManager.registerBridge(bridge.post.bind(bridge));

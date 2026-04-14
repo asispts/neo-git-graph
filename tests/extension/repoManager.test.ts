@@ -196,7 +196,9 @@ suite("repoManager", () => {
     });
 
     teardown(() => {
-      if (fs.existsSync(repo)) fs.rmSync(repo, { recursive: true, force: true });
+      if (fs.existsSync(repo)) {
+        fs.rmSync(repo, { recursive: true, force: true });
+      }
     });
 
     test("returns false and keeps repos when all repos still exist", async () => {

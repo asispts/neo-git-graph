@@ -68,7 +68,9 @@ export function createWebviewPanel(opts: {
     repoManager.deregisterViewCallback();
     while (disposables.length) {
       const x = disposables.pop();
-      if (x) x.dispose();
+      if (x) {
+        x.dispose();
+      }
     }
   }
 
@@ -91,7 +93,9 @@ export function createWebviewPanel(opts: {
   );
 
   repoManager.registerViewCallback((repos: GitRepoSet, numRepos: number) => {
-    if (!panel.visible) return;
+    if (!panel.visible) {
+      return;
+    }
     if ((numRepos === 0 && isGraphViewLoaded) || (numRepos > 0 && !isGraphViewLoaded)) {
       update();
     } else {

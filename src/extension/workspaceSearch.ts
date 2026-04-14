@@ -28,10 +28,14 @@ export function createRepoSearch(repoManager: RepoManager, config: Config) {
     if (typeof rootFolders !== "undefined") {
       for (let i = 0; i < rootFolders.length; i++) {
         const path = getPathFromUri(rootFolders[i].uri);
-        if (await searchDirectoryForRepos(path, maxDepthOfRepoSearch)) changes = true;
+        if (await searchDirectoryForRepos(path, maxDepthOfRepoSearch)) {
+          changes = true;
+        }
       }
     }
-    if (changes) repoManager.sendRepos();
+    if (changes) {
+      repoManager.sendRepos();
+    }
   }
 
   return {

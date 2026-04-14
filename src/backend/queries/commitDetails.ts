@@ -24,7 +24,9 @@ async function fetchCommitInfo(
   const stdout = await git.raw(["show", "--quiet", commitHash, `--format=${format}`]);
   const lines = stdout.split(eolRegex);
   let lastLine = lines.length - 1;
-  while (lastLine >= 0 && lines[lastLine] === "") lastLine--;
+  while (lastLine >= 0 && lines[lastLine] === "") {
+    lastLine--;
+  }
   const commitInfo = lines[0].split(gitLogSeparator);
   return {
     hash: commitInfo[0],
@@ -80,7 +82,9 @@ export async function commitDetails(
     const fileLookup: { [file: string]: number } = {};
     for (let i = 1; i < nameStatusLines.length - 1; i++) {
       const line = nameStatusLines[i].split("\t");
-      if (line.length < 2) break;
+      if (line.length < 2) {
+        break;
+      }
       const oldFilePath = toPath(line[1]);
       const newFilePath = toPath(line[line.length - 1]);
       fileLookup[newFilePath] = details.fileChanges.length;
@@ -95,7 +99,9 @@ export async function commitDetails(
 
     for (let i = 1; i < numStatLines.length - 1; i++) {
       const line = numStatLines[i].split("\t");
-      if (line.length !== 3) break;
+      if (line.length !== 3) {
+        break;
+      }
       const fileName = line[2].replace(/(.*){.* => (.*)}/, "$1$2").replace(/.* => (.*)/, "$1");
       if (typeof fileLookup[fileName] === "number") {
         details.fileChanges[fileLookup[fileName]].additions = parseInt(line[0]);

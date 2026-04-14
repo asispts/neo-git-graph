@@ -54,7 +54,9 @@ export class Dropdown {
     document.addEventListener(
       "click",
       (e) => {
-        if (!e.target) return;
+        if (!e.target) {
+          return;
+        }
         if (e.target === this.currentValueElem) {
           this.dropdownVisible = !this.dropdownVisible;
           if (this.dropdownVisible) {
@@ -62,7 +64,9 @@ export class Dropdown {
             this.filter();
           }
           this.elem.classList.toggle("dropdownOpen");
-          if (this.dropdownVisible) this.filterInput.focus();
+          if (this.dropdownVisible) {
+            this.filterInput.focus();
+          }
         } else if (this.dropdownVisible) {
           if ((<HTMLElement>e.target).closest(".dropdown") !== this.elem) {
             this.close();
@@ -90,7 +94,9 @@ export class Dropdown {
     document.addEventListener(
       "keyup",
       (e) => {
-        if (e.key === "Escape") this.close();
+        if (e.key === "Escape") {
+          this.close();
+        }
       },
       true
     );
@@ -106,12 +112,16 @@ export class Dropdown {
       }
     }
     this.selectedOption = selectedOption;
-    if (options.length <= 1) this.close();
+    if (options.length <= 1) {
+      this.close();
+    }
     this.render();
   }
 
   public refresh() {
-    if (this.options.length > 0) this.render();
+    if (this.options.length > 0) {
+      this.render();
+    }
   }
 
   private render() {
@@ -148,7 +158,9 @@ export class Dropdown {
         130
       ) + "px";
     this.menuElem.style.cssText = "right:0; overflow-y:auto; max-height:297px;";
-    if (this.dropdownVisible) this.filter();
+    if (this.dropdownVisible) {
+      this.filter();
+    }
   }
 
   private filter() {
@@ -158,7 +170,9 @@ export class Dropdown {
     for (let i = 0; i < this.options.length; i++) {
       match = this.options[i].name.toLowerCase().indexOf(val) > -1;
       (<HTMLElement>this.optionsElem.children[i]).style.display = match ? "block" : "none";
-      if (match) matches = true;
+      if (match) {
+        matches = true;
+      }
     }
     this.filterInput.style.display = "block";
     this.noResultsElem.style.display = matches ? "none" : "block";

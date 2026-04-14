@@ -29,7 +29,9 @@ export class DiffDocProvider implements vscode.TextDocumentContentProvider {
 
   public provideTextDocumentContent(uri: vscode.Uri): string | Thenable<string> {
     let document = this.docs.get(uri.toString());
-    if (document) return document.value;
+    if (document) {
+      return document.value;
+    }
 
     let request = decodeDiffDocUri(uri);
     return this.gitClient()

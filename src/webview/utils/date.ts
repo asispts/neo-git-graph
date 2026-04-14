@@ -1,6 +1,8 @@
 let getMonthCache: string[] | null = null;
 export function getMonth(): string[] {
-  if (getMonthCache) return getMonthCache;
+  if (getMonthCache) {
+    return getMonthCache;
+  }
   getMonthCache = [
     l10n.monthJan,
     l10n.monthFeb,

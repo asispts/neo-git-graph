@@ -27,7 +27,9 @@ export class AvatarManager {
     this.avatarStorageFolder = this.extensionState.getAvatarStoragePath();
     this.avatars = this.extensionState.getAvatarCache();
     this.queue = new AvatarRequestQueue(() => {
-      if (this.interval !== null) return;
+      if (this.interval !== null) {
+        return;
+      }
       this.interval = setInterval(() => {
         // Fetch avatars every 10 seconds
         this.fetchAvatarsInterval();
@@ -82,7 +84,9 @@ export class AvatarManager {
   private async fetchAvatarsInterval() {
     if (this.queue.hasItems()) {
       let avatarRequest = this.queue.takeItem();
-      if (avatarRequest === null) return; // No avatar can be checked at the current time
+      if (avatarRequest === null) {
+        return;
+      } // No avatar can be checked at the current time
 
       let remoteSource = await this.getRemoteSource(avatarRequest); // Fetch the remote source of the avatar
       switch (remoteSource.type) {
@@ -173,7 +177,9 @@ export class AvatarManager {
                   avatarRequest.email,
                   commit.author.avatar_url + "&size=54"
                 );
-                if (img !== null) this.saveAvatar(avatarRequest.email, img, false);
+                if (img !== null) {
+                  this.saveAvatar(avatarRequest.email, img, false);
+                }
                 return;
               }
             } else if (res.statusCode === 403) {
@@ -239,7 +245,9 @@ export class AvatarManager {
               if (users.length > 0 && users[0].avatar_url) {
                 // Avatar url found
                 let img = await this.downloadAvatarImage(avatarRequest.email, users[0].avatar_url);
-                if (img !== null) this.saveAvatar(avatarRequest.email, img, false);
+                if (img !== null) {
+                  this.saveAvatar(avatarRequest.email, img, false);
+                }
                 return;
               }
             } else if (res.statusCode === 429) {
@@ -277,7 +285,9 @@ export class AvatarManager {
       );
       identicon = true;
     }
-    if (img !== null) this.saveAvatar(avatarRequest.email, img, identicon);
+    if (img !== null) {
+      this.saveAvatar(avatarRequest.email, img, identicon);
+    }
   }
 
   private async downloadAvatarImage(email: string, imageUrl: string): Promise<string | null> {
@@ -394,7 +404,9 @@ class AvatarRequestQueue {
   // Add an existing avatar request item, setting the next time the request should be checked and registering if the current attempt failed
   public addItem(item: AvatarRequestItem, checkAfter: number, failedAttempt: boolean) {
     item.checkAfter = checkAfter;
-    if (failedAttempt) item.attempts++;
+    if (failedAttempt) {
+      item.attempts++;
+    }
     this.insertItem(item);
   }
 
@@ -405,8 +417,9 @@ class AvatarRequestQueue {
 
   // Takes an item from the queue if possible, respecting the value set for checkAfter
   public takeItem() {
-    if (this.queue.length > 0 && this.queue[0].checkAfter < new Date().getTime())
+    if (this.queue.length > 0 && this.queue[0].checkAfter < new Date().getTime()) {
       return this.queue.shift()!;
+    }
     return null;
   }
 
@@ -418,11 +431,16 @@ class AvatarRequestQueue {
       prevLength = this.queue.length;
     while (l <= r) {
       c = (l + r) >> 1;
-      if (this.queue[c].checkAfter <= item.checkAfter) l = c + 1;
-      else r = c - 1;
+      if (this.queue[c].checkAfter <= item.checkAfter) {
+        l = c + 1;
+      } else {
+        r = c - 1;
+      }
     }
     this.queue.splice(l, 0, item);
-    if (prevLength === 0) this.itemsAvailableCallback();
+    if (prevLength === 0) {
+      this.itemsAvailableCallback();
+    }
   }
 }
 

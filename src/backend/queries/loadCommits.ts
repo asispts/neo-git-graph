@@ -23,14 +23,18 @@ type LoadCommitsInput = {
 async function getRefs(git: SimpleGit, showRemoteBranches: boolean): Promise<GitRefData> {
   try {
     const args = ["show-ref"];
-    if (!showRemoteBranches) args.push("--heads", "--tags");
+    if (!showRemoteBranches) {
+      args.push("--heads", "--tags");
+    }
     args.push("-d", "--head");
     const stdout = await git.raw(args);
     const refData: GitRefData = { head: null, refs: [] };
     const lines = stdout.split(eolRegex);
     for (let i = 0; i < lines.length - 1; i++) {
       const parts = lines[i].split(" ");
-      if (parts.length < 2) continue;
+      if (parts.length < 2) {
+        continue;
+      }
       const hash = parts.shift()!;
       const ref = parts.join(" ");
       if (ref.startsWith("refs/heads/")) {
@@ -67,7 +71,9 @@ async function getLog(
     args.push(branch);
   } else {
     args.push("--branches", "--tags");
-    if (showRemoteBranches) args.push("--remotes");
+    if (showRemoteBranches) {
+      args.push("--remotes");
+    }
   }
   try {
     const stdout = await git.raw(args);
@@ -75,7 +81,9 @@ async function getLog(
     const commits: GitLogEntry[] = [];
     for (let i = 0; i < lines.length - 1; i++) {
       const line = lines[i].split(gitLogSeparator);
-      if (line.length !== 6) break;
+      if (line.length !== 6) {
+        break;
+      }
       commits.push({
         hash: line[0],
         parentHashes: line[1].split(" "),
@@ -94,7 +102,9 @@ async function getLog(
 async function getUnsavedChanges(git: SimpleGit) {
   try {
     const status = await git.status();
-    if (status.files.length === 0) return null;
+    if (status.files.length === 0) {
+      return null;
+    }
     return { branch: status.current ?? "HEAD", changes: status.files.length };
   } catch {
     return null;
@@ -115,7 +125,9 @@ export async function loadCommits(
 
   let commits = rawCommits;
   const moreCommitsAvailable = commits.length === maxCommits + 1;
-  if (moreCommitsAvailable) commits = commits.slice(0, -1);
+  if (moreCommitsAvailable) {
+    commits = commits.slice(0, -1);
+  }
 
   if (refData.head !== null) {
     for (let i = 0; i < commits.length; i++) {
