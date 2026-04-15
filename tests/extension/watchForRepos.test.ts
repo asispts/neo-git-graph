@@ -173,8 +173,8 @@ describe("watchForRepos", () => {
 
     it("calls onReposFound when maxDepth increases", async () => {
       mock.setFolders([repoDir]);
-      mock.setMaxDepth(5); // higher than tracker's current value → maxDepthIncreased() = true
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound); // tracker initializes at 0
+      mock.setMaxDepth(5); // increase after tracker is created
 
       mock.fireConfigChange("neo-git-graph.maxDepthOfRepoSearch");
 

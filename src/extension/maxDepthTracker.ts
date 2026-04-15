@@ -1,9 +1,10 @@
-import { config } from "@/config";
-
-let maxDepth = config.maxDepthOfRepoSearch();
-
-export function maxDepthIncreased(): boolean {
-  const prev = maxDepth;
-  maxDepth = config.maxDepthOfRepoSearch();
-  return maxDepth > prev;
+export function createMaxDepthTracker(initialDepth: number) {
+  let current = initialDepth;
+  return {
+    increased: (newDepth: number) => {
+      const prev = current;
+      current = newDepth;
+      return current > prev;
+    }
+  };
 }

@@ -3,7 +3,7 @@ import * as vscode from "vscode";
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { config } from "@/config";
 import type { InitExtension } from "@/extension/initExtension";
-import { maxDepthIncreased } from "@/extension/maxDepthTracker";
+import { createMaxDepthTracker } from "@/extension/maxDepthTracker";
 import * as l10n from "@/l10n";
 
 type WatcherState = {
@@ -33,6 +33,7 @@ export function watchForRepos(
   ctx: vscode.ExtensionContext,
   onReposFound: InitExtension
 ): { dispose(): void } {
+  const maxDepth = createMaxDepthTracker(config.maxDepthOfRepoSearch());
   const gitWatcher = vscode.workspace.createFileSystemWatcher("**/.git");
   const state: WatcherState = { disposed: false, disposables: [gitWatcher] };
 
@@ -41,7 +42,7 @@ export function watchForRepos(
     vscode.workspace.onDidChangeWorkspaceFolders(() => check(ctx, state, onReposFound)),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
-        if (maxDepthIncreased()) {
+        if (maxDepth.increased(config.maxDepthOfRepoSearch())) {
           void check(ctx, state, onReposFound);
         }
       }
