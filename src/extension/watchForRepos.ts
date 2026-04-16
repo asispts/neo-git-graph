@@ -22,6 +22,7 @@ async function check(
   state: WatcherState,
   onReposFound: InitExtension
 ) {
+  if (state.disposed) return;
   const paths = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
   const repoDirs = await findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch());
   if (repoDirs.length === 0 || state.disposed) return;

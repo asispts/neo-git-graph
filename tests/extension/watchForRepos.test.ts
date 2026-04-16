@@ -91,7 +91,7 @@ vi.mock("vscode", () => mock);
 // ctx is never inspected by watchForRepos itself — it's just forwarded to onReposFound.
 const ctx = {} as unknown as import("vscode").ExtensionContext;
 
-// Enough time for findGitRepos (real fs) to complete.
+// Allow real-fs async paths (findGitRepos) to complete.
 const tick = (ms = 150) => new Promise<void>((r) => setTimeout(r, ms));
 
 let repoDir: string;
@@ -160,13 +160,12 @@ describe("watchForRepos", () => {
   });
 
   describe("config change trigger", () => {
-    it("does not call onReposFound when maxDepth did not increase", async () => {
+    it("does not call onReposFound when maxDepth did not increase", () => {
       mock.setFolders([repoDir]);
       mock.setMaxDepth(0); // same as the tracker's current value → maxDepthIncreased() = false
       watcher = watchForRepos(ctx, onReposFound);
 
       mock.fireConfigChange("neo-git-graph.maxDepthOfRepoSearch");
-      await tick();
 
       expect(onReposFound).not.toHaveBeenCalled();
     });
@@ -181,12 +180,11 @@ describe("watchForRepos", () => {
       await vi.waitFor(() => expect(onReposFound).toHaveBeenCalledOnce());
     });
 
-    it("does not call onReposFound for an unrelated config key", async () => {
+    it("does not call onReposFound for an unrelated config key", () => {
       mock.setFolders([repoDir]);
       watcher = watchForRepos(ctx, onReposFound);
 
       mock.fireConfigChange("neo-git-graph.graphStyle");
-      await tick();
 
       expect(onReposFound).not.toHaveBeenCalled();
     });
@@ -200,9 +198,9 @@ describe("watchForRepos", () => {
       mock.fireCreate();
       await vi.waitFor(() => expect(onReposFound).toHaveBeenCalledOnce());
 
-      // State is now disposed — a second event must not re-trigger.
+      // State is now disposed — check() exits synchronously before any await.
       mock.fireCreate();
-      await tick();
+      await Promise.resolve();
 
       expect(onReposFound).toHaveBeenCalledOnce();
     });
