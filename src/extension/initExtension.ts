@@ -142,7 +142,10 @@ export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
           const paths = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
           void findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch()).then(
             (repoDirs) => {
-              if (repoDirs.length > 0) repoManager.setRepos(repoDirs);
+              if (repoDirs.length > 0) {
+              repoManager.setRepos(repoDirs);
+              repoManager.sendRepos();
+            }
             }
           );
         }

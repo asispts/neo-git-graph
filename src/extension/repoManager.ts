@@ -33,8 +33,6 @@ export function createRepoManager(
       repos[repo] = { columnWidths: null };
     }
     extensionState.saveRepos(repos);
-
-    sendRepos();
   }
 
   function getRepos() {
