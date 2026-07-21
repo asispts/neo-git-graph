@@ -77,6 +77,38 @@ suite("repoManager", () => {
     });
   });
 
+  suite("setRepos", () => {
+    test("adds new repos with null columnWidths", () => {
+      const { manager, store } = makeManager();
+      manager.setRepos(["/ws/a", "/ws/b"]);
+      assert.deepStrictEqual(store.repos, {
+        "/ws/a": { columnWidths: null },
+        "/ws/b": { columnWidths: null }
+      });
+    });
+
+    test("preserves columnWidths of repos that are still present", () => {
+      const { manager, store } = makeManager({ "/ws/a": { columnWidths: [100, 200] } });
+      manager.setRepos(["/ws/a", "/ws/b"]);
+      assert.deepStrictEqual(store.repos["/ws/a"], { columnWidths: [100, 200] });
+    });
+
+    test("removes repos that are not in the new list", () => {
+      const { manager, store } = makeManager({
+        "/ws/a": { columnWidths: [100] },
+        "/ws/b": { columnWidths: null }
+      });
+      manager.setRepos(["/ws/a"]);
+      assert.strictEqual(store.repos["/ws/b"], undefined);
+    });
+
+    test("persists once after setting", () => {
+      const { manager, getSaveCount } = makeManager({ "/ws/a": { columnWidths: null } });
+      manager.setRepos(["/ws/a", "/ws/b"]);
+      assert.strictEqual(getSaveCount(), 1);
+    });
+  });
+
   suite("getRepos", () => {
     test("returns repos sorted by path", () => {
       const { manager } = makeManager({

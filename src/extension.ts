@@ -17,6 +17,9 @@ import { initL10n } from "./l10n";
 import { RepoFileWatcher } from "./repoFileWatcher";
 import { StatusBarItem } from "./statusBarItem";
 
+/**
+ * @deprecated See src/extension/main.ts
+ */
 export function activate(context: vscode.ExtensionContext) {
   initL10n(context.extensionPath);
   const outputChannel = vscode.window.createOutputChannel(l10n.t("outputChannel.text"));
