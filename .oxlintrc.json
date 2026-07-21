@@ -22,6 +22,7 @@
     "style": "off" // Idiomatic and consistent style rules
   },
   "rules": {
+    "eslint/no-underscore-dangle": "allow",
     "unicorn/require-post-message-target-origin": "allow", // false-positive
     "eslint/curly": "error",
     "import-js/order": [

@@ -2,6 +2,20 @@ import * as assert from "node:assert";
 
 import * as vscode from "vscode";
 
+function isPanelOpen() {
+  return vscode.window.tabGroups.all
+    .flatMap((g) => g.tabs)
+    .some((t) => t.label === "(neo) Git Graph");
+}
+
+async function openPanel() {
+  await vscode.commands.executeCommand("neo-git-graph.view");
+  const deadline = Date.now() + 2000;
+  while (!isPanelOpen() && Date.now() < deadline) {
+    await new Promise((r) => setTimeout(r, 50)); // eslint-disable-line no-await-in-loop
+  }
+}
+
 suite("GitGraphPanel", () => {
   suiteSetup(async () => {
     const ext = vscode.extensions.getExtension("asispts.neo-git-graph");
@@ -16,20 +30,6 @@ suite("GitGraphPanel", () => {
   suiteTeardown(async () => {
     await vscode.commands.executeCommand("workbench.action.closeAllEditors");
   });
-
-  function isPanelOpen() {
-    return vscode.window.tabGroups.all
-      .flatMap((g) => g.tabs)
-      .some((t) => t.label === "(neo) Git Graph");
-  }
-
-  async function openPanel() {
-    await vscode.commands.executeCommand("neo-git-graph.view");
-    const deadline = Date.now() + 2000;
-    while (!isPanelOpen() && Date.now() < deadline) {
-      await new Promise((r) => setTimeout(r, 50)); // eslint-disable-line no-await-in-loop
-    }
-  }
 
   test("view command opens the panel", async () => {
     await openPanel();

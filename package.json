@@ -57,19 +57,19 @@
   },
   "devDependencies": {
     "@types/mocha": "^10.0.10",
-    "@types/node": "^20.19.39",
+    "@types/node": "~20.19.43",
     "@types/vscode": "~1.98.0",
     "@vscode/l10n-dev": "^0.0.35",
-    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^2.5.2",
-    "esbuild": "^0.28.0",
+    "esbuild": "^0.28.1",
     "eslint-plugin-import": "^2.32.0",
-    "jsdom": "^29.0.2",
-    "oxfmt": "^0.44.0",
-    "oxlint": "^1.59.0",
-    "tsc-alias": "^1.8.16",
+    "jsdom": "^29.1.1",
+    "oxfmt": "^0.59.0",
+    "oxlint": "^1.74.0",
+    "tsc-alias": "^1.9.1",
     "typescript": "^5.9.3",
-    "vitest": "^4.1.4"
+    "vitest": "^4.1.10"
   },
   "l10n": "./l10n",
   "contributes": {

@@ -9,6 +9,7 @@ export function initLogger(ctx: vscode.ExtensionContext) {
 
 export function log(msg: string) {
   if (!outputChannel) {
+    // eslint-disable-next-line no-console
     console.warn("[Neo Git Graph] log() called before initLogger()");
     return;
   }
