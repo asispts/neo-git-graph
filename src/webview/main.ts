@@ -10,7 +10,7 @@ import type {
 import { Dropdown } from "./dropdown";
 import { Graph } from "./graph";
 import { getMonth, pad2 } from "./utils/date";
-import { addListenerToClass, blinkHeadRow, insertAfter } from "./utils/dom";
+import { addListenerToClass, insertAfter } from "./utils/dom";
 import { arraysEqual, ELLIPSIS, refInvalid } from "./utils/git";
 import { escapeHtml, unescapeHtml } from "./utils/html";
 import { svgIcons } from "./utils/icons";
@@ -85,12 +85,6 @@ class GitGraphView {
     document.getElementById("refreshBtn")!.addEventListener("click", () => {
       this.refresh(true);
     });
-    const blinkBtn = document.getElementById("blinkHeadBtn");
-    if (blinkBtn) {
-      blinkBtn.addEventListener("click", () => {
-        blinkHeadRow(this.commitHead);
-      });
-    }
     this.observeWindowSizeChanges();
     this.observeWebviewStyleChanges();
     this.observeWebviewScroll();
@@ -437,7 +431,11 @@ class GitGraphView {
       html +=
         "<tr " +
         (this.commits[i].hash !== "*"
-          ? 'class="commit" data-hash="' + this.commits[i].hash + '"'
+          ? 'class="commit' +
+            (this.commits[i].hash === this.commitHead ? " head" : "") +
+            '" data-hash="' +
+            this.commits[i].hash +
+            '"'
           : 'class="unsavedChanges"') +
         ' data-id="' +
         i +

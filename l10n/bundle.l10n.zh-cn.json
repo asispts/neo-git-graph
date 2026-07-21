@@ -6,7 +6,6 @@
   "ui.branch": "分支",
   "ui.showRemoteBranches": "显示远程分支",
   "ui.refresh": "刷新",
-  "ui.locateHead": "定位 HEAD",
   "ui.loading": "加载中 ...",
   "ui.loadMore": "加载更多提交",
   "ui.showAll": "显示全部",

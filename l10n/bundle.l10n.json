@@ -6,7 +6,6 @@
   "ui.branch": "Branch",
   "ui.showRemoteBranches": "Show Remote Branches",
   "ui.refresh": "Refresh",
-  "ui.locateHead": "Locate HEAD",
   "ui.loading": "Loading ...",
   "ui.loadMore": "Load More Commits",
   "ui.showAll": "Show All",
