@@ -1,7 +1,4 @@
-import * as vscode from "vscode";
-
 import { isGitRepository } from "@/backend/utils/git";
-import { getPathFromUri } from "@/backend/utils/path";
 import { evalPromises } from "@/backend/utils/promise";
 import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
@@ -97,28 +94,6 @@ export function createRepoManager(
     extensionState.saveRepos(repos);
   }
 
-  function removeReposNotInWorkspace() {
-    const rootsExact: string[] = [];
-    const rootsFolder: string[] = [];
-    const workspaceFolders = vscode.workspace.workspaceFolders;
-    const repoPaths = Object.keys(repos);
-    if (typeof workspaceFolders !== "undefined") {
-      for (let i = 0; i < workspaceFolders.length; i++) {
-        const path = getPathFromUri(workspaceFolders[i].uri);
-        rootsExact.push(path);
-        rootsFolder.push(path + "/");
-      }
-    }
-    for (let i = 0; i < repoPaths.length; i++) {
-      if (
-        rootsExact.indexOf(repoPaths[i]) === -1 &&
-        !rootsFolder.find((x) => repoPaths[i].startsWith(x))
-      ) {
-        removeRepo(repoPaths[i]);
-      }
-    }
-  }
-
   function checkReposExist() {
     return new Promise<boolean>((resolve) => {
       const repoPaths = Object.keys(repos);
@@ -151,7 +126,6 @@ export function createRepoManager(
     removeRepo,
     removeReposWithinFolder,
     setRepoState,
-    removeReposNotInWorkspace,
     checkReposExist
   };
 }

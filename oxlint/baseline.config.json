@@ -17,12 +17,7 @@
 
     // needs refactor
     {
-      "files": [
-        "src/extension/workspaceSearch.ts",
-        "src/backend/queries/loadCommits.ts",
-        "src/backend/utils/repoSearch.ts",
-        "src/extension/workspaceWatcher.ts"
-      ],
+      "files": ["src/backend/queries/loadCommits.ts", "src/backend/utils/repoSearch.ts"],
       "rules": {
         // perf
         "eslint/no-await-in-loop": "allow"
