@@ -50,7 +50,9 @@ function registerViewCommand(
 
       let bridge!: WebviewBridge;
       const repoFileWatcher = new RepoFileWatcher(() => {
-        if (vsPanel.visible) bridge.post({ command: "refresh" });
+        if (vsPanel.visible) {
+          bridge.post({ command: "refresh" });
+        }
       });
       bridge = webviewBridgeFactory(vsPanel.webview, repoFileWatcher);
       avatarManager.registerBridge(bridge.post.bind(bridge));
@@ -111,25 +113,37 @@ export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
     gitWatcher,
     gitWatcher.onDidCreate((uri) => {
       const repoPath = path.dirname(uri.fsPath);
-      if (repoManager.addRepo(repoPath)) repoManager.sendRepos();
+      if (repoManager.addRepo(repoPath)) {
+        repoManager.sendRepos();
+      }
     }),
     gitWatcher.onDidDelete((uri) => {
       const repoPath = path.dirname(uri.fsPath);
-      if (repoManager.removeReposWithinFolder(repoPath)) repoManager.sendRepos();
+      if (repoManager.removeReposWithinFolder(repoPath)) {
+        repoManager.sendRepos();
+      }
     }),
     vscode.workspace.onDidChangeWorkspaceFolders(async (e) => {
       if (e.added.length > 0) {
         const paths = e.added.map((f) => f.uri.fsPath);
         const repoDirs = await findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch());
-        for (const repo of repoDirs) repoManager.addRepo(repo);
-        if (repoDirs.length > 0) repoManager.sendRepos();
+        for (const repo of repoDirs) {
+          repoManager.addRepo(repo);
+        }
+        if (repoDirs.length > 0) {
+          repoManager.sendRepos();
+        }
       }
       if (e.removed.length > 0) {
         let changes = false;
         for (const folder of e.removed) {
-          if (repoManager.removeReposWithinFolder(folder.uri.fsPath)) changes = true;
+          if (repoManager.removeReposWithinFolder(folder.uri.fsPath)) {
+            changes = true;
+          }
         }
-        if (changes) repoManager.sendRepos();
+        if (changes) {
+          repoManager.sendRepos();
+        }
       }
     }),
     vscode.workspace.onDidChangeConfiguration((e) => {

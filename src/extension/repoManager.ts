@@ -71,7 +71,9 @@ export function createRepoManager(
   }
 
   function addRepo(repo: string) {
-    if (repos[repo]) return false;
+    if (repos[repo]) {
+      return false;
+    }
     repos[repo] = { columnWidths: null };
     extensionState.saveRepos(repos);
     return true;

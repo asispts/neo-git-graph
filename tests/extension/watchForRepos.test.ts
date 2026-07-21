@@ -31,8 +31,12 @@ const mock = vi.hoisted(() => {
       },
       getConfiguration: (section: string) => ({
         get: (key: string, def: unknown) => {
-          if (section === "neo-git-graph" && key === "maxDepthOfRepoSearch") return maxDepthVal;
-          if (section === "git" && key === "path") return null; // falls back to "git"
+          if (section === "neo-git-graph" && key === "maxDepthOfRepoSearch") {
+            return maxDepthVal;
+          }
+          if (section === "git" && key === "path") {
+            return null; // falls back to "git"
+          }
           return def;
         }
       }),
