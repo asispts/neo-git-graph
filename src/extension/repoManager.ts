@@ -26,12 +26,11 @@ export function createRepoManager(
   let viewCallback: ((repos: GitRepoSet, numRepos: number) => void) | null = null;
 
   function setRepos(repoDirs: string[]) {
-    for (const key of Object.keys(repos)) {
-      delete repos[key];
-    }
+    const next: GitRepoSet = {};
     for (const repo of repoDirs) {
-      repos[repo] = { columnWidths: null };
+      next[repo] = repos[repo] ?? { columnWidths: null };
     }
+    repos = next;
     extensionState.saveRepos(repos);
   }
 
