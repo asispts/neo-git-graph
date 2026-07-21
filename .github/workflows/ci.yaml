@@ -23,14 +23,14 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
-      - run: corepack enable
+          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Format check
         run: pnpm run format
@@ -53,14 +53,14 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
         with:
           node-version: ${{ matrix.node }}
-      - run: corepack enable
+          cache: pnpm
 
       - name: Install dependencies
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
 
       - name: Run tests
         run: pnpm run test
