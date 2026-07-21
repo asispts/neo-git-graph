@@ -11,7 +11,7 @@ export class StatusBarItem {
 
   constructor(context: vscode.ExtensionContext, config: Config) {
     this.config = config;
-    this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1);
     this.statusBarItem.text = l10n.t("statusBar.text");
     this.statusBarItem.tooltip = l10n.t("statusBar.tooltip");
     this.statusBarItem.command = "neo-git-graph.view";
