@@ -7,6 +7,7 @@ import { initExtension } from "@/extension/initExtension";
 import { watchForRepos } from "@/extension/watchForRepos";
 import * as l10n from "@/l10n";
 import * as logger from "@/logger";
+import { StatusBarItem } from "@/statusBarItem";
 
 export async function activate(ctx: vscode.ExtensionContext) {
   logger.initLogger(ctx);
@@ -22,20 +23,23 @@ export async function activate(ctx: vscode.ExtensionContext) {
     logger.log("Failed to detect git version");
   }
 
+  const statusBarItem = new StatusBarItem(ctx, config);
+  statusBarItem.refresh();
+
   const paths = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
   logger.log(`Searching workspace for new repos (${paths.length} folder(s)) ...`);
   const repoDirs = await findGitRepos(paths, gitPath, config.maxDepthOfRepoSearch());
 
   if (repoDirs.length > 0) {
     logger.log(`Found ${repoDirs.length} repo(s)`);
-    initExtension(ctx, repoDirs);
+    initExtension(ctx, repoDirs, statusBarItem);
     logger.log("Started Neo Git Graph - Ready to use!");
     return;
   }
 
   logger.log("No repos found");
   logger.log("Watching for new repos ...");
-  ctx.subscriptions.push(watchForRepos(ctx, initExtension));
+  ctx.subscriptions.push(watchForRepos(ctx, initExtension, statusBarItem));
 }
 
 export function deactivate() {}

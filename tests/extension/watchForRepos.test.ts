@@ -113,12 +113,17 @@ afterAll(() => {
 
 let watcher: ReturnType<typeof watchForRepos> | undefined;
 let onReposFound: ReturnType<typeof vi.fn<InitExtension>>;
+let mockStatusBarItem: import("@/statusBarItem").StatusBarItem;
 
 beforeEach(() => {
   vi.clearAllMocks();
   mock.setFolders([]);
   mock.setMaxDepth(0);
   onReposFound = vi.fn<InitExtension>();
+  mockStatusBarItem = {
+    refresh: vi.fn(),
+    setNumRepos: vi.fn()
+  } as unknown as import("@/statusBarItem").StatusBarItem;
   watcher = undefined;
 });
 
@@ -132,17 +137,21 @@ describe("watchForRepos", () => {
   describe(".git creation trigger", () => {
     it("calls onReposFound with found repos", async () => {
       mock.setFolders([repoDir]);
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem);
 
       mock.fireCreate();
 
       await vi.waitFor(() => expect(onReposFound).toHaveBeenCalledOnce());
-      expect(onReposFound).toHaveBeenCalledWith(ctx, expect.arrayContaining([repoDir]));
+      expect(onReposFound).toHaveBeenCalledWith(
+        ctx,
+        expect.arrayContaining([repoDir]),
+        mockStatusBarItem
+      );
     });
 
     it("does not call onReposFound when no repos are found", async () => {
       mock.setFolders([plainDir]);
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem);
 
       mock.fireCreate();
       await tick();
@@ -154,12 +163,16 @@ describe("watchForRepos", () => {
   describe("workspace folders change trigger", () => {
     it("calls onReposFound with found repos", async () => {
       mock.setFolders([repoDir]);
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem);
 
       mock.fireFolderChange();
 
       await vi.waitFor(() => expect(onReposFound).toHaveBeenCalledOnce());
-      expect(onReposFound).toHaveBeenCalledWith(ctx, expect.arrayContaining([repoDir]));
+      expect(onReposFound).toHaveBeenCalledWith(
+        ctx,
+        expect.arrayContaining([repoDir]),
+        mockStatusBarItem
+      );
     });
   });
 
@@ -167,7 +180,7 @@ describe("watchForRepos", () => {
     it("does not call onReposFound when maxDepth did not increase", () => {
       mock.setFolders([repoDir]);
       mock.setMaxDepth(0); // same as the tracker's current value → maxDepthIncreased() = false
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem);
 
       mock.fireConfigChange("neo-git-graph.maxDepthOfRepoSearch");
 
@@ -176,7 +189,7 @@ describe("watchForRepos", () => {
 
     it("calls onReposFound when maxDepth increases", async () => {
       mock.setFolders([repoDir]);
-      watcher = watchForRepos(ctx, onReposFound); // tracker initializes at 0
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem); // tracker initializes at 0
       mock.setMaxDepth(5); // increase after tracker is created
 
       mock.fireConfigChange("neo-git-graph.maxDepthOfRepoSearch");
@@ -186,7 +199,7 @@ describe("watchForRepos", () => {
 
     it("does not call onReposFound for an unrelated config key", () => {
       mock.setFolders([repoDir]);
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem);
 
       mock.fireConfigChange("neo-git-graph.graphStyle");
 
@@ -197,7 +210,7 @@ describe("watchForRepos", () => {
   describe("one-shot disposal", () => {
     it("ignores further triggers after onReposFound has been called once", async () => {
       mock.setFolders([repoDir]);
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem);
 
       mock.fireCreate();
       await vi.waitFor(() => expect(onReposFound).toHaveBeenCalledOnce());
@@ -212,7 +225,7 @@ describe("watchForRepos", () => {
 
   describe("error commands (shown before any repo is found)", () => {
     it("neo-git-graph.view shows a modal error", async () => {
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem);
 
       await mock.invokeCommand("neo-git-graph.view");
 
@@ -224,7 +237,7 @@ describe("watchForRepos", () => {
     });
 
     it("neo-git-graph.clearAvatarCache shows a modal error", async () => {
-      watcher = watchForRepos(ctx, onReposFound);
+      watcher = watchForRepos(ctx, onReposFound, mockStatusBarItem);
 
       await mock.invokeCommand("neo-git-graph.clearAvatarCache");
 

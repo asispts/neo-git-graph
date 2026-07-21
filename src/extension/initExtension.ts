@@ -85,7 +85,11 @@ function registerViewCommand(
   );
 }
 
-export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
+export function initExtension(
+  ctx: vscode.ExtensionContext,
+  repos: string[],
+  statusBarItem: StatusBarItem
+) {
   try {
     logger.log(`Initializing extension with ${repos.length} repo(s)`);
 
@@ -107,7 +111,6 @@ export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
     );
 
     const maxDepth = createMaxDepthTracker(config.maxDepthOfRepoSearch());
-    const statusBarItem = new StatusBarItem(ctx, config);
     const repoManager = createRepoManager(extensionState, statusBarItem, config);
     repoManager.setRepos(repos);
     repoManager.sendRepos();

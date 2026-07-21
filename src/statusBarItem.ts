@@ -29,8 +29,15 @@ export class StatusBarItem {
 
   public refresh() {
     const show = this.config.showStatusBarItem();
-    if (show && this.numRepos > 0) {
+    if (show) {
       logger.log(`StatusBarItem.show() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
+      if (this.numRepos === 0) {
+        this.statusBarItem.backgroundColor = new vscode.ThemeColor(
+          "statusBarItem.warningBackground"
+        );
+      } else {
+        this.statusBarItem.backgroundColor = undefined;
+      }
       this.statusBarItem.show();
     } else {
       logger.log(`StatusBarItem.hide() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);

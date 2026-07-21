@@ -5,6 +5,7 @@ import { config } from "@/config";
 import type { InitExtension } from "@/extension/initExtension";
 import { createMaxDepthTracker } from "@/extension/maxDepthTracker";
 import * as l10n from "@/l10n";
+import { StatusBarItem } from "@/statusBarItem";
 
 type WatcherState = {
   disposed: boolean;
@@ -22,7 +23,8 @@ function dispose(state: WatcherState) {
 async function check(
   ctx: vscode.ExtensionContext,
   state: WatcherState,
-  onReposFound: InitExtension
+  onReposFound: InitExtension,
+  statusBarItem: StatusBarItem
 ) {
   if (state.disposed) {
     return;
@@ -33,24 +35,27 @@ async function check(
     return;
   }
   dispose(state);
-  onReposFound(ctx, repoDirs);
+  onReposFound(ctx, repoDirs, statusBarItem);
 }
 
 export function watchForRepos(
   ctx: vscode.ExtensionContext,
-  onReposFound: InitExtension
+  onReposFound: InitExtension,
+  statusBarItem: StatusBarItem
 ): { dispose(): void } {
   const maxDepth = createMaxDepthTracker(config.maxDepthOfRepoSearch());
   const gitWatcher = vscode.workspace.createFileSystemWatcher("**/.git");
   const state: WatcherState = { disposed: false, disposables: [gitWatcher] };
 
   state.disposables.push(
-    gitWatcher.onDidCreate(() => check(ctx, state, onReposFound)),
-    vscode.workspace.onDidChangeWorkspaceFolders(() => check(ctx, state, onReposFound)),
+    gitWatcher.onDidCreate(() => check(ctx, state, onReposFound, statusBarItem)),
+    vscode.workspace.onDidChangeWorkspaceFolders(() =>
+      check(ctx, state, onReposFound, statusBarItem)
+    ),
     vscode.workspace.onDidChangeConfiguration((e) => {
       if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
         if (maxDepth.increased(config.maxDepthOfRepoSearch())) {
-          void check(ctx, state, onReposFound);
+          void check(ctx, state, onReposFound, statusBarItem);
         }
       }
     }),
