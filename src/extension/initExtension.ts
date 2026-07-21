@@ -15,6 +15,7 @@ import { WebviewBridge, webviewBridgeFactory } from "@/extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "@/extension/webviewPanel";
 import { ExtensionState } from "@/extensionState";
 import * as l10n from "@/l10n";
+import * as logger from "@/logger";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { StatusBarItem } from "@/statusBarItem";
 
@@ -85,85 +86,96 @@ function registerViewCommand(
 }
 
 export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
-  const extensionState = new ExtensionState(ctx);
-  const avatarManager = new AvatarManager(config.gitPath, extensionState);
+  try {
+    logger.log(`Initializing extension with ${repos.length} repo(s)`);
 
-  ctx.subscriptions.push(
-    vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", () => {
-      avatarManager.clearCache();
-    })
-  );
+    const extensionState = new ExtensionState(ctx);
+    const avatarManager = new AvatarManager(config.gitPath, extensionState);
 
-  const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
-  ctx.subscriptions.push(
-    vscode.workspace.registerTextDocumentContentProvider(
-      DiffDocProvider.scheme,
-      new DiffDocProvider(gitClient.getInstance)
-    )
-  );
+    ctx.subscriptions.push(
+      vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", () => {
+        avatarManager.clearCache();
+      })
+    );
 
-  const maxDepth = createMaxDepthTracker(config.maxDepthOfRepoSearch());
-  const statusBarItem = new StatusBarItem(ctx, config);
-  const repoManager = createRepoManager(extensionState, statusBarItem, config);
-  repoManager.setRepos(repos);
-  registerViewCommand(ctx, repoManager, extensionState, avatarManager, gitClient);
+    const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
+    ctx.subscriptions.push(
+      vscode.workspace.registerTextDocumentContentProvider(
+        DiffDocProvider.scheme,
+        new DiffDocProvider(gitClient.getInstance)
+      )
+    );
 
-  const gitWatcher = vscode.workspace.createFileSystemWatcher("**/.git");
-  ctx.subscriptions.push(
-    gitWatcher,
-    gitWatcher.onDidCreate((uri) => {
-      const repoPath = path.dirname(uri.fsPath);
-      if (repoManager.addRepo(repoPath)) {
-        repoManager.sendRepos();
-      }
-    }),
-    gitWatcher.onDidDelete((uri) => {
-      const repoPath = path.dirname(uri.fsPath);
-      if (repoManager.removeReposWithinFolder(repoPath)) {
-        repoManager.sendRepos();
-      }
-    }),
-    vscode.workspace.onDidChangeWorkspaceFolders(async (e) => {
-      if (e.added.length > 0) {
-        const paths = e.added.map((f) => f.uri.fsPath);
-        const repoDirs = await findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch());
-        for (const repo of repoDirs) {
-          repoManager.addRepo(repo);
-        }
-        if (repoDirs.length > 0) {
+    const maxDepth = createMaxDepthTracker(config.maxDepthOfRepoSearch());
+    const statusBarItem = new StatusBarItem(ctx, config);
+    const repoManager = createRepoManager(extensionState, statusBarItem, config);
+    repoManager.setRepos(repos);
+    registerViewCommand(ctx, repoManager, extensionState, avatarManager, gitClient);
+
+    const gitWatcher = vscode.workspace.createFileSystemWatcher("**/.git");
+    ctx.subscriptions.push(
+      gitWatcher,
+      gitWatcher.onDidCreate((uri) => {
+        const repoPath = path.dirname(uri.fsPath);
+        if (repoManager.addRepo(repoPath)) {
           repoManager.sendRepos();
         }
-      }
-      if (e.removed.length > 0) {
-        let changes = false;
-        for (const folder of e.removed) {
-          if (repoManager.removeReposWithinFolder(folder.uri.fsPath)) {
-            changes = true;
+      }),
+      gitWatcher.onDidDelete((uri) => {
+        const repoPath = path.dirname(uri.fsPath);
+        if (repoManager.removeReposWithinFolder(repoPath)) {
+          repoManager.sendRepos();
+        }
+      }),
+      vscode.workspace.onDidChangeWorkspaceFolders(async (e) => {
+        if (e.added.length > 0) {
+          const paths = e.added.map((f) => f.uri.fsPath);
+          const repoDirs = await findGitRepos(
+            paths,
+            config.gitPath(),
+            config.maxDepthOfRepoSearch()
+          );
+          for (const repo of repoDirs) {
+            repoManager.addRepo(repo);
+          }
+          if (repoDirs.length > 0) {
+            repoManager.sendRepos();
           }
         }
-        if (changes) {
-          repoManager.sendRepos();
-        }
-      }
-    }),
-    vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("neo-git-graph.showStatusBarItem")) {
-        statusBarItem.refresh();
-      } else if (e.affectsConfiguration("git.path")) {
-        gitClient.setGitPath(config.gitPath());
-      } else if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
-        if (maxDepth.increased(config.maxDepthOfRepoSearch())) {
-          const paths = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
-          void findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch()).then(
-            (repoDirs) => {
-              if (repoDirs.length > 0) {
-                repoManager.setRepos(repoDirs);
-                repoManager.sendRepos();
-              }
+        if (e.removed.length > 0) {
+          let changes = false;
+          for (const folder of e.removed) {
+            if (repoManager.removeReposWithinFolder(folder.uri.fsPath)) {
+              changes = true;
             }
-          );
+          }
+          if (changes) {
+            repoManager.sendRepos();
+          }
         }
-      }
-    })
-  );
+      }),
+      vscode.workspace.onDidChangeConfiguration((e) => {
+        if (e.affectsConfiguration("neo-git-graph.showStatusBarItem")) {
+          statusBarItem.refresh();
+        } else if (e.affectsConfiguration("git.path")) {
+          gitClient.setGitPath(config.gitPath());
+        } else if (e.affectsConfiguration("neo-git-graph.maxDepthOfRepoSearch")) {
+          if (maxDepth.increased(config.maxDepthOfRepoSearch())) {
+            const paths = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
+            void findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch()).then(
+              (repoDirs) => {
+                if (repoDirs.length > 0) {
+                  repoManager.setRepos(repoDirs);
+                  repoManager.sendRepos();
+                }
+              }
+            );
+          }
+        }
+      })
+    );
+  } catch (err) {
+    logger.log(`Error during initialization: ${err instanceof Error ? err.message : String(err)}`);
+    throw err;
+  }
 }
