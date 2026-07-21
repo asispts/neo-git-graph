@@ -13,7 +13,9 @@ type WatcherState = {
 
 function dispose(state: WatcherState) {
   state.disposed = true;
-  for (const d of state.disposables) d.dispose();
+  for (const d of state.disposables) {
+    d.dispose();
+  }
   state.disposables.length = 0;
 }
 
@@ -22,10 +24,14 @@ async function check(
   state: WatcherState,
   onReposFound: InitExtension
 ) {
-  if (state.disposed) return;
+  if (state.disposed) {
+    return;
+  }
   const paths = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
   const repoDirs = await findGitRepos(paths, config.gitPath(), config.maxDepthOfRepoSearch());
-  if (repoDirs.length === 0 || state.disposed) return;
+  if (repoDirs.length === 0 || state.disposed) {
+    return;
+  }
   dispose(state);
   onReposFound(ctx, repoDirs);
 }

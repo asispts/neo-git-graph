@@ -57,17 +57,23 @@ export function t(
     result = l10n.t(key, ...(args as Array<string | number | boolean>));
   }
 
-  if (result !== key) return result;
+  if (result !== key) {
+    return result;
+  }
 
   const translationPath = l10n.uri?.fsPath
     ? path.dirname(l10n.uri.fsPath)
     : _extensionPath
       ? path.join(_extensionPath, "l10n")
       : undefined;
-  if (!translationPath) return result;
+  if (!translationPath) {
+    return result;
+  }
   const enTranslations = loadEnglishTranslations(translationPath);
   const fallback = enTranslations[key];
-  if (!fallback) return result;
+  if (!fallback) {
+    return result;
+  }
 
   if (args.length === 1 && typeof args[0] === "object") {
     return interpolate(fallback, args[0]);

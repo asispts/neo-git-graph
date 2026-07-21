@@ -29,12 +29,15 @@ export function createRepoWatcher(
     let changes = false;
     while ((path = createEventPaths.shift())) {
       if (await isDirectory(path)) {
-        if (await repoSearch.searchDirectoryForRepos(path, config.maxDepthOfRepoSearch()))
+        if (await repoSearch.searchDirectoryForRepos(path, config.maxDepthOfRepoSearch())) {
           changes = true;
+        }
       }
     }
     processCreateEventsTimeout = null;
-    if (changes) repoManager.sendRepos();
+    if (changes) {
+      repoManager.sendRepos();
+    }
   }
 
   async function processChangeEvents() {
@@ -42,40 +45,66 @@ export function createRepoWatcher(
     let changes = false;
     while ((path = changeEventPaths.shift())) {
       if (!(await doesPathExist(path))) {
-        if (repoManager.removeReposWithinFolder(path)) changes = true;
+        if (repoManager.removeReposWithinFolder(path)) {
+          changes = true;
+        }
       }
     }
     processChangeEventsTimeout = null;
-    if (changes) repoManager.sendRepos();
+    if (changes) {
+      repoManager.sendRepos();
+    }
   }
 
   async function onWatcherCreate(uri: vscode.Uri) {
     let path = getPathFromUri(uri);
-    if (path.indexOf("/.git/") > -1) return;
-    if (path.endsWith("/.git")) path = path.slice(0, -5);
-    if (createEventPaths.indexOf(path) > -1) return;
+    if (path.indexOf("/.git/") > -1) {
+      return;
+    }
+    if (path.endsWith("/.git")) {
+      path = path.slice(0, -5);
+    }
+    if (createEventPaths.indexOf(path) > -1) {
+      return;
+    }
 
     createEventPaths.push(path);
-    if (processCreateEventsTimeout !== null) clearTimeout(processCreateEventsTimeout);
+    if (processCreateEventsTimeout !== null) {
+      clearTimeout(processCreateEventsTimeout);
+    }
     processCreateEventsTimeout = setTimeout(() => processCreateEvents(), debounceDelay);
   }
 
   function onWatcherChange(uri: vscode.Uri) {
     let path = getPathFromUri(uri);
-    if (path.indexOf("/.git/") > -1) return;
-    if (path.endsWith("/.git")) path = path.slice(0, -5);
-    if (changeEventPaths.indexOf(path) > -1) return;
+    if (path.indexOf("/.git/") > -1) {
+      return;
+    }
+    if (path.endsWith("/.git")) {
+      path = path.slice(0, -5);
+    }
+    if (changeEventPaths.indexOf(path) > -1) {
+      return;
+    }
 
     changeEventPaths.push(path);
-    if (processChangeEventsTimeout !== null) clearTimeout(processChangeEventsTimeout);
+    if (processChangeEventsTimeout !== null) {
+      clearTimeout(processChangeEventsTimeout);
+    }
     processChangeEventsTimeout = setTimeout(() => processChangeEvents(), debounceDelay);
   }
 
   function onWatcherDelete(uri: vscode.Uri) {
     let path = getPathFromUri(uri);
-    if (path.indexOf("/.git/") > -1) return;
-    if (path.endsWith("/.git")) path = path.slice(0, -5);
-    if (repoManager.removeReposWithinFolder(path)) repoManager.sendRepos();
+    if (path.indexOf("/.git/") > -1) {
+      return;
+    }
+    if (path.endsWith("/.git")) {
+      path = path.slice(0, -5);
+    }
+    if (repoManager.removeReposWithinFolder(path)) {
+      repoManager.sendRepos();
+    }
   }
 
   function startWatchingFolder(path: string) {
@@ -97,21 +126,28 @@ export function createRepoWatcher(
       let changes = false;
       for (let i = 0; i < e.added.length; i++) {
         path = getPathFromUri(e.added[i].uri);
-        if (await repoSearch.searchDirectoryForRepos(path, config.maxDepthOfRepoSearch()))
+        if (await repoSearch.searchDirectoryForRepos(path, config.maxDepthOfRepoSearch())) {
           changes = true;
+        }
         startWatchingFolder(path);
       }
-      if (changes) repoManager.sendRepos();
+      if (changes) {
+        repoManager.sendRepos();
+      }
     }
     if (e.removed.length > 0) {
       let changes = false;
       let path: string;
       for (let i = 0; i < e.removed.length; i++) {
         path = getPathFromUri(e.removed[i].uri);
-        if (repoManager.removeReposWithinFolder(path)) changes = true;
+        if (repoManager.removeReposWithinFolder(path)) {
+          changes = true;
+        }
         stopWatchingFolder(path);
       }
-      if (changes) repoManager.sendRepos();
+      if (changes) {
+        repoManager.sendRepos();
+      }
     }
   });
 

@@ -24,8 +24,11 @@ export function evalPromises<X, Y>(
             if (!rejected) {
               results[cur] = result;
               completed++;
-              if (nextPromise < data.length) startNext();
-              else if (completed === data.length) resolve(results);
+              if (nextPromise < data.length) {
+                startNext();
+              } else if (completed === data.length) {
+                resolve(results);
+              }
             }
           })
           .catch(() => {
@@ -33,7 +36,9 @@ export function evalPromises<X, Y>(
             rejected = true;
           });
       }
-      for (let i = 0; i < maxParallel && i < data.length; i++) startNext();
+      for (let i = 0; i < maxParallel && i < data.length; i++) {
+        startNext();
+      }
     }
   });
 }

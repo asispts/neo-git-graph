@@ -14,7 +14,9 @@ export async function cherrypickCommit(
   input: ActionPayload<"cherrypickCommit">
 ): Promise<void> {
   const args = ["cherry-pick"];
-  if (input.parentIndex > 0) args.push("-m", String(input.parentIndex));
+  if (input.parentIndex > 0) {
+    args.push("-m", String(input.parentIndex));
+  }
   args.push(input.commitHash);
   await git.raw(args);
 }
@@ -24,7 +26,9 @@ export async function revertCommit(
   input: ActionPayload<"revertCommit">
 ): Promise<void> {
   const args = ["revert", "--no-edit"];
-  if (input.parentIndex > 0) args.push("-m", String(input.parentIndex));
+  if (input.parentIndex > 0) {
+    args.push("-m", String(input.parentIndex));
+  }
   args.push(input.commitHash);
   await git.raw(args);
 }

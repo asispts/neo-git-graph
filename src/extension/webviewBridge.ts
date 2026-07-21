@@ -8,7 +8,9 @@ export function webviewBridgeFactory(webview: vscode.Webview, repoFileWatcher: R
 
   webview.onDidReceiveMessage(async (msg: RequestMessage) => {
     const handler = handlers.get(msg.command);
-    if (!handler) return;
+    if (!handler) {
+      return;
+    }
     repoFileWatcher.mute();
     await handler(msg);
     repoFileWatcher.unmute();

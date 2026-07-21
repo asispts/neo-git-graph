@@ -19,7 +19,9 @@ class Branch {
   public addLine(p1: Point, p2: Point, isCommitted: boolean, lockedFirst: boolean) {
     this.lines.push({ p1: p1, p2: p2, lockedFirst: lockedFirst });
     if (isCommitted) {
-      if (p2.y < this.numUncommitted) this.numUncommitted = p2.y;
+      if (p2.y < this.numUncommitted) {
+        this.numUncommitted = p2.y;
+      }
     } else {
       this.numUncommitted++;
     }
@@ -131,11 +133,14 @@ class Branch {
       }
 
       // If the path hasn't been started or the new point belongs to a different path, move to p1
-      if (curPath === "" || (i > 0 && (x1 !== lines[i - 1].p2.x || y1 !== lines[i - 1].p2.y)))
+      if (curPath === "" || (i > 0 && (x1 !== lines[i - 1].p2.x || y1 !== lines[i - 1].p2.y))) {
         curPath += "M" + x1.toFixed(0) + "," + y1.toFixed(1);
+      }
 
       // If the path hasn't been assigned a colour, assign it
-      if (curColour === "") curColour = lines[i].isCommitted ? colour : "#808080";
+      if (curColour === "") {
+        curColour = lines[i].isCommitted ? colour : "#808080";
+      }
 
       if (x1 === x2) {
         // If the path is vertical, draw a straight line
@@ -207,11 +212,15 @@ class Vertex {
     return this.parents.length > 0;
   }
   public getNextParent(): Vertex | null {
-    if (this.nextParent < this.parents.length) return this.parents[this.nextParent];
+    if (this.nextParent < this.parents.length) {
+      return this.parents[this.nextParent];
+    }
     return null;
   }
   public getLastParent(): Vertex | null {
-    if (this.nextParent < 1) return null;
+    if (this.nextParent < 1) {
+      return null;
+    }
     return this.parents[this.nextParent - 1];
   }
   public registerParentProcessed() {
@@ -249,8 +258,9 @@ class Vertex {
 
   public getPointConnectingTo(vertex: VertexOrNull, onBranch: Branch) {
     for (let i = 0; i < this.connections.length; i++) {
-      if (this.connections[i].connectsTo === vertex && this.connections[i].onBranch === onBranch)
+      if (this.connections[i].connectsTo === vertex && this.connections[i].onBranch === onBranch) {
         return { x: i, y: this.y };
+      }
     }
     return null;
   }
@@ -271,7 +281,9 @@ class Vertex {
     this.isCurrent = true;
   }
   public draw(svg: SVGElement, config: Config, expandOffset: boolean) {
-    if (this.onBranch === null) return;
+    if (this.onBranch === null) {
+      return;
+    }
 
     let circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
     let colour = this.isCommitted
@@ -387,7 +399,9 @@ export class Graph {
       this.vertices[i].draw(group, this.config, expandedCommit !== null && i > expandedCommit.id);
     }
 
-    if (this.svgGroup !== null) this.svg.removeChild(this.svgGroup);
+    if (this.svgGroup !== null) {
+      this.svg.removeChild(this.svgGroup);
+    }
     this.svg.appendChild(group);
     this.svgGroup = group;
     this.setDimensions(width, this.getHeight(expandedCommit));
@@ -408,7 +422,9 @@ export class Graph {
       p;
     for (i = 0; i < this.vertices.length; i++) {
       p = this.vertices[i].getNextPoint();
-      if (p.x > x) x = p.x;
+      if (p.x > x) {
+        x = p.x;
+      }
     }
     return x * this.config.grid.x;
   }
@@ -502,7 +518,9 @@ export class Graph {
           parentVertex.addToBranch(branch, curPoint.x);
           vertex = parentVertex;
           parentVertex = vertex.getNextParent();
-          if (parentVertexOnBranch) break;
+          if (parentVertexOnBranch) {
+            break;
+          }
         }
       }
       branch.setEnd(i);
@@ -513,7 +531,9 @@ export class Graph {
 
   private findStart() {
     for (let i = 0; i < this.vertices.length; i++) {
-      if (this.vertices[i].getNextParent() !== null || this.vertices[i].isNotOnBranch()) return i;
+      if (this.vertices[i].getNextParent() !== null || this.vertices[i].isNotOnBranch()) {
+        return i;
+      }
     }
     return -1;
   }

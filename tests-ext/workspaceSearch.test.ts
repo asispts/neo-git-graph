@@ -9,7 +9,9 @@ import { makeRepo } from "@tests/backend/helpers";
 
 function makeStubs(initialRepoPaths: string[] = [], maxDepth = 2, gitPath = "git") {
   const repos: Record<string, { columnWidths: null }> = {};
-  for (const r of initialRepoPaths) repos[r] = { columnWidths: null };
+  for (const r of initialRepoPaths) {
+    repos[r] = { columnWidths: null };
+  }
 
   const added: string[] = [];
   let sendCount = 0;
@@ -54,7 +56,9 @@ suite("workspaceSearch / searchDirectoryForRepos", () => {
   });
 
   teardown(() => {
-    if (fs.existsSync(repo)) fs.rmSync(repo, { recursive: true, force: true });
+    if (fs.existsSync(repo)) {
+      fs.rmSync(repo, { recursive: true, force: true });
+    }
   });
 
   test("returns true and adds repo when a git repo is found", async () => {

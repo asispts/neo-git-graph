@@ -27,7 +27,9 @@ export class ExtensionState {
       } else {
         fs.mkdir(this.globalStoragePath, () => {
           fs.mkdir(this.globalStoragePath + AVATAR_STORAGE_FOLDER, (mkdirErr) => {
-            if (!mkdirErr) this.avatarStorageAvailable = true;
+            if (!mkdirErr) {
+              this.avatarStorageAvailable = true;
+            }
           });
         });
       }
@@ -73,7 +75,9 @@ export class ExtensionState {
   public clearAvatarCache() {
     this.globalState.update(AVATAR_CACHE, {});
     fs.readdir(this.globalStoragePath + AVATAR_STORAGE_FOLDER, (err, files) => {
-      if (err) return;
+      if (err) {
+        return;
+      }
       for (let i = 0; i < files.length; i++) {
         fs.unlink(this.globalStoragePath + AVATAR_STORAGE_FOLDER + "/" + files[i], () => {});
       }

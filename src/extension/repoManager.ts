@@ -42,7 +42,9 @@ export function createRepoManager(
     const sorted = getRepos();
     const numRepos = Object.keys(sorted).length;
     statusBarItem.setNumRepos(numRepos);
-    if (viewCallback !== null) viewCallback(sorted, numRepos);
+    if (viewCallback !== null) {
+      viewCallback(sorted, numRepos);
+    }
   }
 
   function removeRepo(repo: string) {
@@ -61,13 +63,17 @@ export function createRepoManager(
   function isDirectoryWithinRepos(path: string) {
     const repoPaths = Object.keys(repos);
     for (let i = 0; i < repoPaths.length; i++) {
-      if (path === repoPaths[i] || path.startsWith(repoPaths[i] + "/")) return true;
+      if (path === repoPaths[i] || path.startsWith(repoPaths[i] + "/")) {
+        return true;
+      }
     }
     return false;
   }
 
   function addRepo(repo: string) {
-    if (repos[repo]) return false;
+    if (repos[repo]) {
+      return false;
+    }
     repos[repo] = { columnWidths: null };
     extensionState.saveRepos(repos);
     return true;
@@ -107,8 +113,9 @@ export function createRepoManager(
       if (
         rootsExact.indexOf(repoPaths[i]) === -1 &&
         !rootsFolder.find((x) => repoPaths[i].startsWith(x))
-      )
+      ) {
         removeRepo(repoPaths[i]);
+      }
     }
   }
 
@@ -124,7 +131,9 @@ export function createRepoManager(
               changes = true;
             }
           }
-          if (changes) sendRepos();
+          if (changes) {
+            sendRepos();
+          }
           resolve(changes);
         }
       );

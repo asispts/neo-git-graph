@@ -22,6 +22,8 @@
     "style": "off" // Idiomatic and consistent style rules
   },
   "rules": {
+    "unicorn/require-post-message-target-origin": "allow", // false-positive
+    "eslint/curly": "error",
     "import-js/order": [
       "error",
       {
@@ -56,8 +58,7 @@
           "variables": "suggestion"
         }
       }
-    ],
-    "unicorn/require-post-message-target-origin": "allow" // false-positive
+    ]
   },
   "overrides": [
     {

@@ -247,8 +247,9 @@ class GitGraphView {
       avatarsNeeded: { [email: string]: string[] } = {};
     for (i = 0; i < this.commits.length; i++) {
       this.commitLookup[this.commits[i].hash] = i;
-      if (this.expandedCommit !== null && this.expandedCommit.hash === this.commits[i].hash)
+      if (this.expandedCommit !== null && this.expandedCommit.hash === this.commits[i].hash) {
         expandedCommitVisible = true;
+      }
       if (
         this.config.fetchAvatars &&
         typeof this.avatars[this.commits[i].email] !== "string" &&
@@ -309,7 +310,9 @@ class GitGraphView {
     hard: boolean,
     loadedCallback: (changes: boolean, isRepo: boolean) => void
   ) {
-    if (this.loadBranchesCallback !== null) return;
+    if (this.loadBranchesCallback !== null) {
+      return;
+    }
     this.loadBranchesCallback = loadedCallback;
     sendMessage({ command: "selectRepo", repo: this.currentRepo });
     sendMessage({
@@ -319,7 +322,9 @@ class GitGraphView {
     });
   }
   private requestLoadCommits(hard: boolean, loadedCallback: (changes: boolean) => void) {
-    if (this.loadCommitsCallback !== null) return;
+    if (this.loadCommitsCallback !== null) {
+      return;
+    }
     this.loadCommitsCallback = loadedCallback;
     sendMessage({
       command: "loadCommits",
@@ -380,7 +385,9 @@ class GitGraphView {
   }
   private renderGraph() {
     let colHeadersElem = document.getElementById("tableColHeaders");
-    if (colHeadersElem === null) return;
+    if (colHeadersElem === null) {
+      return;
+    }
     let headerHeight = colHeadersElem.clientHeight + 1,
       expandedCommitElem =
         this.expandedCommit !== null ? document.getElementById("commitDetails") : null;
@@ -1024,21 +1031,33 @@ class GitGraphView {
         let mouseDeltaX = mouseEvent.clientX - mouseX;
         switch (col) {
           case 0:
-            if (columnWidths[0] + mouseDeltaX < 40) mouseDeltaX = -columnWidths[0] + 40;
-            if (cols[1].clientWidth - mouseDeltaX < 64) mouseDeltaX = cols[1].clientWidth - 64;
+            if (columnWidths[0] + mouseDeltaX < 40) {
+              mouseDeltaX = -columnWidths[0] + 40;
+            }
+            if (cols[1].clientWidth - mouseDeltaX < 64) {
+              mouseDeltaX = cols[1].clientWidth - 64;
+            }
             columnWidths[0] += mouseDeltaX;
             cols[0].style.width = columnWidths[0] + "px";
             this.graph.limitMaxWidth(columnWidths[0] + 16);
             break;
           case 1:
-            if (cols[1].clientWidth + mouseDeltaX < 64) mouseDeltaX = -cols[1].clientWidth + 64;
-            if (columnWidths[1] - mouseDeltaX < 40) mouseDeltaX = columnWidths[1] - 40;
+            if (cols[1].clientWidth + mouseDeltaX < 64) {
+              mouseDeltaX = -cols[1].clientWidth + 64;
+            }
+            if (columnWidths[1] - mouseDeltaX < 40) {
+              mouseDeltaX = columnWidths[1] - 40;
+            }
             columnWidths[1] -= mouseDeltaX;
             cols[2].style.width = columnWidths[1] + "px";
             break;
           default:
-            if (columnWidths[col - 1] + mouseDeltaX < 40) mouseDeltaX = -columnWidths[col - 1] + 40;
-            if (columnWidths[col] - mouseDeltaX < 40) mouseDeltaX = columnWidths[col] - 40;
+            if (columnWidths[col - 1] + mouseDeltaX < 40) {
+              mouseDeltaX = -columnWidths[col - 1] + 40;
+            }
+            if (columnWidths[col] - mouseDeltaX < 40) {
+              mouseDeltaX = columnWidths[col] - 40;
+            }
             columnWidths[col - 1] += mouseDeltaX;
             columnWidths[col] -= mouseDeltaX;
             cols[col].style.width = columnWidths[col - 1] + "px";
@@ -1106,9 +1125,12 @@ class GitGraphView {
   public hideCommitDetails() {
     if (this.expandedCommit !== null) {
       let elem = document.getElementById("commitDetails");
-      if (typeof elem === "object" && elem !== null) elem.remove();
-      if (typeof this.expandedCommit.srcElem === "object" && this.expandedCommit.srcElem !== null)
+      if (typeof elem === "object" && elem !== null) {
+        elem.remove();
+      }
+      if (typeof this.expandedCommit.srcElem === "object" && this.expandedCommit.srcElem !== null) {
         this.expandedCommit.srcElem.classList.remove("commitDetailsOpen");
+      }
       this.expandedCommit = null;
       this.saveState();
       this.renderGraph();
@@ -1119,10 +1141,13 @@ class GitGraphView {
       this.expandedCommit === null ||
       this.expandedCommit.srcElem === null ||
       this.expandedCommit.hash !== commitDetails.hash
-    )
+    ) {
       return;
+    }
     let elem = document.getElementById("commitDetails");
-    if (typeof elem === "object" && elem !== null) elem.remove();
+    if (typeof elem === "object" && elem !== null) {
+      elem.remove();
+    }
 
     this.expandedCommit.commitDetails = commitDetails;
     this.expandedCommit.fileTree = fileTree;
@@ -1150,11 +1175,12 @@ class GitGraphView {
     html +=
       "<b>" + l10n.detailDate + "</b>" + new Date(commitDetails.date * 1000).toString() + "<br>";
     html += "<b>" + l10n.detailCommitter + "</b>" + escapeHtml(commitDetails.committer) + "</span>";
-    if (typeof this.avatars[commitDetails.email] === "string")
+    if (typeof this.avatars[commitDetails.email] === "string") {
       html +=
         '<span class="commitDetailsSummaryAvatar"><img src="' +
         this.avatars[commitDetails.email] +
         '"></span>';
+    }
     html += "</span></span><br><br>";
     html += escapeHtml(commitDetails.body).replace(/\n/g, "<br>") + "</div>";
     html +=
@@ -1208,7 +1234,9 @@ class GitGraphView {
     });
     addListenerToClass("gitFile", "click", (e) => {
       let sourceElem = <HTMLElement>(<Element>e.target).closest(".gitFile")!;
-      if (this.expandedCommit === null || !sourceElem.classList.contains("gitDiffPossible")) return;
+      if (this.expandedCommit === null || !sourceElem.classList.contains("gitDiffPossible")) {
+        return;
+      }
       sendMessage({
         command: "viewDiff",
         repo: this.currentRepo!,
@@ -1326,7 +1354,9 @@ window.addEventListener("message", (event) => {
       refreshGraphOrDisplayError(msg.status, l10n.unableToRevert);
       break;
     case "viewDiff":
-      if (msg.success === false) showErrorDialog(l10n.unableToViewDiff, null, null);
+      if (msg.success === false) {
+        showErrorDialog(l10n.unableToViewDiff, null, null);
+      }
       break;
   }
 });
@@ -1698,7 +1728,9 @@ function showFormDialog(
           ? ' placeholder="' + escapeHtml(input.placeholder) + '"'
           : "") +
         "/>";
-      if (input.type === "text-ref") textRefInput = i;
+      if (input.type === "text-ref") {
+        textRefInput = i;
+      }
     }
     html += "</td></tr>";
   }
@@ -1708,8 +1740,9 @@ function showFormDialog(
     actionName,
     l10n.dialogCancel,
     () => {
-      if (dialog.className === "active noInput" || dialog.className === "active inputInvalid")
+      if (dialog.className === "active noInput" || dialog.className === "active inputInvalid") {
         return;
+      }
       let values = [];
       for (let i = 0; i < inputs.length; i++) {
         let input = inputs[i],
@@ -1731,7 +1764,9 @@ function showFormDialog(
   if (textRefInput > -1) {
     let dialogInput = <HTMLInputElement>document.getElementById("dialogInput" + textRefInput),
       dialogAction = document.getElementById("dialogAction")!;
-    if (dialogInput.value === "") dialog.className = "active noInput";
+    if (dialogInput.value === "") {
+      dialog.className = "active noInput";
+    }
     dialogInput.focus();
     dialogInput.addEventListener("keyup", () => {
       let noInput = dialogInput.value === "",
@@ -1784,12 +1819,15 @@ function showDialog(
     '<div id="dialogDismiss" class="roundedBtn">' +
     dismissName +
     "</div>";
-  if (actionName !== null && actioned !== null)
+  if (actionName !== null && actioned !== null) {
     document.getElementById("dialogAction")!.addEventListener("click", actioned);
+  }
   document.getElementById("dialogDismiss")!.addEventListener("click", hideDialog);
 
   dialogMenuSource = sourceElem;
-  if (dialogMenuSource !== null) dialogMenuSource.classList.add("dialogActive");
+  if (dialogMenuSource !== null) {
+    dialogMenuSource.classList.add("dialogActive");
+  }
 }
 function hideDialog() {
   dialogBacking.className = "";
@@ -1802,17 +1840,25 @@ function hideDialog() {
 }
 
 function hideDialogAndContextMenu() {
-  if (dialog.classList.contains("active")) hideDialog();
-  if (contextMenu.classList.contains("active")) hideContextMenu();
+  if (dialog.classList.contains("active")) {
+    hideDialog();
+  }
+  if (contextMenu.classList.contains("active")) {
+    hideContextMenu();
+  }
 }
 
 /* Global Listeners */
 document.addEventListener("keyup", (e) => {
-  if (e.key === "Escape") hideDialogAndContextMenu();
+  if (e.key === "Escape") {
+    hideDialogAndContextMenu();
+  }
 });
 document.addEventListener("click", hideContextMenuListener);
 document.addEventListener("contextmenu", hideContextMenuListener);
 document.addEventListener("mouseleave", hideContextMenuListener);
 function hideContextMenuListener() {
-  if (contextMenu.classList.contains("active")) hideContextMenu();
+  if (contextMenu.classList.contains("active")) {
+    hideContextMenu();
+  }
 }
