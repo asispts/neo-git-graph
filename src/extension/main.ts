@@ -4,13 +4,13 @@ import { findGitRepos } from "@/backend/queries/repoSearch";
 import { getGitVersion } from "@/backend/utils/git";
 import { config } from "@/config";
 import { initExtension } from "@/extension/initExtension";
+import { logger } from "@/extension/utils/logger";
 import { watchForRepos } from "@/extension/watchForRepos";
 import * as l10n from "@/l10n";
-import * as logger from "@/logger";
 import { StatusBarItem } from "@/statusBarItem";
 
 export async function activate(ctx: vscode.ExtensionContext) {
-  logger.initLogger(ctx);
+  logger.init(ctx);
   logger.log("Starting Neo Git Graph ...");
 
   l10n.initL10n(ctx.extensionUri.fsPath);

@@ -1,8 +1,8 @@
 import * as vscode from "vscode";
 
 import { Config } from "./config";
+import { logger } from "./extension/utils/logger";
 import * as l10n from "./l10n";
-import * as logger from "./logger";
 
 export class StatusBarItem {
   private statusBarItem: vscode.StatusBarItem;
