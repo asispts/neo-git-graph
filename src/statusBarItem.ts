@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 
 import { Config } from "./config";
 import * as l10n from "./l10n";
+import * as logger from "./logger";
 
 export class StatusBarItem {
   private statusBarItem: vscode.StatusBarItem;
@@ -15,17 +16,24 @@ export class StatusBarItem {
     this.statusBarItem.tooltip = l10n.t("statusBar.tooltip");
     this.statusBarItem.command = "neo-git-graph.view";
     context.subscriptions.push(this.statusBarItem);
+    logger.log(
+      `StatusBarItem created (showStatusBarItem=${config.showStatusBarItem()}, numRepos=0)`
+    );
   }
 
   public setNumRepos(numRepos: number) {
+    logger.log(`StatusBarItem.setNumRepos(${numRepos})`);
     this.numRepos = numRepos;
     this.refresh();
   }
 
   public refresh() {
-    if (this.config.showStatusBarItem() && this.numRepos > 0) {
+    const show = this.config.showStatusBarItem();
+    if (show && this.numRepos > 0) {
+      logger.log(`StatusBarItem.show() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
       this.statusBarItem.show();
     } else {
+      logger.log(`StatusBarItem.hide() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
       this.statusBarItem.hide();
     }
   }

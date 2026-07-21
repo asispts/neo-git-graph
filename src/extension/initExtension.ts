@@ -110,6 +110,7 @@ export function initExtension(ctx: vscode.ExtensionContext, repos: string[]) {
     const statusBarItem = new StatusBarItem(ctx, config);
     const repoManager = createRepoManager(extensionState, statusBarItem, config);
     repoManager.setRepos(repos);
+    repoManager.sendRepos();
     registerViewCommand(ctx, repoManager, extensionState, avatarManager, gitClient);
 
     const gitWatcher = vscode.workspace.createFileSystemWatcher("**/.git");
