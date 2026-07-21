@@ -46,6 +46,7 @@ beforeAll(() => {
   initRepo(repoB);
   fs.mkdirSync(nonRepoDir);
   fs.writeFileSync(path.join(nonRepoDir, "readme.txt"), "hello");
+  fs.mkdirSync(path.join(tmpDir, "plain"));
 });
 
 afterAll(() => {

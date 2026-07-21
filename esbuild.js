@@ -33,7 +33,7 @@ const aliasPlugin = {
 
 async function main() {
   const extension = await esbuild.context({
-    entryPoints: ["src/extension.ts"],
+    entryPoints: ["src/extension/main.ts"],
     bundle: true,
     format: "cjs",
     minify: production,

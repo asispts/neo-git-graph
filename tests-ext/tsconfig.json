@@ -1,10 +1,10 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "noEmit": false,
-    "module": "commonjs",
+    "module": "CommonJS",
     "moduleResolution": "node",
-    "outDir": "../out/extension"
+    "noEmit": false,
+    "outDir": "./out"
   },
   "include": ["./**/*.ts"]
 }

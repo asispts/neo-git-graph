@@ -67,6 +67,12 @@
       }
     },
     {
+      "files": ["tests-ext/**/*.ts"],
+      "env": {
+        "mocha": true
+      }
+    },
+    {
       "files": ["src/webview/**/*.ts"],
       "env": {
         "node": false,
