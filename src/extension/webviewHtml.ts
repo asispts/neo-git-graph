@@ -6,8 +6,9 @@ import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
 import { GitGraphViewState } from "@/types";
 
+import { EXTENSION_NAME } from "./constant/const";
+import { getWebviewLocalizedStrings } from "./l10n/webviewL10n";
 import { RepoManager } from "./repoManager";
-import { getWebviewLocalizedStrings } from "./webviewL10n";
 
 /**
  * Safely escape JSON for embedding in HTML script tags.
@@ -94,7 +95,7 @@ export function buildWebviewHtml(opts: {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<link rel="stylesheet" type="text/css" href="${mediaUri("main.css")}">
 			<link rel="stylesheet" type="text/css" href="${mediaUri("dropdown.css")}">
-			<title>${vscode.l10n.t("(neo) Git Graph")}</title>
+			<title>${EXTENSION_NAME}</title>
 			<style>${colorParams}"</style>
 		</head>
 		${body}

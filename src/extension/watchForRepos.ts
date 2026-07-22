@@ -2,7 +2,9 @@ import * as vscode from "vscode";
 
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { config } from "@/config";
+import { EXTENSION_NAME } from "@/extension/constant/const";
 import type { InitExtension } from "@/extension/initExtension";
+import { l10n } from "@/extension/l10n/l10n";
 import { createMaxDepthTracker } from "@/extension/maxDepthTracker";
 import { StatusBarItem } from "@/statusBarItem";
 
@@ -59,18 +61,14 @@ export function watchForRepos(
       }
     }),
     vscode.commands.registerCommand("neo-git-graph.view", async () => {
-      await vscode.window.showErrorMessage(vscode.l10n.t("(neo) Git Graph"), {
-        detail: vscode.l10n.t(
-          "Either the current workspace does not contain a Git repository, or the Git repository is not configured correctly."
-        ),
+      await vscode.window.showErrorMessage(EXTENSION_NAME, {
+        detail: l10n.t("noGitRepository"),
         modal: true
       });
     }),
     vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", async () => {
-      await vscode.window.showErrorMessage(vscode.l10n.t("(neo) Git Graph"), {
-        detail: vscode.l10n.t(
-          "Either the current workspace does not contain a Git repository, or the Git repository is not configured correctly."
-        ),
+      await vscode.window.showErrorMessage(EXTENSION_NAME, {
+        detail: l10n.t("noGitRepository"),
         modal: true
       });
     })

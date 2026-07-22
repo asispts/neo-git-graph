@@ -50,7 +50,8 @@
     "format:fix": "oxfmt .",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "l10n:check": "node ./scripts/check-l10n.js"
+    "l10n:check": "node ./scripts/check-l10n.js",
+    "l10n:sync": "node ./scripts/check-l10n.js --sync"
   },
   "dependencies": {
     "simple-git": "^3.36.0"
