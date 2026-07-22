@@ -15,7 +15,6 @@ import { logger } from "@/extension/utils/logger";
 import { WebviewBridge, webviewBridgeFactory } from "@/extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "@/extension/webviewPanel";
 import { ExtensionState } from "@/extensionState";
-import * as l10n from "@/l10n";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { StatusBarItem } from "@/statusBarItem";
 
@@ -38,7 +37,7 @@ function registerViewCommand(
 
       const vsPanel = vscode.window.createWebviewPanel(
         "neo-git-graph",
-        l10n.t("outputChannel.text"),
+        vscode.l10n.t("(neo) Git Graph"),
         vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
         {
           enableScripts: true,

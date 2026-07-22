@@ -24,6 +24,7 @@ function loadJson(filePath) {
 /**
  * Extract placeholders from a translation string
  * Supports formats: {0}, {1}, {variableName}
+ *
  * @param {string} text - The translation text
  * @returns {string[]} - Array of found placeholders (sorted for consistent comparison)
  */
@@ -32,39 +33,67 @@ function extractPlaceholders(text) {
     return [];
   }
 
-  // Match {0}, {1}, {variableName}, etc.
   const placeholders = text.match(/\{[^}]+\}/g);
-
-  if (!placeholders) {
-    return [];
-  }
-
-  // Return sorted array for consistent comparison
-  return placeholders.toSorted();
+  return placeholders ? placeholders.toSorted() : [];
 }
 
 /**
- * Check if two placeholder arrays are equal
+ * Check if two placeholder arrays are equal (both are pre-sorted)
+ *
  * @param {string[]} arr1
  * @param {string[]} arr2
  * @returns {boolean}
  */
 function placeholdersMatch(arr1, arr2) {
-  if (arr1.length !== arr2.length) {
+  return arr1.length === arr2.length && arr1.every((p, i) => p === arr2[i]);
+}
+
+/**
+ * Log a group of issues if any exist.
+ *
+ * @param {Array<*>} items
+ * @param {(count: number) => string} header - returns the header line, given the item count
+ * @param {(item: any) => string[]} formatter - returns lines to print per item
+ * @returns {boolean} whether any issues were found
+ */
+function reportIssues(items, header, formatter) {
+  if (items.length === 0) {
     return false;
   }
 
-  for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i] !== arr2[i]) {
-      return false;
-    }
-  }
-
+  console.log(header(items.length));
+  items.forEach((item) => {
+    formatter(item).forEach((line) => console.log(line));
+  });
   return true;
 }
 
-function checkFileSet(baseDir, baseFileName, filePattern, sectionTitle) {
-  // Load base translation file
+function checkParameterConsistency(baseTranslations, translations, keys) {
+  const paramIssues = [];
+
+  keys.forEach((key) => {
+    if (!(key in baseTranslations)) {
+      return;
+    }
+
+    const basePlaceholders = extractPlaceholders(baseTranslations[key]);
+    const translatedPlaceholders = extractPlaceholders(translations[key]);
+
+    if (!placeholdersMatch(basePlaceholders, translatedPlaceholders)) {
+      paramIssues.push({
+        key,
+        base: basePlaceholders,
+        translated: translatedPlaceholders,
+        baseText: baseTranslations[key],
+        translatedText: translations[key]
+      });
+    }
+  });
+
+  return paramIssues;
+}
+
+function checkFileSet(baseDir, baseFileName, filePrefix, sectionTitle, type) {
   const basePath = path.join(baseDir, baseFileName);
   const baseTranslations = loadJson(basePath);
 
@@ -77,21 +106,10 @@ function checkFileSet(baseDir, baseFileName, filePattern, sectionTitle) {
   console.log(`\n${sectionTitle}`);
   console.log(`📚 Base file (${baseFileName}): ${baseKeys.length} keys\n`);
 
-  // Get all translation files
-  let files;
-  if (baseDir === ROOT_DIR) {
-    // For package.nls files, look in root directory
-    files = fs
-      .readdirSync(baseDir)
-      .filter((file) => file.startsWith(filePattern) && file !== baseFileName)
-      .toSorted();
-  } else {
-    // For bundle.l10n files, look in l10n directory
-    files = fs
-      .readdirSync(baseDir)
-      .filter((file) => file.startsWith(filePattern) && file !== baseFileName)
-      .toSorted();
-  }
+  const files = fs
+    .readdirSync(baseDir)
+    .filter((file) => file.startsWith(filePrefix) && file !== baseFileName)
+    .toSorted();
 
   if (files.length === 0) {
     console.log("✅ No additional translation files found\n");
@@ -101,7 +119,6 @@ function checkFileSet(baseDir, baseFileName, filePattern, sectionTitle) {
   let hasIssues = false;
   const coverageStats = [];
 
-  // Check each translation file
   files.forEach((file) => {
     const filePath = path.join(baseDir, file);
     const translations = loadJson(filePath);
@@ -113,72 +130,49 @@ function checkFileSet(baseDir, baseFileName, filePattern, sectionTitle) {
     const keys = Object.keys(translations);
     const missing = baseKeys.filter((k) => !(k in translations));
     const extra = keys.filter((k) => !(k in baseTranslations));
-
-    // Extract locale name
-    let locale;
-    if (file.startsWith("bundle.l10n.")) {
-      locale = file.replace("bundle.l10n.", "").replace(".json", "");
-    } else if (file.startsWith("package.nls.")) {
-      locale = file.replace("package.nls.", "").replace(".json", "");
-    }
+    const locale = file.replace(filePrefix, "").replace(".json", "");
 
     const coverage =
-      baseKeys.length > 0 ? (((keys.length - extra.length) / baseKeys.length) * 100).toFixed(1) : 0;
+      baseKeys.length > 0
+        ? Math.round(((keys.length - extra.length) / baseKeys.length) * 1000) / 10
+        : 0;
+
     coverageStats.push({
       locale,
-      coverage: parseFloat(coverage),
+      type,
+      coverage,
       total: baseKeys.length,
       translated: keys.length - extra.length
     });
 
     console.log(`🌍 ${locale} (${file}): ${keys.length} keys - Coverage: ${coverage}%`);
 
-    if (missing.length > 0) {
+    const missingFound = reportIssues(
+      missing,
+      (count) => `  ⚠️  Missing ${count} translation(s):`,
+      (k) => [`     - ${k}: "${baseTranslations[k]}"`]
+    );
+
+    const extraFound = reportIssues(
+      extra,
+      (count) => `  ⚠️  Extra ${count} key(s) not in base:`,
+      (k) => [`     - ${k}`]
+    );
+
+    const paramIssues = checkParameterConsistency(baseTranslations, translations, keys);
+    const paramFound = reportIssues(
+      paramIssues,
+      (count) => `  ⚠️  Parameter mismatch in ${count} translation(s):`,
+      (issue) => [
+        `     - ${issue.key}:`,
+        `       Base: "${issue.baseText}" -> [${issue.base.join(", ")}]`,
+        `       Translation: "${issue.translatedText}" -> [${issue.translated.join(", ")}]`
+      ]
+    );
+
+    if (missingFound || extraFound || paramFound) {
       hasIssues = true;
-      console.log(`  ⚠️  Missing ${missing.length} translation(s):`);
-      missing.forEach((k) => {
-        console.log(`     - ${k}: "${baseTranslations[k]}"`);
-      });
-    }
-
-    if (extra.length > 0) {
-      hasIssues = true;
-      console.log(`  ⚠️  Extra ${extra.length} key(s) not in base:`);
-      extra.forEach((k) => console.log(`     - ${k}`));
-    }
-
-    // Check parameter consistency
-    const paramIssues = [];
-    keys.forEach((key) => {
-      if (key in baseTranslations) {
-        const basePlaceholders = extractPlaceholders(baseTranslations[key]);
-        const translatedPlaceholders = extractPlaceholders(translations[key]);
-
-        if (!placeholdersMatch(basePlaceholders, translatedPlaceholders)) {
-          paramIssues.push({
-            key,
-            base: basePlaceholders,
-            translated: translatedPlaceholders,
-            baseText: baseTranslations[key],
-            translatedText: translations[key]
-          });
-        }
-      }
-    });
-
-    if (paramIssues.length > 0) {
-      hasIssues = true;
-      console.log(`  ⚠️  Parameter mismatch in ${paramIssues.length} translation(s):`);
-      paramIssues.forEach((issue) => {
-        console.log(`     - ${issue.key}:`);
-        console.log(`       Base: "${issue.baseText}" -> [${issue.base.join(", ")}]`);
-        console.log(
-          `       Translation: "${issue.translatedText}" -> [${issue.translated.join(", ")}]`
-        );
-      });
-    }
-
-    if (missing.length === 0 && extra.length === 0 && paramIssues.length === 0) {
+    } else {
       console.log(`  ✅ Complete`);
     }
 
@@ -188,68 +182,89 @@ function checkFileSet(baseDir, baseFileName, filePattern, sectionTitle) {
   return { hasIssues, coverageStats };
 }
 
+/**
+ * Format a coverage stat as a summary table cell
+ *
+ * @param {{coverage: number, translated: number, total: number}|undefined} stat
+ * @returns {string}
+ */
+function formatCell(stat) {
+  return stat === undefined ? "N/A" : `${stat.coverage}% (${stat.translated}/${stat.total})`;
+}
+
+/**
+ * Center text within a fixed width
+ *
+ * @param {string} text
+ * @param {number} width
+ * @returns {string}
+ */
+function centerText(text, width) {
+  const pad = width - text.length;
+  return " ".repeat(Math.floor(pad / 2)) + text + " ".repeat(Math.ceil(pad / 2));
+}
+
 function printCoverageSummary(allStats) {
   if (allStats.length === 0) {
     return;
   }
 
-  console.log("\n📊 Coverage Summary by Language:\n");
-  console.log("┌──────────────┬──────────────────┬──────────────────┐");
-  console.log("│   Language   │  bundle.l10n.*.  │   package.nls.*  │");
-  console.log("├──────────────┼──────────────────┼──────────────────┤");
-
-  // Group stats by locale
   const localeMap = {};
   allStats.forEach((stat) => {
-    if (!localeMap[stat.locale]) {
-      localeMap[stat.locale] = {};
-    }
-    localeMap[stat.locale][stat.type] = stat.coverage;
+    localeMap[stat.locale] ??= {};
+    localeMap[stat.locale][stat.type] = stat;
   });
 
-  Object.keys(localeMap)
+  const headers = ["Language", "bundle.l10n.*", "package.nls.*"];
+  const rows = Object.keys(localeMap)
     .toSorted()
-    .forEach((locale) => {
-      const bundleCov =
-        localeMap[locale]["bundle"] !== undefined ? `${localeMap[locale]["bundle"]}%` : "N/A";
-      const packageCov =
-        localeMap[locale]["package"] !== undefined ? `${localeMap[locale]["package"]}%` : "N/A";
+    .map((locale) => [
+      locale,
+      formatCell(localeMap[locale].bundle),
+      formatCell(localeMap[locale].package)
+    ]);
 
-      console.log(
-        `│ ${locale.padEnd(12)} │ ${bundleCov.padStart(16)} │ ${packageCov.padStart(16)} │`
-      );
-    });
+  const widths = headers.map((header, i) =>
+    Math.max(header.length, ...rows.map((row) => row[i].length))
+  );
 
-  console.log("└──────────────┴──────────────────┴──────────────────┘\n");
+  const border = (left, join, right) =>
+    left + widths.map((w) => "─".repeat(w + 2)).join(join) + right;
+
+  console.log("\n📊 Coverage Summary by Language:\n");
+  console.log(border("┌", "┬", "┐"));
+  const headerCells = headers.map((header, i) => centerText(header, widths[i]));
+  console.log(`│ ${headerCells.join(" │ ")} │`);
+  console.log(border("├", "┼", "┤"));
+  rows.forEach(([locale, bundleCov, packageCov]) => {
+    const cells = [
+      locale.padEnd(widths[0]),
+      bundleCov.padStart(widths[1]),
+      packageCov.padStart(widths[2])
+    ];
+    console.log(`│ ${cells.join(" │ ")} │`);
+  });
+  console.log(border("└", "┴", "┘") + "\n");
 }
 
 function checkTranslations() {
-  const allStats = [];
-
-  // Check bundle.l10n.* files
   const bundleResult = checkFileSet(
     L10N_DIR,
     BASE_FILE,
     "bundle.l10n.",
-    "=== Checking bundle.l10n.* files ==="
+    "=== Checking bundle.l10n.* files ===",
+    "bundle"
   );
-  bundleResult.coverageStats.forEach((stat) => {
-    allStats.push({ ...stat, type: "bundle" });
-  });
 
-  // Check package.nls.* files
   const packageResult = checkFileSet(
     ROOT_DIR,
     PACKAGE_NLS_BASE,
     "package.nls.",
-    "=== Checking package.nls.* files ==="
+    "=== Checking package.nls.* files ===",
+    "package"
   );
-  packageResult.coverageStats.forEach((stat) => {
-    allStats.push({ ...stat, type: "package" });
-  });
 
-  // Print coverage summary
-  printCoverageSummary(allStats);
+  printCoverageSummary([...bundleResult.coverageStats, ...packageResult.coverageStats]);
 
   const hasIssues = bundleResult.hasIssues || packageResult.hasIssues;
 

@@ -4,7 +4,6 @@ import { getNonce } from "@/backend/utils/nonce";
 import { buildExtensionUri } from "@/backend/utils/path";
 import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
-import * as l10n from "@/l10n";
 import { GitGraphViewState } from "@/types";
 
 import { RepoManager } from "./repoManager";
@@ -95,7 +94,7 @@ export function buildWebviewHtml(opts: {
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
 			<link rel="stylesheet" type="text/css" href="${mediaUri("main.css")}">
 			<link rel="stylesheet" type="text/css" href="${mediaUri("dropdown.css")}">
-			<title>${l10n.t("outputChannel.text")}</title>
+			<title>${vscode.l10n.t("(neo) Git Graph")}</title>
 			<style>${colorParams}"</style>
 		</head>
 		${body}

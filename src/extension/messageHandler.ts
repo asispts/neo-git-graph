@@ -20,7 +20,6 @@ import { Config } from "@/config";
 import { encodeDiffDocUri } from "@/diffDocProvider";
 import { copyToClipboard } from "@/extension/utils/clipboard";
 import { ExtensionState } from "@/extensionState";
-import * as l10n from "@/l10n";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { RequestMessage, ResponseMessage } from "@/types";
 
@@ -40,9 +39,9 @@ function viewDiff(
     pathComponents[pathComponents.length - 1] +
     " (" +
     (type === "A"
-      ? l10n.t("diff.addedIn", abbrevHash)
+      ? vscode.l10n.t("Added in {0}", abbrevHash)
       : type === "D"
-        ? l10n.t("diff.deletedIn", abbrevHash)
+        ? vscode.l10n.t("Deleted in {0}", abbrevHash)
         : abbrevCommit(commitHash) + "^ ↔ " + abbrevCommit(commitHash)) +
     ")";
   return new Promise<boolean>((resolve) => {
