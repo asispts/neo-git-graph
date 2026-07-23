@@ -50,8 +50,8 @@
     "format:fix": "oxfmt .",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
-    "l10n:check": "node ./scripts/check-l10n.js",
-    "l10n:sync": "node ./scripts/check-l10n.js --sync"
+    "l10n:export": "vscode-l10n-dev export --outDir ./l10n ./src && oxfmt ./l10n/bundle.l10n.json",
+    "l10n:check": "pnpm run l10n:export && git diff --exit-code ./l10n/bundle.l10n.json && node scripts/check-l10n.js"
   },
   "dependencies": {
     "simple-git": "^3.36.0"

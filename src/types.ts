@@ -20,6 +20,8 @@ export type GitGraphViewState = {
   initialLoadCommits: number;
   lastActiveRepo: string | null;
   loadMoreCommits: number;
+  /** VS Code display language (vscode.env.language), used for Intl date formatting */
+  locale: string;
   repos: GitRepoSet;
   showCurrentBranchByDefault: boolean;
 };

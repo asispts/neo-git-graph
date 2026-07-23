@@ -18,7 +18,6 @@ import { GitFileChangeType } from "@/backend/types";
 import { abbrevCommit } from "@/backend/utils/string";
 import { Config } from "@/config";
 import { encodeDiffDocUri } from "@/diffDocProvider";
-import { l10n } from "@/extension/l10n/l10n";
 import { copyToClipboard } from "@/extension/utils/clipboard";
 import { ExtensionState } from "@/extensionState";
 import { RepoFileWatcher } from "@/repoFileWatcher";
@@ -40,9 +39,9 @@ function viewDiff(
     pathComponents[pathComponents.length - 1] +
     " (" +
     (type === "A"
-      ? l10n.t("diffAddedIn", abbrevHash)
+      ? vscode.l10n.t("Added in {0}", abbrevHash)
       : type === "D"
-        ? l10n.t("diffDeletedIn", abbrevHash)
+        ? vscode.l10n.t("Deleted in {0}", abbrevHash)
         : abbrevCommit(commitHash) + "^ ↔ " + abbrevCommit(commitHash)) +
     ")";
   return new Promise<boolean>((resolve) => {

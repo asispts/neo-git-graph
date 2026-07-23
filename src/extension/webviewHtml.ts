@@ -40,6 +40,7 @@ export function buildWebviewHtml(opts: {
     initialLoadCommits: config.initialLoadCommits(),
     lastActiveRepo: extensionState.getLastActiveRepo(),
     loadMoreCommits: config.loadMoreCommits(),
+    locale: vscode.env.language,
     repos: repoManager.getRepos(),
     showCurrentBranchByDefault: config.showCurrentBranchByDefault()
   };
@@ -61,10 +62,10 @@ export function buildWebviewHtml(opts: {
   if (numRepos > 0) {
     body = `<body style="${colorVars}">
 		<div id="controls">
-			<span id="repoControl"><span class="unselectable">${l10nStrings.repo}: </span><div id="repoSelect" class="dropdown"></div></span>
-			<span id="branchControl"><span class="unselectable">${l10nStrings.branch}: </span><div id="branchSelect" class="dropdown"></div></span>
-			<label id="showRemoteBranchesControl"><input type="checkbox" id="showRemoteBranchesCheckbox" value="1" checked>${l10nStrings.showRemoteBranches}</label>
-      <div id="refreshBtn" class="roundedBtn">${l10nStrings.refresh}</div>
+			<span id="repoControl"><span class="unselectable">${vscode.l10n.t("Repo")}: </span><div id="repoSelect" class="dropdown"></div></span>
+			<span id="branchControl"><span class="unselectable">${vscode.l10n.t("Branch")}: </span><div id="branchSelect" class="dropdown"></div></span>
+			<label id="showRemoteBranchesControl"><input type="checkbox" id="showRemoteBranchesCheckbox" value="1" checked>${vscode.l10n.t("Show Remote Branches")}</label>
+      <div id="refreshBtn" class="roundedBtn">${vscode.l10n.t("Refresh")}</div>
 		</div>
 		<div id="content">
 			<div id="commitGraph"></div>
@@ -81,9 +82,9 @@ export function buildWebviewHtml(opts: {
 		</body>`;
   } else {
     body = `<body class="unableToLoad" style="${colorVars}">
-		<h2>${l10nStrings.unableToLoadGitGraph}</h2>
-		<p>${l10nStrings.noGitRepository}</p>
-		<p>${l10nStrings.noGit}</p>
+		<h2>${vscode.l10n.t("Unable to load Git Graph")}</h2>
+		<p>${vscode.l10n.t("Either the current workspace does not contain a Git repository, or the Git repository is not configured correctly.")}</p>
+		<p>${vscode.l10n.t('If you are using a portable Git installation, make sure you have set the Visual Studio Code Setting "git.path" to the path of your portable installation (e.g. "C:\\Program Files\\Git\\bin\\git.exe" on Windows).')}</p>
 		</body>`;
   }
 

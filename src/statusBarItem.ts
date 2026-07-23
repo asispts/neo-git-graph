@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 
 import { Config } from "./config";
 import { EXTENSION_NAME } from "./extension/constant/const";
-import { l10n } from "./extension/l10n/l10n";
 import { logger } from "./extension/utils/logger";
 
 export class StatusBarItem {
@@ -14,7 +13,7 @@ export class StatusBarItem {
     this.config = config;
     this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1);
     this.statusBarItem.text = EXTENSION_NAME;
-    this.statusBarItem.tooltip = l10n.t("viewGitGraph");
+    this.statusBarItem.tooltip = vscode.l10n.t("View Git Graph");
     this.statusBarItem.command = "neo-git-graph.view";
     context.subscriptions.push(this.statusBarItem);
     logger.log(
