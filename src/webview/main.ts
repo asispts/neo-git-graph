@@ -9,7 +9,7 @@ import type {
 
 import { Dropdown } from "./dropdown";
 import { Graph } from "./graph";
-import { getMonth, pad2 } from "./utils/date";
+import { formatShortDate, pad2 } from "./utils/date";
 import { addListenerToClass, insertAfter } from "./utils/dom";
 import { arraysEqual, ELLIPSIS, refInvalid } from "./utils/git";
 import { escapeHtml, unescapeHtml } from "./utils/html";
@@ -1158,21 +1158,20 @@ class GitGraphView {
       '<span class="commitDetailsSummaryTop' +
       (typeof this.avatars[commitDetails.email] === "string" ? " withAvatar" : "") +
       '"><span class="commitDetailsSummaryTopRow"><span class="commitDetailsSummaryKeyValues">';
-    html += "<b>" + l10n.detailCommit + "</b>" + escapeHtml(commitDetails.hash) + "<br>";
-    html += "<b>" + l10n.detailParents + "</b>" + commitDetails.parents.join(", ") + "<br>";
+    html += detailRowHtml(l10n.detailCommit, escapeHtml(commitDetails.hash)) + "<br>";
+    html += detailRowHtml(l10n.detailParents, commitDetails.parents.join(", ")) + "<br>";
     html +=
-      "<b>" +
-      l10n.detailAuthor +
-      "</b>" +
-      escapeHtml(commitDetails.author) +
-      ' &lt;<a href="mailto:' +
-      encodeURIComponent(commitDetails.email) +
-      '">' +
-      escapeHtml(commitDetails.email) +
-      "</a>&gt;<br>";
-    html +=
-      "<b>" + l10n.detailDate + "</b>" + new Date(commitDetails.date * 1000).toString() + "<br>";
-    html += "<b>" + l10n.detailCommitter + "</b>" + escapeHtml(commitDetails.committer) + "</span>";
+      detailRowHtml(
+        l10n.detailAuthor,
+        escapeHtml(commitDetails.author) +
+          ' &lt;<a href="mailto:' +
+          encodeURIComponent(commitDetails.email) +
+          '">' +
+          escapeHtml(commitDetails.email) +
+          "</a>&gt;"
+      ) + "<br>";
+    html += detailRowHtml(l10n.detailDate, new Date(commitDetails.date * 1000).toString()) + "<br>";
+    html += detailRowHtml(l10n.detailCommitter, escapeHtml(commitDetails.committer)) + "</span>";
     if (typeof this.avatars[commitDetails.email] === "string") {
       html +=
         '<span class="commitDetailsSummaryAvatar"><img src="' +
@@ -1371,15 +1370,7 @@ function getCommitDate(dateVal: number) {
   let date = new Date(dateVal * 1000),
     value;
 
-  let dateStr = l10n.timeDateFormat
-    .replace("DD", String(date.getDate()))
-    .replace(
-      "MM",
-      l10n.timeNeedFormatMonth === "true"
-        ? getMonth()[date.getMonth()]
-        : String(date.getMonth() + 1)
-    )
-    .replace("YYYY", String(date.getFullYear()));
+  let dateStr = formatShortDate(date, viewState.locale);
   let timeStr = pad2(date.getHours()) + ":" + pad2(date.getMinutes());
 
   switch (viewState.dateFormat) {
@@ -1428,6 +1419,16 @@ function getCommitDate(dateVal: number) {
 }
 
 /* Utils */
+
+/**
+ * Render a commit-detail row from a "Label: {0}" l10n template.
+ * The text before {0} is the label and is rendered bold; valueHtml replaces {0}.
+ */
+function detailRowHtml(template: string, valueHtml: string) {
+  const parts = template.split("{0}");
+  return "<b>" + parts[0] + "</b>" + valueHtml + (parts[1] ?? "");
+}
+
 function generateGitFileTree(gitFiles: GitFileChange[]) {
   let contents: GitFolderContents = {},
     i,
@@ -1524,7 +1525,11 @@ function generateGitFileTreeHtml(folder: GitFolder, gitFiles: GitFileChange[]) {
         escapeHtml(folder.contents[keys[i]].name) +
         (gitFile.type === "R"
           ? ' <span class="gitFileRename" title="' +
-            escapeHtml(gitFile.oldFilePath + l10n.tooltipRenamedTo + gitFile.newFilePath) +
+            escapeHtml(
+              l10n.tooltipRenamedTo
+                .replace("{0}", gitFile.oldFilePath)
+                .replace("{1}", gitFile.newFilePath)
+            ) +
             '">R</span>'
           : "") +
         (gitFile.type !== "A" &&
@@ -1532,13 +1537,17 @@ function generateGitFileTreeHtml(folder: GitFolder, gitFiles: GitFileChange[]) {
         gitFile.additions !== null &&
         gitFile.deletions !== null
           ? '<span class="gitFileAddDel">(<span class="gitFileAdditions" title="' +
-            gitFile.additions +
-            (gitFile.additions !== 1 ? l10n.tooltipAdditions : l10n.tooltipAddition) +
+            (gitFile.additions !== 1 ? l10n.tooltipAdditions : l10n.tooltipAddition).replace(
+              "{0}",
+              String(gitFile.additions)
+            ) +
             '">+' +
             gitFile.additions +
             '</span>|<span class="gitFileDeletions" title="' +
-            gitFile.deletions +
-            (gitFile.deletions !== 1 ? l10n.tooltipDeletions : l10n.tooltipDeletion) +
+            (gitFile.deletions !== 1 ? l10n.tooltipDeletions : l10n.tooltipDeletion).replace(
+              "{0}",
+              String(gitFile.deletions)
+            ) +
             '">-' +
             gitFile.deletions +
             "</span>)</span>"

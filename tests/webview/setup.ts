@@ -1,4 +1,4 @@
-import { getWebviewLocalizedStrings } from "@/extension/webviewL10n";
+import { getWebviewLocalizedStrings } from "@/extension/l10n/webviewL10n";
 import type * as GG from "@/types";
 
 export function createVscodeMock() {

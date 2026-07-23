@@ -16,6 +16,7 @@ const defaultViewState: GG.GitGraphViewState = {
   initialLoadCommits: 300,
   lastActiveRepo: null,
   loadMoreCommits: 75,
+  locale: "en",
   repos: { [REPO]: { columnWidths: null } },
   showCurrentBranchByDefault: false
 };

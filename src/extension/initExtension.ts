@@ -8,6 +8,7 @@ import { findGitRepos } from "@/backend/queries/repoSearch";
 import { buildExtensionUri } from "@/backend/utils/path";
 import { config } from "@/config";
 import { DiffDocProvider } from "@/diffDocProvider";
+import { EXTENSION_NAME } from "@/extension/constant/const";
 import { createMaxDepthTracker } from "@/extension/maxDepthTracker";
 import { registerMessageHandlers } from "@/extension/messageHandler";
 import { createRepoManager, RepoManager } from "@/extension/repoManager";
@@ -15,7 +16,6 @@ import { logger } from "@/extension/utils/logger";
 import { WebviewBridge, webviewBridgeFactory } from "@/extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "@/extension/webviewPanel";
 import { ExtensionState } from "@/extensionState";
-import * as l10n from "@/l10n";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { StatusBarItem } from "@/statusBarItem";
 
@@ -38,7 +38,7 @@ function registerViewCommand(
 
       const vsPanel = vscode.window.createWebviewPanel(
         "neo-git-graph",
-        l10n.t("outputChannel.text"),
+        EXTENSION_NAME,
         vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
         {
           enableScripts: true,
