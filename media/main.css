@@ -374,15 +374,12 @@ svg.fileIcon {
 
 /* Controls */
 #controls {
-  display: block;
-  position: relative;
-  left: 0;
-  right: 0;
-  top: 0;
-  padding: 4px 96px 4px 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 4px 8px;
   border-bottom: 1px solid rgba(128, 128, 128, 0.5);
   line-height: 32px;
-  text-align: center;
   font-weight: 700;
   font-size: 13px;
 }
@@ -401,14 +398,11 @@ svg.fileIcon {
   vertical-align: text-top;
 }
 #refreshBtn {
-  position: absolute;
-  right: 8px;
-  top: 50%;
+  margin-left: auto;
   width: 80px;
   height: 22px;
   line-height: 22px;
   border-radius: 11px;
-  margin-top: -12px;
 }
 #loadMoreCommitsBtn {
   width: 180px;
