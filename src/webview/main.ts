@@ -1579,6 +1579,10 @@ function abbrevCommit(commitHash: string) {
 
 /* Context Menu */
 function showContextMenu(e: MouseEvent, items: ContextMenuElement[], sourceElem: HTMLElement) {
+  // Suppress the host's native context menu. Required in browser-based VS Code
+  // (vscode.dev / Codespaces), where it would otherwise render on top of ours.
+  e.preventDefault();
+
   let html = "",
     i: number,
     event = <MouseEvent>e;
