@@ -11,9 +11,8 @@ export class StatusBarItem {
 
   constructor(context: vscode.ExtensionContext, config: Config) {
     this.config = config;
-    this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Right, 1);
-    this.statusBarItem.text = EXTENSION_NAME;
-    this.statusBarItem.tooltip = vscode.l10n.t("View Git Graph");
+    this.statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 1);
+    this.statusBarItem.name = EXTENSION_NAME;
     this.statusBarItem.command = "neo-git-graph.view";
     context.subscriptions.push(this.statusBarItem);
     logger.log(
@@ -32,11 +31,11 @@ export class StatusBarItem {
     if (show) {
       logger.log(`StatusBarItem.show() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
       if (this.numRepos === 0) {
-        this.statusBarItem.backgroundColor = new vscode.ThemeColor(
-          "statusBarItem.warningBackground"
-        );
+        this.statusBarItem.text = `$(eye) ${EXTENSION_NAME}`;
+        this.statusBarItem.tooltip = vscode.l10n.t("No Git repository found — watching for one");
       } else {
-        this.statusBarItem.backgroundColor = undefined;
+        this.statusBarItem.text = `$(type-hierarchy) ${EXTENSION_NAME}`;
+        this.statusBarItem.tooltip = vscode.l10n.t("View Git Graph");
       }
       this.statusBarItem.show();
     } else {
