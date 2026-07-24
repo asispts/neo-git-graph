@@ -401,8 +401,7 @@ class GitGraphView {
   }
   private renderTable() {
     let html = `<tr id="tableColHeaders"><th id="tableHeaderGraphCol" class="tableColHeader">${l10n.graph}</th><th class="tableColHeader">${l10n.description}</th><th class="tableColHeader">${l10n.date}</th><th class="tableColHeader">${l10n.author}</th><th class="tableColHeader">${l10n.commit}</th></tr>`,
-      i,
-      currentHash = this.commits.length > 0 && this.commits[0].hash === "*" ? "*" : this.commitHead;
+      i;
     for (i = 0; i < this.commits.length; i++) {
       let refs = "",
         message = escapeHtml(this.commits[i].message),
@@ -444,7 +443,7 @@ class GitGraphView {
         '"><td></td><td>' +
         (this.commits[i].hash === this.commitHead ? '<span class="commitHeadDot"></span>' : "") +
         refs +
-        (this.commits[i].hash === currentHash ? "<b>" + message + "</b>" : message) +
+        (this.commits[i].hash === this.commitHead ? "<b>" + message + "</b>" : message) +
         '</td><td title="' +
         date.title +
         '">' +

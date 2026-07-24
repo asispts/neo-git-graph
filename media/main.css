@@ -315,11 +315,17 @@ svg.fileIcon {
   margin-top: 7px;
 }
 
-#commitTable tr.commit.head td {
-  background-color: color-mix(in srgb, var(--vscode-focusBorder) 40%, transparent);
+#commitTable tr.commit.head td:not(:first-child) {
+  background-color: var(--vscode-list-inactiveSelectionBackground);
 }
-#commitTable tr.commit.head:hover td {
-  background-color: color-mix(in srgb, var(--vscode-focusBorder) 60%, transparent);
+#commitTable td:nth-child(2) {
+  padding-left: 10px;
+}
+#commitTable tr.commit.head td:nth-child(2) {
+  box-shadow: inset 2px 0 0 var(--git-graph-color);
+}
+#commitTable tr.commit.head:hover td:not(:first-child) {
+  background-color: var(--vscode-list-hoverBackground);
 }
 
 /* Ref labels */
