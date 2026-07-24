@@ -106,22 +106,8 @@ export function getWebviewLocalizedStrings() {
     // Status
     pushingTag: vscode.l10n.t("Pushing Tag"),
 
-    // Relative time units
-    timeSecond: vscode.l10n.t("second"),
-    timeMinute: vscode.l10n.t("minute"),
-    timeHour: vscode.l10n.t("hour"),
-    timeDay: vscode.l10n.t("day"),
-    timeWeek: vscode.l10n.t("week"),
-    timeMonth: vscode.l10n.t("month"),
-    timeYear: vscode.l10n.t("year"),
-    timeAgo: vscode.l10n.t("ago"),
-    timeSeconds: vscode.l10n.t("seconds"),
-    timeMinutes: vscode.l10n.t("minutes"),
-    timeHours: vscode.l10n.t("hours"),
-    timeDays: vscode.l10n.t("days"),
-    timeWeeks: vscode.l10n.t("weeks"),
-    timeMonths: vscode.l10n.t("months"),
-    timeYears: vscode.l10n.t("years"),
+    // Relative commit dates are formatted by Intl.RelativeTimeFormat in the
+    // webview (see utils/date.ts), so no time units are declared here.
 
     // Commit details ({0} is the value; the text before it is rendered bold)
     detailCommit: vscode.l10n.t("Commit: {0}"),

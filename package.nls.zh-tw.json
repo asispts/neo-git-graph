@@ -1,9 +1,7 @@
 {
-  "displayName": "(neo) Git Graph",
   "description": "Git Graph 的純淨 MIT 分支。視覺化歷史記錄、分支操作和開發容器支援。",
-  "command.view": "檢視 Git 圖形 (git log)",
+  "command.view": "檢視 Git Graph (git log)",
   "command.clearAvatarCache": "清除頭像快取",
-  "config.title": "(neo) Git Graph",
   "config.autoCenterCommitDetailsView": "開啟提交詳情檢視時自動置中顯示。",
   "config.dateFormat": "指定 Git 圖形日期欄中使用的日期格式。",
   "config.dateFormat.dateTime": "顯示日期和時間，例如 \"2019年3月19日 21:34\"",
@@ -14,6 +12,7 @@
   "config.dateType.commitDate": "使用提交的提交者日期",
   "config.fetchAvatars": "取得提交作者和提交者的頭像。啟用此設定即表示您同意將提交作者和提交者的電子郵件地址傳送到 GitHub、GitLab 或 Gravatar（取決於存放庫的遠端來源）。",
   "config.graphColours": "指定圖形上使用的顏色。",
+  "config.graphColours.item": "顏色（HEX 或 RGB）",
   "config.graphStyle": "指定圖形的樣式。",
   "config.graphStyle.rounded": "在圖形中的分支之間過渡時使用平滑曲線",
   "config.graphStyle.angular": "在圖形中的分支之間過渡時使用直角線條",

@@ -1,9 +1,7 @@
 {
-  "displayName": "(neo) Git Graph",
   "description": "A clean MIT fork of Git Graph. Visual history, branch actions, and devcontainer support.",
   "command.view": "View Git Graph (git log)",
   "command.clearAvatarCache": "Clear Avatar Cache",
-  "config.title": "(neo) Git Graph",
   "config.autoCenterCommitDetailsView": "Automatically center the commit details view when it is opened.",
   "config.dateFormat": "Specifies the date format to be used in the date column of Git Graph.",
   "config.dateFormat.dateTime": "Show the date and time, for example \"19 Mar 2019 21:34\"",
@@ -14,6 +12,7 @@
   "config.dateType.commitDate": "Use the committer date of a commit",
   "config.fetchAvatars": "Fetch avatars of commit authors and committers. By enabling this setting, you consent to commit author and committer email addresses being sent GitHub, GitLab or Gravatar, depending on the repositories remote origin.",
   "config.graphColours": "Specifies the colours used on the graph.",
+  "config.graphColours.item": "Colour (HEX or RGB)",
   "config.graphStyle": "Specifies the style of the graph.",
   "config.graphStyle.rounded": "Use smooth curves when transitioning between branches on the graph",
   "config.graphStyle.angular": "Use angular lines when transitioning between branches on the graph",
