@@ -54,6 +54,8 @@
     "l10n:check": "pnpm run l10n:export && git diff --exit-code ./l10n/bundle.l10n.json && node scripts/check-l10n.js"
   },
   "dependencies": {
+    "@preact/signals": "^2.9.4",
+    "preact": "^10.29.7",
     "simple-git": "^3.36.0"
   },
   "devDependencies": {

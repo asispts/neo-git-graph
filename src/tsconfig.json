@@ -3,5 +3,5 @@
   "compilerOptions": {
     "types": ["node", "vscode"]
   },
-  "exclude": ["./webview"]
+  "exclude": ["./webview", "./old-webview"]
 }
