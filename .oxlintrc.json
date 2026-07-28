@@ -76,7 +76,7 @@
       }
     },
     {
-      "files": ["src/webview/**/*.ts"],
+      "files": ["src/webview/**/*.{ts,tsx}"],
       "env": {
         "node": false,
         "browser": true
