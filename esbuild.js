@@ -1,6 +1,9 @@
+const fs = require("node:fs");
 const path = require("node:path");
 
+const tailwindcss = require("@tailwindcss/postcss");
 const esbuild = require("esbuild");
+const postcss = require("postcss");
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
@@ -27,6 +30,21 @@ const aliasPlugin = {
     build.onResolve({ filter: /^@\// }, async (args) => {
       const resolved = path.resolve(__dirname, "src", args.path.slice(2));
       return build.resolve(resolved, { kind: args.kind, resolveDir: path.dirname(resolved) });
+    });
+  }
+};
+
+// Run Tailwind (via PostCSS) over CSS files before esbuild bundles them, so
+// `@import "tailwindcss/..."` and utility classes are resolved. Tailwind v4
+// auto-detects source files from the project root.
+const tailwindPlugin = {
+  name: "tailwindcss",
+  setup(build) {
+    const processor = postcss([tailwindcss()]);
+    build.onLoad({ filter: /\.css$/ }, async (args) => {
+      const source = await fs.promises.readFile(args.path, "utf8");
+      const result = await processor.process(source, { from: args.path });
+      return { contents: result.css, loader: "css", resolveDir: path.dirname(args.path) };
     });
   }
 };
@@ -59,7 +77,7 @@ async function main() {
     jsxImportSource: "preact",
     outfile: "out/web.min.js",
     logLevel: "silent",
-    plugins: [aliasPlugin, esbuildProblemMatcherPlugin]
+    plugins: [tailwindPlugin, aliasPlugin, esbuildProblemMatcherPlugin]
   });
 
   if (watch) {

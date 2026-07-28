@@ -1,0 +1,16 @@
+@layer theme, base, components, utilities;
+
+@import "tailwindcss";
+
+@theme {
+  --default-font-family: var(--vscode-font-family);
+  --default-mono-font-family: var(--vscode-editor-font-family);
+
+  --color-fg: var(--vscode-foreground);
+  --color-dropdown: var(--vscode-dropdown-background);
+  --color-dropdown-fg: var(--vscode-dropdown-foreground);
+  --color-dropdown-border: var(--vscode-dropdown-border);
+  --color-line: rgba(128, 128, 128, 0.5);
+  --color-btn: rgba(128, 128, 128, 0.1);
+  --color-btn-hover: rgba(128, 128, 128, 0.2);
+}

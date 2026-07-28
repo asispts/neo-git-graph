@@ -60,6 +60,7 @@ export function buildWebviewHtml(opts: {
 			<meta charset="UTF-8">
 			<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} 'nonce-${nonce}'; img-src data:;">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
+			<link rel="stylesheet" href="${compiledOutputUri("web.min.css")}">
 			<title>${EXTENSION_NAME}</title>
 		</head>
 		<body>
