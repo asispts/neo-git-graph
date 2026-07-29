@@ -1,10 +1,12 @@
 import type { RequestMessage, ResponseMessage } from "@/types";
 
-type ResponseOf<T extends ResponseMessage["command"]> = Extract<ResponseMessage, { command: T }>;
+import { vscodeApi } from "./api";
+
+type Command = ResponseMessage["command"];
+type ResponseOf<T extends Command> = Extract<ResponseMessage, { command: T }>;
 type AnyHandler = (msg: ResponseMessage) => void;
 
-const vscode = acquireVsCodeApi();
-const handlers = new Map<ResponseMessage["command"], Set<AnyHandler>>();
+const handlers = new Map<Command, Set<AnyHandler>>();
 
 window.addEventListener("message", (event: MessageEvent<ResponseMessage>) => {
   const msg = event.data;
@@ -12,10 +14,10 @@ window.addEventListener("message", (event: MessageEvent<ResponseMessage>) => {
 });
 
 export function sendMessage(msg: RequestMessage): void {
-  vscode.postMessage(msg);
+  vscodeApi.postMessage(msg);
 }
 
-export function onMessage<T extends ResponseMessage["command"]>(
+export function onMessage<T extends Command>(
   command: T,
   handler: (msg: ResponseOf<T>) => void
 ): () => void {
@@ -26,13 +28,4 @@ export function onMessage<T extends ResponseMessage["command"]>(
   }
   set.add(handler as AnyHandler);
   return () => set.delete(handler as AnyHandler);
-}
-
-export function readState<T>(): T | null {
-  const state = vscode.getState();
-  return state !== null && typeof state === "object" ? (state as T) : null;
-}
-
-export function writeState<T>(state: T): void {
-  vscode.setState(state);
 }

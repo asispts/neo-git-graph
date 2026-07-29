@@ -3,16 +3,13 @@ import { Checkbox } from "@/webview/components/Checkbox";
 import { RefreshIcon } from "@/webview/components/Icons";
 import { Select } from "@/webview/components/Select";
 import {
-  branchOptions,
-  currentBranch,
-  currentRepo,
   refresh,
-  repoOptions,
   selectBranch,
   selectRepo,
-  setShowRemoteBranches,
-  showRemoteBranches
-} from "@/webview/store/repo";
+  setShowRemoteBranches
+} from "@/webview/store/repo/actions";
+import { branchOptions, repoOptions } from "@/webview/store/repo/options";
+import { currentBranch, currentRepo, showRemoteBranches } from "@/webview/store/repo/state";
 
 export function TopBar() {
   return (
