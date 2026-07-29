@@ -1,3 +1,9 @@
+import { TopBar } from "@/webview/layout/TopBar";
+
 export function App() {
-  return <div class="bg-amber-500">hello world</div>;
+  return (
+    <>
+      <TopBar />
+    </>
+  );
 }
