@@ -1,11 +1,9 @@
-import type { GitGraphViewState, RequestMessage } from "@/types";
+declare module "*.css";
 
-declare global {
-  function acquireVsCodeApi(): {
-    getState(): unknown;
-    setState(state: unknown): void;
-    postMessage(message: RequestMessage): void;
-  };
+declare function acquireVsCodeApi(): {
+  getState(): unknown;
+  setState(state: unknown): void;
+  postMessage(message: import("@/types").RequestMessage): void;
+};
 
-  var viewState: GitGraphViewState;
-}
+declare let viewState: import("@/types").GitGraphViewState;

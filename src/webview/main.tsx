@@ -1,12 +1,10 @@
+import "./styles.css";
+
 import { render } from "preact";
 
-import "./styles.css";
-import { App } from "./app";
-import { restoreRepoState, startRepoPersistence } from "./store/repo/persistence";
-import { startRepoSync } from "./store/repo/sync";
+import { App } from "./App";
+import { initWebview } from "./lib/bootstrap";
 
-restoreRepoState();
-startRepoPersistence();
-startRepoSync();
+initWebview();
 
 render(<App />, document.getElementById("app")!);
