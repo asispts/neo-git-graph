@@ -5,9 +5,9 @@ import type { RepoList } from "@/webview/types/repo";
 type LoadRepoMessage = Extract<ResponseMessage, { command: "loadRepos" }>;
 
 export function handleLoadRepos(msg: LoadRepoMessage) {
-  const repos: RepoList = Object.keys(msg.repos).map((v) => ({
-    id: v,
-    value: v
+  const repos: RepoList = Object.keys(msg.repos).map((value) => ({
+    label: value.split(/[\\/]/).findLast(Boolean) ?? value,
+    value
   }));
 
   const [firstRepo] = repos;
@@ -20,6 +20,6 @@ export function handleLoadRepos(msg: LoadRepoMessage) {
   repoState.value = {
     status: "ready",
     repos,
-    selectedRepo: repos.find((repo) => repo.id === msg.lastActiveRepo) ?? firstRepo
+    selectedRepo: repos.find((repo) => repo.value === msg.lastActiveRepo) ?? firstRepo
   };
 }

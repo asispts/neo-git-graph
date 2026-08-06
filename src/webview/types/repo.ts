@@ -1,5 +1,5 @@
 export type RepoData = {
-  id: string;
+  label: string;
   value: string;
 };
 
