@@ -10,6 +10,18 @@
   --color-dropdown: var(--vscode-dropdown-background);
   --color-dropdown-fg: var(--vscode-dropdown-foreground);
   --color-dropdown-border: var(--vscode-dropdown-border);
+  --color-menu: var(--vscode-menu-background, var(--vscode-dropdown-background));
+  --color-menu-fg: var(--vscode-menu-foreground, var(--vscode-dropdown-foreground));
+  --color-menu-active: var(
+    --vscode-menu-selectionBackground,
+    var(--vscode-list-activeSelectionBackground)
+  );
+  --color-menu-active-fg: var(
+    --vscode-menu-selectionForeground,
+    var(--vscode-list-activeSelectionForeground)
+  );
+  --color-input: var(--vscode-input-background);
+  --color-input-fg: var(--vscode-input-foreground);
   --color-checkbox: var(--vscode-checkbox-background);
   --color-checkbox-border: var(--vscode-checkbox-border, rgba(128, 128, 128, 0.5));
   --color-checkbox-checked: var(--vscode-button-background);

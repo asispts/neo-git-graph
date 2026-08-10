@@ -1,25 +1,22 @@
 import type { ResponseMessage } from "@/types";
-import { repoState } from "@/webview/lib/store/repo";
-import type { RepoList } from "@/webview/types/repo";
+import { selectRepo } from "@/webview/lib/actions";
+import { repoList } from "@/webview/lib/stores";
+import type { RepoData } from "@/webview/types";
 
 type LoadRepoMessage = Extract<ResponseMessage, { command: "loadRepos" }>;
 
 export function handleLoadRepos(msg: LoadRepoMessage) {
-  const repos: RepoList = Object.keys(msg.repos).map((value) => ({
+  const repos: Array<RepoData> = Object.keys(msg.repos).map((value) => ({
     label: value.split(/[\\/]/).findLast(Boolean) ?? value,
     value
   }));
 
-  const [firstRepo] = repos;
+  repoList.value = repos;
 
-  if (firstRepo === undefined) {
-    repoState.value = { status: "no-repo" };
-    return;
+  const selected =
+    repos.find((repo) => repo.value === msg.lastActiveRepo)?.value ?? repos.at(0)?.value ?? null;
+
+  if (selected !== null) {
+    selectRepo(selected);
   }
-
-  repoState.value = {
-    status: "ready",
-    repos,
-    selectedRepo: repos.find((repo) => repo.value === msg.lastActiveRepo) ?? firstRepo
-  };
 }

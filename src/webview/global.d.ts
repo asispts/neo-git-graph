@@ -7,3 +7,7 @@ declare function acquireVsCodeApi(): {
 };
 
 declare let viewState: import("@/types").GitGraphViewState;
+
+interface Window {
+  readonly l10n: import("@/extension/l10n/webviewL10n").LocalizedStrings;
+}

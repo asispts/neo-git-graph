@@ -1,31 +1,35 @@
 import type { ResponseMessage } from "@/types";
 
+import { handleLoadBranches } from "./handler/load-branches";
 import { handleLoadRepos } from "./handler/load-repo";
 import { vscode } from "./vscode";
 
 type Command = ResponseMessage["command"];
 
-type HandlerMap = {
-  [C in Command]?: (msg: Extract<ResponseMessage, { command: C }>) => void;
-};
+type Handler<C extends Command> = (msg: Extract<ResponseMessage, { command: C }>) => void;
+
+type Registry = Map<Command, { handle(msg: ResponseMessage): void }>;
+
+function register<C extends Command>(registry: Registry, command: C, handle: Handler<C>): void {
+  registry.set(command, { handle });
+}
 
 export function initWebview() {
-  const handlers: HandlerMap = {
-    loadRepos: handleLoadRepos
-    //   loadBranches: handleLoadBranches,
-    //   refresh: handleRefresh
-  };
+  const handlers: Registry = new Map();
+
+  register(handlers, "loadRepos", handleLoadRepos);
+  register(handlers, "loadBranches", handleLoadBranches);
 
   window.addEventListener("message", (e: MessageEvent<ResponseMessage>) => {
-    const handler = handlers[e.data.command] as ((msg: ResponseMessage) => void) | undefined;
+    const entry = handlers.get(e.data.command);
 
-    if (handler === undefined) {
+    if (entry === undefined) {
       // eslint-disable-next-line no-console
       console.warn("no handler for", e.data.command);
       return;
     }
 
-    handler(e.data);
+    entry.handle(e.data);
   });
 
   vscode.postMessage({ command: "loadRepos", check: false });

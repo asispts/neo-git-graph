@@ -1,23 +1,23 @@
 import { GraphView } from "./layout/GraphView";
 import { MainHeader } from "./layout/MainHeader";
-import { repoState } from "./lib/store/repo";
+import { repoList } from "./lib/stores";
 import { LoadingPage } from "./pages/LoadingPage";
 import { NoRepoPage } from "./pages/NoRepoPage";
 
 export function App() {
-  const state = repoState.value;
+  const repos = repoList.value;
 
-  if (state.status === "loading") {
+  if (repos === undefined) {
     return <LoadingPage />;
   }
 
-  if (state.status === "no-repo") {
+  if (repos.length === 0) {
     return <NoRepoPage />;
   }
 
   return (
     <>
-      <MainHeader state={state} />
+      <MainHeader repos={repos} />
       <GraphView />
     </>
   );
