@@ -49,10 +49,11 @@ describe("loadBranches", () => {
     const result = await loadBranches(simpleGit(simpleRepo), {
       showRemoteBranches: false,
       hard: false,
-      currentRepo: simpleRepo,
+      repo: simpleRepo,
       gitPath: "git"
     });
     expect(result).toEqual({
+      repo: simpleRepo,
       branches: expect.any(Array),
       head: "main",
       hard: false,
@@ -65,7 +66,7 @@ describe("loadBranches", () => {
     const result = await loadBranches(simpleGit(simpleRepo), {
       showRemoteBranches: false,
       hard: false,
-      currentRepo: simpleRepo,
+      repo: simpleRepo,
       gitPath: "git"
     });
     expect(result.branches).toContain("feature/foo");
@@ -75,10 +76,11 @@ describe("loadBranches", () => {
     const result = await loadBranches(simpleGit(detachedRepo), {
       showRemoteBranches: false,
       hard: false,
-      currentRepo: detachedRepo,
+      repo: detachedRepo,
       gitPath: "git"
     });
     expect(result).toEqual({
+      repo: detachedRepo,
       branches: expect.any(Array),
       head: null,
       hard: false,
@@ -91,10 +93,11 @@ describe("loadBranches", () => {
     const result = await loadBranches(simpleGit(repoWithRemote), {
       showRemoteBranches: false,
       hard: false,
-      currentRepo: repoWithRemote,
+      repo: repoWithRemote,
       gitPath: "git"
     });
     expect(result).toEqual({
+      repo: repoWithRemote,
       branches: expect.any(Array),
       head: expect.any(String),
       hard: false,
@@ -107,10 +110,11 @@ describe("loadBranches", () => {
     const result = await loadBranches(simpleGit(repoWithRemote), {
       showRemoteBranches: true,
       hard: false,
-      currentRepo: repoWithRemote,
+      repo: repoWithRemote,
       gitPath: "git"
     });
     expect(result).toEqual({
+      repo: repoWithRemote,
       branches: expect.any(Array),
       head: expect.any(String),
       hard: false,
@@ -123,10 +127,11 @@ describe("loadBranches", () => {
     const result = await loadBranches(simpleGit(os.tmpdir()), {
       showRemoteBranches: false,
       hard: false,
-      currentRepo: os.tmpdir(),
+      repo: os.tmpdir(),
       gitPath: "git"
     });
     expect(result).toEqual({
+      repo: os.tmpdir(),
       branches: [],
       head: null,
       hard: false,
@@ -138,10 +143,11 @@ describe("loadBranches", () => {
     const result = await loadBranches(simpleGit(simpleRepo), {
       showRemoteBranches: false,
       hard: true,
-      currentRepo: simpleRepo,
+      repo: simpleRepo,
       gitPath: "git"
     });
     expect(result).toEqual({
+      repo: simpleRepo,
       branches: expect.any(Array),
       head: expect.any(String),
       hard: true,

@@ -2,6 +2,8 @@ import type { ResponseMessage } from "@/types";
 
 import { handleLoadBranches } from "./handler/load-branches";
 import { handleLoadRepos } from "./handler/load-repo";
+import { handleRefresh } from "./handler/refresh";
+import { startSync } from "./sync";
 import { vscode } from "./vscode";
 
 type Command = ResponseMessage["command"];
@@ -19,6 +21,7 @@ export function initWebview() {
 
   register(handlers, "loadRepos", handleLoadRepos);
   register(handlers, "loadBranches", handleLoadBranches);
+  register(handlers, "refresh", handleRefresh);
 
   window.addEventListener("message", (e: MessageEvent<ResponseMessage>) => {
     const entry = handlers.get(e.data.command);
@@ -31,6 +34,8 @@ export function initWebview() {
 
     entry.handle(e.data);
   });
+
+  startSync();
 
   vscode.postMessage({ command: "loadRepos", check: false });
 }

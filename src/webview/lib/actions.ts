@@ -1,6 +1,12 @@
-import { SHOW_ALL_BRANCHES } from "@/webview/constants";
-import { selectedBranch, selectedRepo, showRemoteBranch } from "@/webview/lib/stores";
-import { vscode } from "@/webview/lib/vscode";
+import { batch } from "@preact/signals";
+
+import {
+  maxCommits,
+  refreshToken,
+  selectedBranch,
+  selectedRepo,
+  showRemoteBranch
+} from "@/webview/lib/stores";
 import type { CommitBranchType } from "@/webview/types";
 
 export function selectRepo(repo: string) {
@@ -8,35 +14,25 @@ export function selectRepo(repo: string) {
     return;
   }
 
-  selectedRepo.value = repo;
-  selectedBranch.value = undefined;
-
-  vscode.postMessage({ command: "selectRepo", repo });
-  loadBranches();
-}
-
-export function loadBranches() {
-  vscode.postMessage({
-    command: "loadBranches",
-    showRemoteBranches: showRemoteBranch.value,
-    hard: true
+  batch(() => {
+    selectedRepo.value = repo;
+    selectedBranch.value = undefined;
+    maxCommits.value = viewState.initialLoadCommits;
   });
 }
 
 export function selectBranch(branch: CommitBranchType) {
   selectedBranch.value = branch;
+}
 
-  const repo = selectedRepo.value;
-  if (repo === undefined) {
-    return;
-  }
+export function setShowRemoteBranch(value: boolean) {
+  showRemoteBranch.value = value;
+}
 
-  vscode.postMessage({
-    command: "loadCommits",
-    repo,
-    branchName: branch === SHOW_ALL_BRANCHES ? "" : branch,
-    maxCommits: viewState.initialLoadCommits,
-    showRemoteBranches: showRemoteBranch.value,
-    hard: true
-  });
+export function loadMoreCommits() {
+  maxCommits.value += viewState.loadMoreCommits;
+}
+
+export function refresh() {
+  refreshToken.value++;
 }

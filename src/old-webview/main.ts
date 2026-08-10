@@ -311,6 +311,7 @@ class GitGraphView {
     sendMessage({ command: "selectRepo", repo: this.currentRepo });
     sendMessage({
       command: "loadBranches",
+      repo: this.currentRepo,
       showRemoteBranches: this.showRemoteBranches,
       hard: hard
     });

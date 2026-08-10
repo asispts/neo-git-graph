@@ -6,8 +6,14 @@ type QueryPayloads = {
     response: { commitDetails: GitCommitDetails | null };
   };
   loadBranches: {
-    request: { showRemoteBranches: boolean; hard: boolean };
-    response: { branches: string[]; head: string | null; hard: boolean; isRepo: boolean };
+    request: { repo: string; showRemoteBranches: boolean; hard: boolean };
+    response: {
+      repo: string;
+      branches: string[];
+      head: string | null;
+      hard: boolean;
+      isRepo: boolean;
+    };
   };
   loadCommits: {
     request: {

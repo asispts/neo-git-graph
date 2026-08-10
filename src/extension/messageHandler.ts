@@ -73,6 +73,16 @@ export function registerMessageHandlers(
 
   let currentRepo: string | null = null;
 
+  function setCurrentRepo(repo: string) {
+    if (repo === currentRepo) {
+      return;
+    }
+    currentRepo = repo;
+    gitClient.setRepo(repo);
+    extensionState.setLastActiveRepo(repo);
+    repoFileWatcher.start(repo);
+  }
+
   function registerAction<T extends RequestMessage["command"]>(
     command: T,
     handler: (msg: Extract<RequestMessage, { command: T }>) => Promise<void>
@@ -107,6 +117,7 @@ export function registerMessageHandlers(
   // --- Query handlers ---
 
   bridge.onMessage("loadCommits", async (msg) => {
+    setCurrentRepo(msg.repo);
     bridge.post({
       command: "loadCommits",
       ...(await loadCommits(gitClient.getInstance(), {
@@ -121,12 +132,13 @@ export function registerMessageHandlers(
   });
 
   bridge.onMessage("loadBranches", async (msg) => {
+    setCurrentRepo(msg.repo);
     bridge.post({
       command: "loadBranches",
       ...(await loadBranches(gitClient.getInstance(), {
         showRemoteBranches: msg.showRemoteBranches,
         hard: msg.hard,
-        currentRepo: currentRepo!,
+        repo: msg.repo,
         gitPath: config.gitPath()
       }))
     });
@@ -145,13 +157,7 @@ export function registerMessageHandlers(
   // --- Infrastructure handlers ---
 
   bridge.onMessage("selectRepo", (msg) => {
-    if (msg.repo === currentRepo) {
-      return;
-    }
-    currentRepo = msg.repo;
-    gitClient.setRepo(msg.repo);
-    extensionState.setLastActiveRepo(msg.repo);
-    repoFileWatcher.start(msg.repo);
+    setCurrentRepo(msg.repo);
   });
 
   bridge.onMessage("loadRepos", async (msg) => {

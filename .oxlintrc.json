@@ -82,6 +82,24 @@
         "node": false,
         "browser": true
       }
+    },
+    {
+      // Response handlers reduce state only. Requests belong in lib/sync.ts.
+      "files": ["src/webview/lib/handler/**/*.ts", "src/webview/lib/actions.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@/webview/lib/vscode",
+                "message": "Handlers and actions write signals only. Post messages from lib/sync.ts."
+              }
+            ],
+            "patterns": ["*/vscode", "./vscode"]
+          }
+        ]
+      }
     }
   ]
 }
