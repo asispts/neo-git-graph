@@ -111,10 +111,13 @@ async function getUnsavedChanges(git: SimpleGit) {
   }
 }
 
+/** `repo` and `branchName` are echoed back by the message layer, not by the query. */
+type LoadCommitsResult = Omit<QueryResult<"loadCommits">, "repo" | "branchName">;
+
 export async function loadCommits(
   git: SimpleGit,
   input: LoadCommitsInput
-): Promise<QueryResult<"loadCommits">> {
+): Promise<LoadCommitsResult> {
   const { branchName, maxCommits, showRemoteBranches, hard, dateType, showUncommittedChanges } =
     input;
 

@@ -1,6 +1,7 @@
 import type { ResponseMessage } from "@/types";
 
 import { handleLoadBranches } from "./handler/load-branches";
+import { handleLoadCommits } from "./handler/load-commits";
 import { handleLoadRepos } from "./handler/load-repo";
 import { handleRefresh } from "./handler/refresh";
 import { startSync } from "./sync";
@@ -15,6 +16,7 @@ type Handlers = {
 const handlers: Handlers = {
   loadRepos: handleLoadRepos,
   loadBranches: handleLoadBranches,
+  loadCommits: handleLoadCommits,
   refresh: handleRefresh
 };
 

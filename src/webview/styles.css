@@ -30,4 +30,11 @@
   --color-line: rgba(128, 128, 128, 0.5);
   --color-btn: rgba(128, 128, 128, 0.1);
   --color-btn-hover: rgba(128, 128, 128, 0.2);
+
+  --color-editor: var(--vscode-editor-background);
+  --color-row-head: var(--vscode-list-inactiveSelectionBackground);
+  --color-row-hover: var(--vscode-list-hoverBackground);
+
+  /* Colour of the graph branch a row belongs to. Overridden per commit table. */
+  --color-graph: var(--vscode-focusBorder);
 }

@@ -2,14 +2,24 @@ import { batch } from "@preact/signals";
 
 import {
   branchList,
+  commitHead,
+  commitList,
   headBranch,
   maxCommits,
+  moreCommitsAvailable,
   refreshToken,
   selectedBranch,
   selectedRepo,
   showRemoteBranch
 } from "@/webview/lib/stores";
 import type { CommitBranchType } from "@/webview/types";
+
+function clearCommits() {
+  commitList.value = undefined;
+  commitHead.value = null;
+  moreCommitsAvailable.value = false;
+  maxCommits.value = viewState.initialLoadCommits;
+}
 
 export function selectRepo(repo: string) {
   if (repo === selectedRepo.value) {
@@ -21,12 +31,19 @@ export function selectRepo(repo: string) {
     branchList.value = undefined;
     headBranch.value = null;
     selectedBranch.value = undefined;
-    maxCommits.value = viewState.initialLoadCommits;
+    clearCommits();
   });
 }
 
 export function selectBranch(branch: CommitBranchType) {
-  selectedBranch.value = branch;
+  if (branch === selectedBranch.value) {
+    return;
+  }
+
+  batch(() => {
+    selectedBranch.value = branch;
+    clearCommits();
+  });
 }
 
 export function setShowRemoteBranch(value: boolean) {

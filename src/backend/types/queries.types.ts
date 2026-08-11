@@ -24,6 +24,8 @@ type QueryPayloads = {
       hard: boolean;
     };
     response: {
+      repo: string;
+      branchName: string;
       commits: GitCommitNode[];
       head: string | null;
       moreCommitsAvailable: boolean;

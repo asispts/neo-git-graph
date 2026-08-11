@@ -120,6 +120,8 @@ export function registerMessageHandlers(
     setCurrentRepo(msg.repo);
     bridge.post({
       command: "loadCommits",
+      repo: msg.repo,
+      branchName: msg.branchName,
       ...(await loadCommits(gitClient.getInstance(), {
         branchName: msg.branchName,
         maxCommits: msg.maxCommits,
