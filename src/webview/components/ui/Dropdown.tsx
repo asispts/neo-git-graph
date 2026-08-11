@@ -13,12 +13,22 @@ type DropdownProps = {
   value: string | undefined;
   onChange: (value: string) => void;
   class?: string;
+  disabled?: boolean;
 };
 
-export function Dropdown({ label, options, value, onChange, class: className }: DropdownProps) {
-  const [open, setOpen] = useState(false);
+export function Dropdown({
+  label,
+  options,
+  value,
+  onChange,
+  class: className,
+  disabled = false
+}: DropdownProps) {
+  const [expanded, setExpanded] = useState(false);
   const [query, setQuery] = useState("");
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const open = expanded && !disabled;
 
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -45,7 +55,7 @@ export function Dropdown({ label, options, value, onChange, class: className }: 
 
     const onPointerDown = (event: PointerEvent) => {
       if (!rootRef.current?.contains(event.target as Node)) {
-        setOpen(false);
+        setExpanded(false);
       }
     };
     document.addEventListener("pointerdown", onPointerDown, true);
@@ -57,13 +67,13 @@ export function Dropdown({ label, options, value, onChange, class: className }: 
   }, [open, active]);
 
   function close() {
-    setOpen(false);
+    setExpanded(false);
     triggerRef.current?.focus();
   }
 
   function toggle() {
     if (open) {
-      setOpen(false);
+      setExpanded(false);
       return;
     }
     setQuery("");
@@ -73,7 +83,7 @@ export function Dropdown({ label, options, value, onChange, class: className }: 
         0
       )
     );
-    setOpen(true);
+    setExpanded(true);
   }
 
   function select(option: DropdownOption | undefined) {
@@ -128,7 +138,7 @@ export function Dropdown({ label, options, value, onChange, class: className }: 
         close();
         break;
       case "Tab":
-        setOpen(false);
+        setExpanded(false);
         break;
     }
   }
@@ -140,7 +150,8 @@ export function Dropdown({ label, options, value, onChange, class: className }: 
         <button
           ref={triggerRef}
           type="button"
-          class={`flex w-full cursor-pointer items-center gap-1 rounded-md bg-dropdown py-1 pl-3 pr-2 text-dropdown-fg outline-1 outline-dropdown-border focus-visible:outline-2 focus-visible:outline-focus ${className ?? ""}`}
+          class={`flex w-full cursor-pointer items-center gap-1 rounded-md bg-dropdown py-1 pl-3 pr-2 text-dropdown-fg outline-1 outline-dropdown-border focus-visible:outline-2 focus-visible:outline-focus disabled:cursor-not-allowed disabled:opacity-60 ${className ?? ""}`}
+          disabled={disabled}
           aria-haspopup="listbox"
           aria-expanded={open}
           aria-controls={listId}

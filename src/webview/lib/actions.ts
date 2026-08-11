@@ -1,6 +1,8 @@
 import { batch } from "@preact/signals";
 
 import {
+  branchList,
+  headBranch,
   maxCommits,
   refreshToken,
   selectedBranch,
@@ -16,6 +18,8 @@ export function selectRepo(repo: string) {
 
   batch(() => {
     selectedRepo.value = repo;
+    branchList.value = undefined;
+    headBranch.value = null;
     selectedBranch.value = undefined;
     maxCommits.value = viewState.initialLoadCommits;
   });
