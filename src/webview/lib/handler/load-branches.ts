@@ -12,10 +12,7 @@ export function handleLoadBranches(msg: LoadBranchesMessage) {
   }
 
   batch(() => {
-    branchList.value = msg.branches.map((value) => ({
-      label: value.startsWith("remotes/") ? value.slice(8) : value,
-      value
-    }));
+    branchList.value = msg.branches;
     headBranch.value = msg.head;
 
     const current = selectedBranch.value;

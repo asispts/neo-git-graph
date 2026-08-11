@@ -5,9 +5,16 @@ import { Icon } from "@/webview/components/ui/Icons";
 import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import { refresh, selectBranch, selectRepo, setShowRemoteBranch } from "@/webview/lib/actions";
 import { branchList, selectedBranch, selectedRepo, showRemoteBranch } from "@/webview/lib/stores";
-import type { RepoData } from "@/webview/types";
 
-export function MainHeader({ repos }: { repos: Array<RepoData> }) {
+function repoOption(value: string) {
+  return { label: value.split(/[\\/]/).findLast(Boolean) ?? value, value };
+}
+
+function branchOption(value: string) {
+  return { label: value.startsWith("remotes/") ? value.slice(8) : value, value };
+}
+
+export function MainHeader({ repos }: { repos: Array<string> }) {
   return (
     <header class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-b border-line py-4">
       <Button aria-label={window.l10n.refresh} title={window.l10n.refresh} onClick={refresh}>
@@ -21,7 +28,7 @@ export function MainHeader({ repos }: { repos: Array<RepoData> }) {
           <Dropdown
             label={window.l10n.repo}
             class="max-w-48"
-            options={repos}
+            options={repos.map(repoOption)}
             value={selectedRepo.value}
             onChange={selectRepo}
           />
@@ -31,7 +38,7 @@ export function MainHeader({ repos }: { repos: Array<RepoData> }) {
           class="max-w-64"
           options={[
             { label: window.l10n.showAll, value: SHOW_ALL_BRANCHES },
-            ...(branchList.value ?? [])
+            ...(branchList.value ?? []).map(branchOption)
           ]}
           value={selectedBranch.value}
           onChange={selectBranch}
