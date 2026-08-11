@@ -8,31 +8,31 @@ import { vscode } from "./vscode";
 
 type Command = ResponseMessage["command"];
 
-type Handler<C extends Command> = (msg: Extract<ResponseMessage, { command: C }>) => void;
+type Handlers = {
+  [C in Command]?: (msg: Extract<ResponseMessage, { command: C }>) => void;
+};
 
-type Registry = Map<Command, { handle(msg: ResponseMessage): void }>;
+const handlers: Handlers = {
+  loadRepos: handleLoadRepos,
+  loadBranches: handleLoadBranches,
+  refresh: handleRefresh
+};
 
-function register<C extends Command>(registry: Registry, command: C, handle: Handler<C>): void {
-  registry.set(command, { handle });
+function dispatch(msg: ResponseMessage): void {
+  const handle = handlers[msg.command] as ((m: ResponseMessage) => void) | undefined;
+
+  if (handle === undefined) {
+    // eslint-disable-next-line no-console
+    console.warn("no handler for", msg.command);
+    return;
+  }
+
+  handle(msg);
 }
 
 export function initWebview() {
-  const handlers: Registry = new Map();
-
-  register(handlers, "loadRepos", handleLoadRepos);
-  register(handlers, "loadBranches", handleLoadBranches);
-  register(handlers, "refresh", handleRefresh);
-
   window.addEventListener("message", (e: MessageEvent<ResponseMessage>) => {
-    const entry = handlers.get(e.data.command);
-
-    if (entry === undefined) {
-      // eslint-disable-next-line no-console
-      console.warn("no handler for", e.data.command);
-      return;
-    }
-
-    entry.handle(e.data);
+    dispatch(e.data);
   });
 
   startSync();
