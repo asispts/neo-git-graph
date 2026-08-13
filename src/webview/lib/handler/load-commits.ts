@@ -9,7 +9,8 @@ import {
   expandedCommit,
   moreCommitsAvailable,
   selectedBranch,
-  selectedRepo
+  selectedRepo,
+  uncommittedChanges
 } from "@/webview/lib/stores";
 
 type LoadCommitsMessage = Extract<ResponseMessage, { command: "loadCommits" }>;
@@ -26,6 +27,7 @@ export function handleLoadCommits(msg: LoadCommitsMessage) {
     commitList.value = msg.commits;
     commitHead.value = msg.head;
     moreCommitsAvailable.value = msg.moreCommitsAvailable;
+    uncommittedChanges.value = msg.uncommittedChanges;
 
     const expanded = expandedCommit.value;
     if (expanded !== null && !msg.commits.some((commit) => commit.hash === expanded)) {

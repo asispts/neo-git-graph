@@ -5,8 +5,9 @@ import { UNCOMMITTED_CHANGES } from "@/webview/constants";
 import { openContextMenu } from "@/webview/lib/actions";
 import type { CommitMessages } from "@/webview/lib/menus";
 import { commitMenu, commitMenuSource } from "@/webview/lib/menus";
-import { activeSource } from "@/webview/lib/stores";
+import { activeSource, uncommittedChanges } from "@/webview/lib/stores";
 import { getCommitDate } from "@/webview/utils/date";
+import { format } from "@/webview/utils/format";
 
 type CommitRowProps = {
   commit: GitCommitNode;
@@ -65,6 +66,9 @@ export function CommitRow({
   onSelect
 }: CommitRowProps) {
   const uncommitted = commit.hash === UNCOMMITTED_CHANGES;
+  const message = uncommitted
+    ? format(window.l10n.uncommittedChanges, uncommittedChanges.value)
+    : commit.message;
   const date = getCommitDate(commit.date);
   const source = commitMenuSource(commit.hash);
   const menuOpen = activeSource.value === source;
@@ -96,7 +100,7 @@ export function CommitRow({
             active={isActiveRef(gitRef, headBranch)}
           />
         ))}
-        {isHead || uncommitted ? <b>{commit.message}</b> : commit.message}
+        {isHead || uncommitted ? <b>{message}</b> : message}
       </td>
       <td class={CELL_CLASS} title={date.title}>
         {date.value}

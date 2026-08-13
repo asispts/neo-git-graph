@@ -99,15 +99,12 @@ async function getLog(
   }
 }
 
-async function getUnsavedChanges(git: SimpleGit) {
+async function countUnsavedChanges(git: SimpleGit) {
   try {
     const status = await git.status();
-    if (status.files.length === 0) {
-      return null;
-    }
-    return { branch: status.current ?? "HEAD", changes: status.files.length };
+    return status.files.length;
   } catch {
-    return null;
+    return 0;
   }
 }
 
@@ -132,18 +129,20 @@ export async function loadCommits(
     commits = commits.slice(0, -1);
   }
 
-  if (refData.head !== null) {
+  let uncommittedChanges = 0;
+  if (refData.head !== null && showUncommittedChanges) {
     for (let i = 0; i < commits.length; i++) {
       if (refData.head === commits[i].hash) {
-        const unsaved = showUncommittedChanges ? await getUnsavedChanges(git) : null;
-        if (unsaved !== null) {
+        uncommittedChanges = await countUnsavedChanges(git);
+        if (uncommittedChanges > 0) {
+          // The webview names this row, so that the name is localized.
           commits.unshift({
             hash: "*",
             parentHashes: [refData.head],
             author: "*",
             email: "",
             date: Math.round(new Date().getTime() / 1000),
-            message: `Uncommitted Changes (${unsaved.changes})`
+            message: ""
           });
         }
         break;
@@ -171,5 +170,11 @@ export async function loadCommits(
     }
   }
 
-  return { commits: commitNodes, head: refData.head, moreCommitsAvailable, hard };
+  return {
+    commits: commitNodes,
+    head: refData.head,
+    moreCommitsAvailable,
+    hard,
+    uncommittedChanges
+  };
 }

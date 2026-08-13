@@ -19,6 +19,8 @@ export const commitList = signal<Array<GitCommitNode> | undefined>(undefined);
 /** Hash of the commit that HEAD points to, or `null` when the repo has no commit. */
 export const commitHead = signal<string | null>(null);
 export const moreCommitsAvailable = signal<boolean>(false);
+/** Number of unsaved changes. `0` when the uncommitted row is absent. */
+export const uncommittedChanges = signal<number>(0);
 
 /** Hash of the commit whose details view is open, or `null` when none is open. */
 export const expandedCommit = signal<string | null>(null);

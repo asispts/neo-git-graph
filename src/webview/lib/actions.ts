@@ -19,7 +19,8 @@ import {
   refreshToken,
   selectedBranch,
   selectedRepo,
-  showRemoteBranch
+  showRemoteBranch,
+  uncommittedChanges
 } from "@/webview/lib/stores";
 import type {
   ActionCommand,
@@ -34,6 +35,7 @@ function clearCommits() {
   commitList.value = undefined;
   commitHead.value = null;
   moreCommitsAvailable.value = false;
+  uncommittedChanges.value = 0;
   maxCommits.value = viewState.initialLoadCommits;
   closeCommitDetails();
 }
