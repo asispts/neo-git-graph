@@ -1,6 +1,7 @@
 import type { ResponseMessage } from "@/types";
 
 import { handleCommitDetails } from "./handler/commit-details";
+import { handleCopyToClipboard } from "./handler/copy-to-clipboard";
 import { handleLoadBranches } from "./handler/load-branches";
 import { handleLoadCommits } from "./handler/load-commits";
 import { handleLoadRepos } from "./handler/load-repo";
@@ -16,6 +17,7 @@ type Handlers = {
 
 const handlers: Handlers = {
   commitDetails: handleCommitDetails,
+  copyToClipboard: handleCopyToClipboard,
   loadRepos: handleLoadRepos,
   loadBranches: handleLoadBranches,
   loadCommits: handleLoadCommits,

@@ -2,6 +2,7 @@ import { computed, effect } from "@preact/signals";
 
 import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import {
+  clipboardRequest,
   diffRequest,
   expandedCommit,
   maxCommits,
@@ -101,6 +102,19 @@ export function startSync() {
       command: "commitDetails",
       repo: query.repo,
       commitHash: query.commitHash
+    });
+  });
+
+  effect(() => {
+    const request = clipboardRequest.value;
+    if (request === null) {
+      return;
+    }
+
+    vscode.postMessage({
+      command: "copyToClipboard",
+      type: request.type,
+      data: request.data
     });
   });
 

@@ -2,6 +2,9 @@ import type { GitCommitNode, GitRef } from "@/backend/types";
 import { abbrevCommit } from "@/backend/utils/string";
 import { RefLabel } from "@/webview/components/commit/RefLabel";
 import { UNCOMMITTED_CHANGES } from "@/webview/constants";
+import { openContextMenu } from "@/webview/lib/actions";
+import { commitMenu, commitMenuSource } from "@/webview/lib/menus";
+import { contextMenu } from "@/webview/lib/stores";
 import { getCommitDate } from "@/webview/utils/date";
 
 type CommitRowProps = {
@@ -29,12 +32,22 @@ function orderRefs(refs: Array<GitRef>, headBranch: string | null) {
   );
 }
 
-function rowClass(isHead: boolean, expanded: boolean, selectable: boolean) {
-  return [
-    expanded ? "bg-row-selected hover:bg-row-selected-hover" : "hover:bg-row-hover",
-    isHead && !expanded ? "bg-row-head" : "",
-    selectable ? "cursor-pointer" : ""
-  ]
+/** One background per state. Two unprefixed `bg-*` classes would race on CSS order. */
+function rowBackground(isHead: boolean, expanded: boolean, menuOpen: boolean) {
+  if (expanded) {
+    return "bg-row-selected hover:bg-row-selected-hover";
+  }
+  if (menuOpen) {
+    return "bg-row-hover";
+  }
+  if (isHead) {
+    return "bg-row-head hover:bg-row-hover";
+  }
+  return "hover:bg-row-hover";
+}
+
+function rowClass(isHead: boolean, expanded: boolean, selectable: boolean, menuOpen: boolean) {
+  return [rowBackground(isHead, expanded, menuOpen), selectable ? "cursor-pointer" : ""]
     .filter(Boolean)
     .join(" ");
 }
@@ -49,12 +62,17 @@ export function CommitRow({
 }: CommitRowProps) {
   const uncommitted = commit.hash === UNCOMMITTED_CHANGES;
   const date = getCommitDate(commit.date);
+  const source = commitMenuSource(commit.hash);
+  const menuOpen = contextMenu.value?.source === source;
 
   return (
     <tr
-      class={rowClass(isHead, expanded, onSelect !== undefined)}
+      class={rowClass(isHead, expanded, onSelect !== undefined, menuOpen)}
       style={colour === undefined ? undefined : `--color-graph: ${colour}`}
       onClick={onSelect}
+      onContextMenu={
+        uncommitted ? undefined : (event) => openContextMenu(event, source, commitMenu(commit.hash))
+      }
     >
       <td class={CELL_CLASS} />
       <td
