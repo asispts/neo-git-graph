@@ -44,4 +44,16 @@
 
   /* Colour of the graph branch a row belongs to. Overridden per commit table. */
   --color-graph: var(--vscode-focusBorder);
+
+  /* Driven by a scroll timeline, so the range is a distance, not a duration. */
+  --animate-scroll-shadow: scroll-shadow linear both;
+
+  @keyframes scroll-shadow {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 }
