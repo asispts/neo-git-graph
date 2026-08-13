@@ -1,13 +1,16 @@
 import { batch } from "@preact/signals";
+import type { ComponentChildren } from "preact";
 
-import type { GitFileChange } from "@/backend/types";
+import type { ActionRequest, GitFileChange } from "@/backend/types";
 import {
+  actionRequest,
   branchList,
   clipboardRequest,
   commitDetails,
   commitHead,
   commitList,
   contextMenu,
+  dialog,
   diffRequest,
   expandedCommit,
   headBranch,
@@ -18,7 +21,14 @@ import {
   selectedRepo,
   showRemoteBranch
 } from "@/webview/lib/stores";
-import type { CommitBranchType, ContextMenuEntry } from "@/webview/types";
+import type {
+  ActionCommand,
+  CommitBranchType,
+  ContextMenuEntry,
+  DialogBody,
+  DialogInput,
+  DialogValues
+} from "@/webview/types";
 
 function clearCommits() {
   commitList.value = undefined;
@@ -101,6 +111,72 @@ export function openContextMenu(
 
 export function closeContextMenu() {
   contextMenu.value = null;
+}
+
+/** Open a dialog. The context menu that asked for it closes. */
+function openDialog(body: DialogBody) {
+  batch(() => {
+    contextMenu.value = null;
+    dialog.value = { ...body, token: (dialog.value?.token ?? 0) + 1 };
+  });
+}
+
+export function closeDialog() {
+  dialog.value = null;
+}
+
+type FormDialog<T extends ReadonlyArray<DialogInput>> = {
+  message: ComponentChildren;
+  inputs: T;
+  /** Label of the button that submits the form. */
+  action: string;
+  /** Context menu key of the element the dialog belongs to. */
+  source: string | null;
+  onSubmit: (values: DialogValues<T>) => void;
+};
+
+/**
+ * Ask the user to fill in a form, or to confirm when `inputs` is empty.
+ * The dialog fills one value per input, in order, so the tuple type holds.
+ */
+export function openFormDialog<const T extends ReadonlyArray<DialogInput>>({
+  message,
+  inputs,
+  action,
+  source,
+  onSubmit
+}: FormDialog<T>) {
+  openDialog({
+    kind: "form",
+    message,
+    inputs: [...inputs],
+    action,
+    onSubmit: onSubmit as (values: Array<string | boolean>) => void,
+    source
+  });
+}
+
+/** Report a command that failed. `reason` holds the output of git. */
+export function openErrorDialog(message: string, reason: string | null = null) {
+  openDialog({ kind: "error", message, reason });
+}
+
+/** Report a command that runs longer than the others. The response replaces it. */
+export function openRunningDialog(message: string) {
+  openDialog({ kind: "running", message });
+}
+
+/** Ask the editor to run a git command on the selected repo. */
+export function runAction(command: ActionCommand) {
+  const repo = selectedRepo.value;
+  if (repo === undefined) {
+    return;
+  }
+
+  actionRequest.value = {
+    action: { ...command, repo } as ActionRequest,
+    token: (actionRequest.value?.token ?? 0) + 1
+  };
 }
 
 /** Ask the editor to put text on the clipboard. `type` names it in error messages. */

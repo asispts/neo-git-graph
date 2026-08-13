@@ -9,7 +9,8 @@ export function Button({ class: className, type, ...props }: ButtonProps) {
       class={[
         "inline-flex cursor-pointer items-center justify-center gap-1 select-none",
         "rounded-full border border-line bg-btn px-4 py-1 font-semibold",
-        "hover:bg-btn-hover focus:outline-1",
+        "not-disabled:hover:bg-btn-hover focus:outline-1",
+        "disabled:cursor-not-allowed disabled:opacity-50",
         className
       ]
         .filter(Boolean)

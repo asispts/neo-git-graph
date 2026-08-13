@@ -1,4 +1,5 @@
 import { ContextMenu } from "./components/ui/ContextMenu";
+import { Dialog } from "./components/ui/Dialog";
 import { GraphView } from "./layout/GraphView";
 import { MainHeader } from "./layout/MainHeader";
 import { repoList } from "./lib/stores";
@@ -21,6 +22,7 @@ export function App() {
       <MainHeader repos={repos} />
       <GraphView />
       <ContextMenu />
+      <Dialog />
     </>
   );
 }

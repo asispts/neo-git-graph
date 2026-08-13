@@ -31,6 +31,13 @@ export default defineConfig({
           name: "extension",
           include: ["tests/extension/**/*.test.ts"]
         }
+      },
+      {
+        resolve: { alias },
+        test: {
+          name: "webview",
+          include: ["tests/webview/**/*.test.ts"]
+        }
       }
     ]
   }

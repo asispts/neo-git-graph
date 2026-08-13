@@ -3,14 +3,17 @@ import { abbrevCommit } from "@/backend/utils/string";
 import { RefLabel } from "@/webview/components/commit/RefLabel";
 import { UNCOMMITTED_CHANGES } from "@/webview/constants";
 import { openContextMenu } from "@/webview/lib/actions";
+import type { CommitMessages } from "@/webview/lib/menus";
 import { commitMenu, commitMenuSource } from "@/webview/lib/menus";
-import { contextMenu } from "@/webview/lib/stores";
+import { activeSource } from "@/webview/lib/stores";
 import { getCommitDate } from "@/webview/utils/date";
 
 type CommitRowProps = {
   commit: GitCommitNode;
   isHead: boolean;
   headBranch: string | null;
+  /** Commit messages by hash, so the menu can name the parents of a merge. */
+  messages: CommitMessages;
   /** Colour of the graph branch this commit sits on. */
   colour: string | undefined;
   /** The details view of this commit is open. */
@@ -56,6 +59,7 @@ export function CommitRow({
   commit,
   isHead,
   headBranch,
+  messages,
   colour,
   expanded,
   onSelect
@@ -63,7 +67,7 @@ export function CommitRow({
   const uncommitted = commit.hash === UNCOMMITTED_CHANGES;
   const date = getCommitDate(commit.date);
   const source = commitMenuSource(commit.hash);
-  const menuOpen = contextMenu.value?.source === source;
+  const menuOpen = activeSource.value === source;
 
   return (
     <tr
@@ -71,7 +75,9 @@ export function CommitRow({
       style={colour === undefined ? undefined : `--color-graph: ${colour}`}
       onClick={onSelect}
       onContextMenu={
-        uncommitted ? undefined : (event) => openContextMenu(event, source, commitMenu(commit.hash))
+        uncommitted
+          ? undefined
+          : (event) => openContextMenu(event, source, commitMenu(commit, messages))
       }
     >
       <td class={CELL_CLASS} />

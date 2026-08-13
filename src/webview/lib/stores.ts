@@ -1,10 +1,12 @@
-import { signal } from "@preact/signals";
+import { computed, signal } from "@preact/signals";
 
 import type { GitCommitDetails, GitCommitNode } from "@/backend/types";
 import type {
+  ActionRequestState,
   ClipboardRequest,
   CommitBranchType,
   ContextMenuState,
+  DialogState,
   DiffRequest
 } from "@/webview/types";
 
@@ -26,9 +28,27 @@ export const commitDetails = signal<GitCommitDetails | null>(null);
 export const diffRequest = signal<DiffRequest | null>(null);
 /** Last copy the user asked for. `lib/sync.ts` sends it to the editor. */
 export const clipboardRequest = signal<ClipboardRequest | null>(null);
+/** Last git action the user confirmed. `lib/sync.ts` sends it to the editor. */
+export const actionRequest = signal<ActionRequestState | null>(null);
 
 /** The open context menu, or `null` when none is open. Only one opens at a time. */
 export const contextMenu = signal<ContextMenuState | null>(null);
+/** The open dialog, or `null` when none is open. Only one opens at a time. */
+export const dialog = signal<DialogState | null>(null);
+
+/**
+ * Menu key of the element whose context menu or dialog is open. The element
+ * highlights itself while it owns one of the two.
+ */
+export const activeSource = computed(() => {
+  const menu = contextMenu.value;
+  if (menu !== null) {
+    return menu.source;
+  }
+
+  const open = dialog.value;
+  return open !== null && open.kind === "form" ? open.source : null;
+});
 
 export const selectedBranch = signal<CommitBranchType | undefined>(undefined);
 export const showRemoteBranch = signal<boolean>(true);

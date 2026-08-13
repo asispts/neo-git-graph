@@ -1,8 +1,8 @@
 import type { GitRef } from "@/backend/types";
 import { Icon } from "@/webview/components/ui/Icons";
 import { openContextMenu } from "@/webview/lib/actions";
-import { refMenu, refMenuSource } from "@/webview/lib/menus";
-import { contextMenu } from "@/webview/lib/stores";
+import { checkoutBranchAction, refMenu, refMenuSource } from "@/webview/lib/menus";
+import { activeSource } from "@/webview/lib/stores";
 
 const ICON_CLASS = "mr-[5px] size-[18px] shrink-0 rounded-l-[4px] bg-graph fill-editor p-[2px]";
 
@@ -24,7 +24,7 @@ function RefIcon({ type }: { type: GitRef["type"] }) {
 
 export function RefLabel({ gitRef, active }: { gitRef: GitRef; active: boolean }) {
   const source = refMenuSource(gitRef);
-  const menuOpen = contextMenu.value?.source === source;
+  const menuOpen = activeSource.value === source;
 
   return (
     <span
@@ -32,7 +32,12 @@ export function RefLabel({ gitRef, active }: { gitRef: GitRef; active: boolean }
         active ? "border-graph" : "border-line"
       } ${menuOpen ? "bg-btn-hover" : "bg-btn"}`}
       title={gitRef.name}
-      onContextMenu={(event) => openContextMenu(event, source, refMenu(gitRef))}
+      onContextMenu={(event) => openContextMenu(event, source, refMenu(gitRef, active))}
+      onClick={(event) => event.stopPropagation()}
+      onDblClick={(event) => {
+        event.stopPropagation();
+        checkoutBranchAction(gitRef);
+      }}
     >
       <RefIcon type={gitRef.type} />
       <span class="truncate">{gitRef.name}</span>

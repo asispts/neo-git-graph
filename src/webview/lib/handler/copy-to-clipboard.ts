@@ -1,10 +1,10 @@
 import type { ResponseCopyToClipboard } from "@/types";
+import { openErrorDialog } from "@/webview/lib/actions";
 
 export function handleCopyToClipboard(msg: ResponseCopyToClipboard) {
   if (msg.success) {
     return;
   }
 
-  // eslint-disable-next-line no-console
-  console.error(window.l10n.unableToCopyToClipboard.replace("{0}", msg.type));
+  openErrorDialog(window.l10n.unableToCopyToClipboard.replace("{0}", msg.type));
 }

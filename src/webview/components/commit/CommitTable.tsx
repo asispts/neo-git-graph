@@ -27,6 +27,10 @@ const MIN_GRAPH_COLUMN = 64;
 
 export function CommitTable({ commits, head, headBranch }: CommitTableProps) {
   const layout = useMemo(() => computeGraphLayout(commits, head), [commits, head]);
+  const messages = useMemo(
+    () => new Map(commits.map((commit) => [commit.hash, commit.message])),
+    [commits]
+  );
   const graphColumn = Math.max(graphWidth(layout) + GRAPH_PADDING, MIN_GRAPH_COLUMN);
 
   const expandedHash = expandedCommit.value;
@@ -56,6 +60,7 @@ export function CommitTable({ commits, head, headBranch }: CommitTableProps) {
                 commit={commit}
                 isHead={commit.hash === head}
                 headBranch={headBranch}
+                messages={messages}
                 colour={branchColour(layout.vertices[index].colour)}
                 expanded={index === expandedRow}
                 onSelect={

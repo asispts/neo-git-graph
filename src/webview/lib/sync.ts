@@ -2,6 +2,7 @@ import { computed, effect } from "@preact/signals";
 
 import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import {
+  actionRequest,
   clipboardRequest,
   diffRequest,
   expandedCommit,
@@ -116,6 +117,15 @@ export function startSync() {
       type: request.type,
       data: request.data
     });
+  });
+
+  effect(() => {
+    const request = actionRequest.value;
+    if (request === null) {
+      return;
+    }
+
+    vscode.postMessage(request.action);
   });
 
   effect(() => {
