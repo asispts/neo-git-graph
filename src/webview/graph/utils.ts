@@ -1,6 +1,12 @@
 import { ROW_HEIGHT } from "@/webview/constants";
 import { LANE_OFFSET, LANE_WIDTH } from "@/webview/graph/constants";
-import type { Branch, GraphLayout, GraphPoint, Vertex } from "@/webview/graph/types";
+import type {
+  Branch,
+  GraphExpansion,
+  GraphLayout,
+  GraphPoint,
+  Vertex
+} from "@/webview/graph/types";
 
 /** Centre of a lane, in pixels. */
 export function laneX(x: number): number {
@@ -16,8 +22,13 @@ export function graphWidth(layout: GraphLayout): number {
   return layout.lanes * LANE_WIDTH;
 }
 
-export function graphHeight(layout: GraphLayout): number {
-  return layout.vertices.length * ROW_HEIGHT;
+export function graphHeight(layout: GraphLayout, expansion: GraphExpansion | null): number {
+  return layout.vertices.length * ROW_HEIGHT + (expansion?.height ?? 0);
+}
+
+/** Pixels a row moves down, because the commit details view opens above it. */
+export function expandOffset(row: number, expansion: GraphExpansion | null): number {
+  return expansion !== null && row > expansion.row ? expansion.height : 0;
 }
 
 /** Where the vertex sits, once it is on a branch. */

@@ -1,5 +1,5 @@
 import { ROW_HEIGHT } from "@/webview/constants";
-import type { GraphBranch, GraphStroke } from "@/webview/graph/types";
+import type { GraphBranch, GraphExpansion, GraphLine, GraphStroke } from "@/webview/graph/types";
 import { laneX, rowY } from "@/webview/graph/utils";
 
 /** A branch line converted to pixels. */
@@ -12,15 +12,47 @@ type PlacedLine = {
   lockedFirst: boolean;
 };
 
-function placeLines(branch: GraphBranch): Array<PlacedLine> {
-  const lines = branch.lines.map((line) => ({
-    x1: laneX(line.p1.x),
-    y1: rowY(line.p1.y),
-    x2: laneX(line.p2.x),
-    y2: rowY(line.p2.y),
-    isCommitted: line.isCommitted,
-    lockedFirst: line.lockedFirst
-  }));
+/**
+ * Convert one line to pixels. A line below the open commit details view moves
+ * down by its height; a line that crosses the view is stretched over it, which
+ * takes a second line when the line also changes lane.
+ */
+function placeLine(line: GraphLine, expansion: GraphExpansion | null): Array<PlacedLine> {
+  const x1 = laneX(line.p1.x);
+  const x2 = laneX(line.p2.x);
+  const y1 = rowY(line.p1.y);
+  const y2 = rowY(line.p2.y);
+  const rest = { isCommitted: line.isCommitted, lockedFirst: line.lockedFirst };
+
+  if (expansion === null || line.p2.y <= expansion.row) {
+    return [{ x1, y1, x2, y2, ...rest }];
+  }
+
+  const height = expansion.height;
+  if (line.p1.y > expansion.row) {
+    return [{ x1, y1: y1 + height, x2, y2: y2 + height, ...rest }];
+  }
+
+  if (x1 === x2) {
+    return [{ x1, y1, x2, y2: y2 + height, ...rest }];
+  }
+
+  // The corner of a lane change keeps its row, so the line is split into the
+  // lane change itself, and a straight line that spans the view.
+  if (line.lockedFirst) {
+    return [
+      { x1, y1, x2, y2, ...rest },
+      { x1: x2, y1: y1 + ROW_HEIGHT, x2, y2: y2 + height, ...rest }
+    ];
+  }
+  return [
+    { x1, y1, x2: x1, y2: y2 - ROW_HEIGHT + height, ...rest },
+    { x1, y1: y1 + height, x2, y2: y2 + height, ...rest }
+  ];
+}
+
+function placeLines(branch: GraphBranch, expansion: GraphExpansion | null): Array<PlacedLine> {
+  const lines = branch.lines.flatMap((line) => placeLine(line, expansion));
 
   // Join consecutive vertical lines into one, so the path stays short.
   for (let i = 0; i < lines.length - 1;) {
@@ -49,8 +81,12 @@ function placeLines(branch: GraphBranch): Array<PlacedLine> {
  * where it changes between committed and uncommitted, because the two are
  * drawn in different colours.
  */
-export function branchStrokes(branch: GraphBranch, angular: boolean): Array<GraphStroke> {
-  const lines = placeLines(branch);
+export function branchStrokes(
+  branch: GraphBranch,
+  angular: boolean,
+  expansion: GraphExpansion | null
+): Array<GraphStroke> {
+  const lines = placeLines(branch, expansion);
   const corner = ROW_HEIGHT * (angular ? 0.38 : 0.8);
 
   const strokes: Array<GraphStroke> = [];

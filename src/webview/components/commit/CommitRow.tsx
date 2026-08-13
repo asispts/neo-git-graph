@@ -10,6 +10,10 @@ type CommitRowProps = {
   headBranch: string | null;
   /** Colour of the graph branch this commit sits on. */
   colour: string | undefined;
+  /** The details view of this commit is open. */
+  expanded: boolean;
+  /** Open or close the details view. Absent for the uncommitted changes row. */
+  onSelect: (() => void) | undefined;
 };
 
 const CELL_CLASS = "h-[24px] overflow-hidden text-ellipsis whitespace-nowrap px-1 leading-[24px]";
@@ -25,14 +29,32 @@ function orderRefs(refs: Array<GitRef>, headBranch: string | null) {
   );
 }
 
-export function CommitRow({ commit, isHead, headBranch, colour }: CommitRowProps) {
+function rowClass(isHead: boolean, expanded: boolean, selectable: boolean) {
+  return [
+    expanded ? "bg-row-selected hover:bg-row-selected-hover" : "hover:bg-row-hover",
+    isHead && !expanded ? "bg-row-head" : "",
+    selectable ? "cursor-pointer" : ""
+  ]
+    .filter(Boolean)
+    .join(" ");
+}
+
+export function CommitRow({
+  commit,
+  isHead,
+  headBranch,
+  colour,
+  expanded,
+  onSelect
+}: CommitRowProps) {
   const uncommitted = commit.hash === UNCOMMITTED_CHANGES;
   const date = getCommitDate(commit.date);
 
   return (
     <tr
-      class={isHead ? "bg-row-head hover:bg-row-hover" : "hover:bg-row-hover"}
+      class={rowClass(isHead, expanded, onSelect !== undefined)}
       style={colour === undefined ? undefined : `--color-graph: ${colour}`}
+      onClick={onSelect}
     >
       <td class={CELL_CLASS} />
       <td

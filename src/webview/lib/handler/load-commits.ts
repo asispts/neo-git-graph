@@ -2,9 +2,11 @@ import { batch } from "@preact/signals";
 
 import type { ResponseMessage } from "@/types";
 import { SHOW_ALL_BRANCHES } from "@/webview/constants";
+import { closeCommitDetails } from "@/webview/lib/actions";
 import {
   commitHead,
   commitList,
+  expandedCommit,
   moreCommitsAvailable,
   selectedBranch,
   selectedRepo
@@ -24,5 +26,10 @@ export function handleLoadCommits(msg: LoadCommitsMessage) {
     commitList.value = msg.commits;
     commitHead.value = msg.head;
     moreCommitsAvailable.value = msg.moreCommitsAvailable;
+
+    const expanded = expandedCommit.value;
+    if (expanded !== null && !msg.commits.some((commit) => commit.hash === expanded)) {
+      closeCommitDetails();
+    }
   });
 }

@@ -35,8 +35,9 @@ const aliasPlugin = {
 };
 
 // Run Tailwind (via PostCSS) over CSS files before esbuild bundles them, so
-// `@import "tailwindcss/..."` and utility classes are resolved. Tailwind v4
-// auto-detects source files from the project root.
+// `@import "tailwindcss/..."` and utility classes are resolved. Tailwind reports
+// every file it scans for classes. Those files become esbuild watch files, so
+// that a new class in a component regenerates the CSS in watch mode.
 const tailwindPlugin = {
   name: "tailwindcss",
   setup(build) {
@@ -44,7 +45,24 @@ const tailwindPlugin = {
     build.onLoad({ filter: /\.css$/ }, async (args) => {
       const source = await fs.promises.readFile(args.path, "utf8");
       const result = await processor.process(source, { from: args.path });
-      return { contents: result.css, loader: "css", resolveDir: path.dirname(args.path) };
+
+      const watchFiles = [];
+      const watchDirs = [];
+      for (const message of result.messages) {
+        if (message.type === "dependency") {
+          watchFiles.push(message.file);
+        } else if (message.type === "dir-dependency") {
+          watchDirs.push(message.dir);
+        }
+      }
+
+      return {
+        contents: result.css,
+        loader: "css",
+        resolveDir: path.dirname(args.path),
+        watchFiles,
+        watchDirs
+      };
     });
   }
 };

@@ -34,6 +34,12 @@ export type GraphLayout = {
   lanes: number;
 };
 
+/** Space the open commit details view adds under the row it belongs to. */
+export type GraphExpansion = {
+  row: number;
+  height: number;
+};
+
 /** One SVG path, in pixels. */
 export type GraphStroke = {
   path: string;

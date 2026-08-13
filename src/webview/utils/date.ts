@@ -23,6 +23,10 @@ const getDateFormatter = memoizeByLocale(
   (locale) => new Intl.DateTimeFormat(locale, { year: "numeric", month: "short", day: "numeric" })
 );
 
+const getFullDateFormatter = memoizeByLocale(
+  (locale) => new Intl.DateTimeFormat(locale, { dateStyle: "full", timeStyle: "long" })
+);
+
 const getRelativeFormatter = memoizeByLocale(
   (locale) => new Intl.RelativeTimeFormat(locale, { numeric: "always" })
 );
@@ -61,6 +65,11 @@ export type CommitDate = {
   /** Cell text, in the format the user configured. */
   value: string;
 };
+
+/** Full date and time, as shown in the commit details view. */
+export function getFullDate(seconds: number): string {
+  return getFullDateFormatter(viewState.locale).format(new Date(seconds * 1000));
+}
 
 export function getCommitDate(seconds: number): CommitDate {
   const date = new Date(seconds * 1000);

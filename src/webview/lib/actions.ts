@@ -1,9 +1,13 @@
 import { batch } from "@preact/signals";
 
+import type { GitFileChange } from "@/backend/types";
 import {
   branchList,
+  commitDetails,
   commitHead,
   commitList,
+  diffRequest,
+  expandedCommit,
   headBranch,
   maxCommits,
   moreCommitsAvailable,
@@ -19,6 +23,7 @@ function clearCommits() {
   commitHead.value = null;
   moreCommitsAvailable.value = false;
   maxCommits.value = viewState.initialLoadCommits;
+  closeCommitDetails();
 }
 
 export function selectRepo(repo: string) {
@@ -56,4 +61,39 @@ export function loadMoreCommits() {
 
 export function refresh() {
   refreshToken.value++;
+}
+
+export function closeCommitDetails() {
+  batch(() => {
+    expandedCommit.value = null;
+    commitDetails.value = null;
+  });
+}
+
+/** Open the details view of a commit, or close it when it is already open. */
+export function toggleCommitDetails(hash: string) {
+  if (hash === expandedCommit.value) {
+    closeCommitDetails();
+    return;
+  }
+
+  batch(() => {
+    expandedCommit.value = hash;
+    commitDetails.value = null;
+  });
+}
+
+/** Ask the editor to open the diff of a file of a commit. */
+export function viewDiff(commitHash: string, file: GitFileChange) {
+  const repo = selectedRepo.value;
+  if (repo === undefined) {
+    return;
+  }
+
+  diffRequest.value = {
+    repo,
+    commitHash,
+    file,
+    token: (diffRequest.value?.token ?? 0) + 1
+  };
 }

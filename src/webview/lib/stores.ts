@@ -1,7 +1,7 @@
 import { signal } from "@preact/signals";
 
-import type { GitCommitNode } from "@/backend/types";
-import type { CommitBranchType } from "@/webview/types";
+import type { GitCommitDetails, GitCommitNode } from "@/backend/types";
+import type { CommitBranchType, DiffRequest } from "@/webview/types";
 
 export const repoList = signal<Array<string> | undefined>(undefined);
 export const selectedRepo = signal<string | undefined>(undefined);
@@ -12,6 +12,13 @@ export const commitList = signal<Array<GitCommitNode> | undefined>(undefined);
 /** Hash of the commit that HEAD points to, or `null` when the repo has no commit. */
 export const commitHead = signal<string | null>(null);
 export const moreCommitsAvailable = signal<boolean>(false);
+
+/** Hash of the commit whose details view is open, or `null` when none is open. */
+export const expandedCommit = signal<string | null>(null);
+/** Details of `expandedCommit`, or `null` while they load. */
+export const commitDetails = signal<GitCommitDetails | null>(null);
+/** Last file diff the user asked for. `lib/sync.ts` sends it to the editor. */
+export const diffRequest = signal<DiffRequest | null>(null);
 
 export const selectedBranch = signal<CommitBranchType | undefined>(undefined);
 export const showRemoteBranch = signal<boolean>(true);
