@@ -1,4 +1,3 @@
-import { TABLE_HEADER_HEIGHT } from "@/webview/constants";
 import { VERTEX_RADIUS } from "@/webview/graph/constants";
 import { branchColour, UNCOMMITTED_COLOUR } from "@/webview/graph/palette";
 import { branchStrokes } from "@/webview/graph/strokes";
@@ -12,7 +11,8 @@ const DOT_CLASS = "stroke-editor [stroke-opacity:0.75] [stroke-width:1]";
 
 /**
  * The branch lines and commit dots, drawn behind the first column of the commit
- * table. The table rows set the scale: a row is `ROW_HEIGHT` high.
+ * table. The table rows set the scale: a row is `ROW_HEIGHT` high. The caller
+ * places the graph, and cuts it off when the column is too narrow for it.
  */
 export function CommitGraph({
   layout,
@@ -26,8 +26,7 @@ export function CommitGraph({
 
   return (
     <svg
-      class="pointer-events-none absolute left-0"
-      style={`top: ${TABLE_HEADER_HEIGHT}px`}
+      class="block"
       width={graphWidth(layout)}
       height={graphHeight(layout, expansion)}
       aria-hidden="true"

@@ -1,6 +1,7 @@
 import type { ComponentChildren } from "preact";
 
 import type { ActionRequest, GitFileChange } from "@/backend/types";
+import type { GitRepoState } from "@/types";
 
 export type CommitBranchType = "*" | (string & {});
 
@@ -77,6 +78,14 @@ export type ClipboardRequest = {
   type: string;
   data: string;
   /** Bumped per request, so that copying the same text twice is sent twice. */
+  token: number;
+};
+
+/** State of one repo the user changed, for example its column widths. */
+export type RepoStateRequest = {
+  repo: string;
+  state: GitRepoState;
+  /** Bumped per request, so that saving the same state twice is sent twice. */
   token: number;
 };
 

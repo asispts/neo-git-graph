@@ -29,6 +29,7 @@
   --color-checkbox-check: var(--vscode-button-foreground);
   --color-focus: var(--vscode-focusBorder);
   --color-line: rgba(128, 128, 128, 0.5);
+  --color-line-soft: rgba(128, 128, 128, 0.25);
   --color-btn: rgba(128, 128, 128, 0.1);
   --color-btn-hover: rgba(128, 128, 128, 0.2);
 

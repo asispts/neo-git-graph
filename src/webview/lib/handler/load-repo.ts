@@ -2,7 +2,7 @@ import { batch } from "@preact/signals";
 
 import type { ResponseMessage } from "@/types";
 import { selectRepo } from "@/webview/lib/actions";
-import { repoList, selectedRepo } from "@/webview/lib/stores";
+import { repoList, repoStates, selectedRepo } from "@/webview/lib/stores";
 
 type LoadRepoMessage = Extract<ResponseMessage, { command: "loadRepos" }>;
 
@@ -16,6 +16,7 @@ export function handleLoadRepos(msg: LoadRepoMessage) {
 
   batch(() => {
     repoList.value = repos;
+    repoStates.value = msg.repos;
 
     if (next !== undefined) {
       selectRepo(next);

@@ -1,14 +1,17 @@
 import { computed, signal } from "@preact/signals";
 
 import type { GitCommitDetails, GitCommitNode } from "@/backend/types";
+import type { GitRepoSet } from "@/types";
 import type {
   ActionRequestState,
   ClipboardRequest,
   CommitBranchType,
   ContextMenuState,
   DialogState,
-  DiffRequest
+  DiffRequest,
+  RepoStateRequest
 } from "@/webview/types";
+import { isColumnWidths } from "@/webview/utils/columns";
 
 export const repoList = signal<Array<string> | undefined>(undefined);
 export const selectedRepo = signal<string | undefined>(undefined);
@@ -51,6 +54,23 @@ export const activeSource = computed(() => {
   const open = dialog.value;
   return open !== null && open.kind === "form" ? open.source : null;
 });
+
+/** State the editor keeps per repo. `lib/handler/load-repo.ts` refreshes it. */
+export const repoStates = signal<GitRepoSet>(viewState.repos);
+
+/**
+ * Widths of the resizable columns of the selected repo, or `null` while the
+ * browser sizes the table itself.
+ */
+export const columnWidths = computed(() => {
+  const repo = selectedRepo.value;
+  const widths = repo === undefined ? null : (repoStates.value[repo]?.columnWidths ?? null);
+
+  return isColumnWidths(widths) ? widths : null;
+});
+
+/** Last repo state the user changed. `lib/sync.ts` saves it in the editor. */
+export const repoStateRequest = signal<RepoStateRequest | null>(null);
 
 export const selectedBranch = signal<CommitBranchType | undefined>(undefined);
 export const showRemoteBranch = signal<boolean>(true);

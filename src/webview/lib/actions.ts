@@ -17,6 +17,8 @@ import {
   maxCommits,
   moreCommitsAvailable,
   refreshToken,
+  repoStateRequest,
+  repoStates,
   selectedBranch,
   selectedRepo,
   showRemoteBranch,
@@ -62,6 +64,36 @@ export function selectBranch(branch: CommitBranchType) {
   batch(() => {
     selectedBranch.value = branch;
     clearCommits();
+  });
+}
+
+/** Resize the columns of the commit table, while the user drags a boundary. */
+export function setColumnWidths(widths: Array<number>) {
+  const repo = selectedRepo.value;
+  if (repo === undefined) {
+    return;
+  }
+
+  repoStates.value = {
+    ...repoStates.value,
+    [repo]: { ...repoStates.value[repo], columnWidths: widths }
+  };
+}
+
+/** Resize the columns of the commit table, and keep the widths for the next session. */
+export function saveColumnWidths(widths: Array<number>) {
+  const repo = selectedRepo.value;
+  if (repo === undefined) {
+    return;
+  }
+
+  batch(() => {
+    setColumnWidths(widths);
+    repoStateRequest.value = {
+      repo,
+      state: repoStates.value[repo],
+      token: (repoStateRequest.value?.token ?? 0) + 1
+    };
   });
 }
 
