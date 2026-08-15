@@ -1,11 +1,16 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "node18",
+    "moduleResolution": "node16",
     "noEmit": false,
+    "rootDir": "..",
     "types": ["node", "vscode", "mocha"],
-    "outDir": "./out"
+    "outDir": "./out",
+    "paths": {
+      "@/*": ["../src/*"],
+      "@tests/*": ["../tests/*"]
+    }
   },
   "include": ["./**/*.ts"]
 }
