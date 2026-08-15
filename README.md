@@ -59,7 +59,7 @@ Search for `neo-git-graph` in Extensions, or install from:
 All settings use the `neo-git-graph` prefix.
 
 | Setting                       | Default         | Description                                      |
-|-------------------------------|-----------------|--------------------------------------------------|
+| ----------------------------- | --------------- | ------------------------------------------------ |
 | `autoCenterCommitDetailsView` | `true`          | Center commit details when opened                |
 | `dateFormat`                  | `"Date & Time"` | `"Date & Time"`, `"Date Only"`, or `"Relative"`  |
 | `dateType`                    | `"Author Date"` | `"Author Date"` or `"Commit Date"`               |

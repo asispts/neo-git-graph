@@ -33,10 +33,10 @@
     "type": "git",
     "url": "https://github.com/asispts/neo-git-graph.git"
   },
-  "publisher": "asispts",
   "sponsor": {
     "url": "https://github.com/sponsors/asispts"
   },
+  "publisher": "asispts",
   "main": "./out/extension.js",
   "scripts": {
     "typecheck": "tsc -p . --noEmit && tsc -p ./src --noEmit && tsc -p ./src/webview --noEmit && tsc -p ./tests --noEmit && tsc -p ./tests/webview --noEmit && tsc -p ./tests-ext --noEmit",
