@@ -46,60 +46,29 @@ export function buildWebviewHtml(opts: {
   };
 
   const numRepos = Object.keys(viewState.repos).length;
-  let colorVars = "",
-    colorParams = "";
-  for (let i = 0; i < viewState.graphColours.length; i++) {
-    colorVars += "--git-graph-color" + i + ":" + viewState.graphColours[i] + "; ";
-    colorParams += '[data-color="' + i + '"]{--git-graph-color:var(--git-graph-color' + i + ");} ";
-  }
 
-  const mediaUri = (file: string) =>
-    webview.asWebviewUri(buildExtensionUri(extensionPath, "media", file));
   const compiledOutputUri = (file: string) =>
     webview.asWebviewUri(buildExtensionUri(extensionPath, "out", file));
 
-  let body: string;
-  if (numRepos > 0) {
-    body = `<body style="${colorVars}">
-		<div id="controls">
-			<span id="repoControl"><span class="unselectable">${vscode.l10n.t("Repo")}: </span><div id="repoSelect" class="dropdown"></div></span>
-			<span id="branchControl"><span class="unselectable">${vscode.l10n.t("Branch")}: </span><div id="branchSelect" class="dropdown"></div></span>
-			<label id="showRemoteBranchesControl"><input type="checkbox" id="showRemoteBranchesCheckbox" value="1" checked>${vscode.l10n.t("Show Remote Branches")}</label>
-      <div id="refreshBtn" class="roundedBtn">${vscode.l10n.t("Refresh")}</div>
-		</div>
-		<div id="content">
-			<div id="commitGraph"></div>
-			<div id="commitTable"></div>
-		</div>
-		<div id="footer"></div>
-		<ul id="contextMenu"></ul>
-		<div id="dialogBacking"></div>
-		<div id="dialog"></div>
-		<div id="scrollShadow"></div>
-		<script nonce="${nonce}">var viewState = ${escapeJsonForHtml(viewState)};</script>
-		<script nonce="${nonce}">var l10n = ${escapeJsonForHtml(l10nStrings)};</script>
-		<script src="${compiledOutputUri("web.min.js")}"></script>
-		</body>`;
-  } else {
-    body = `<body class="unableToLoad" style="${colorVars}">
-		<h2>${vscode.l10n.t("Unable to load Git Graph")}</h2>
-		<p>${vscode.l10n.t("Either the current workspace does not contain a Git repository, or the Git repository is not configured correctly.")}</p>
-		<p>${vscode.l10n.t('If you are using a portable Git installation, make sure you have set the Visual Studio Code Setting "git.path" to the path of your portable installation (e.g. "C:\\Program Files\\Git\\bin\\git.exe" on Windows).')}</p>
-		</body>`;
-  }
-
+  // The extension host only bootstraps the webview: it sets up the CSP, injects
+  // the initial state (viewState / l10n) and mounts the Preact bundle. Everything
+  // the user sees — controls, graph, dialogs, "unable to load" state — is rendered
+  // by Preact into #app.
   const html = `<!DOCTYPE html>
 	<html lang="en">
 		<head>
 			<meta charset="UTF-8">
 			<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src ${webview.cspSource} 'unsafe-inline'; script-src ${webview.cspSource} 'nonce-${nonce}'; img-src data:;">
 			<meta name="viewport" content="width=device-width, initial-scale=1.0">
-			<link rel="stylesheet" type="text/css" href="${mediaUri("main.css")}">
-			<link rel="stylesheet" type="text/css" href="${mediaUri("dropdown.css")}">
+			<link rel="stylesheet" href="${compiledOutputUri("web.min.css")}">
 			<title>${EXTENSION_NAME}</title>
-			<style>${colorParams}"</style>
 		</head>
-		${body}
+		<body>
+			<div id="app"></div>
+			<script nonce="${nonce}">var viewState = ${escapeJsonForHtml(viewState)};</script>
+			<script nonce="${nonce}">var l10n = ${escapeJsonForHtml(l10nStrings)};</script>
+			<script nonce="${nonce}" src="${compiledOutputUri("web.min.js")}"></script>
+		</body>
 	</html>`;
 
   return { html, isGraphLoaded: numRepos > 0 };

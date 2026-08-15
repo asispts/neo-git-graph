@@ -7,9 +7,7 @@
   "include": [
     "./backend/**/*.ts",
     "./extension/**/*.ts",
-    "./webview/**/*.ts",
     "../src/backend/**/*.ts",
-    "../src/extension/**/*.ts",
-    "../src/webview/**/*.ts"
+    "../src/extension/**/*.ts"
   ]
 }

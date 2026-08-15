@@ -1,6 +1,9 @@
+const fs = require("node:fs");
 const path = require("node:path");
 
+const tailwindcss = require("@tailwindcss/postcss");
 const esbuild = require("esbuild");
+const postcss = require("postcss");
 
 const production = process.argv.includes("--production");
 const watch = process.argv.includes("--watch");
@@ -31,6 +34,39 @@ const aliasPlugin = {
   }
 };
 
+// Run Tailwind (via PostCSS) over CSS files before esbuild bundles them, so
+// `@import "tailwindcss/..."` and utility classes are resolved. Tailwind reports
+// every file it scans for classes. Those files become esbuild watch files, so
+// that a new class in a component regenerates the CSS in watch mode.
+const tailwindPlugin = {
+  name: "tailwindcss",
+  setup(build) {
+    const processor = postcss([tailwindcss()]);
+    build.onLoad({ filter: /\.css$/ }, async (args) => {
+      const source = await fs.promises.readFile(args.path, "utf8");
+      const result = await processor.process(source, { from: args.path });
+
+      const watchFiles = [];
+      const watchDirs = [];
+      for (const message of result.messages) {
+        if (message.type === "dependency") {
+          watchFiles.push(message.file);
+        } else if (message.type === "dir-dependency") {
+          watchDirs.push(message.dir);
+        }
+      }
+
+      return {
+        contents: result.css,
+        loader: "css",
+        resolveDir: path.dirname(args.path),
+        watchFiles,
+        watchDirs
+      };
+    });
+  }
+};
+
 async function main() {
   const extension = await esbuild.context({
     entryPoints: ["src/extension/main.ts"],
@@ -48,16 +84,18 @@ async function main() {
   });
 
   const webview = await esbuild.context({
-    entryPoints: ["src/webview/main.ts"],
+    entryPoints: ["src/webview/main.tsx"],
     bundle: true,
     format: "iife",
     minify: production,
     sourcemap: !production,
     sourcesContent: false,
-    target: "es6",
+    target: "es2020",
+    jsx: "automatic",
+    jsxImportSource: "preact",
     outfile: "out/web.min.js",
     logLevel: "silent",
-    plugins: [aliasPlugin, esbuildProblemMatcherPlugin]
+    plugins: [tailwindPlugin, aliasPlugin, esbuildProblemMatcherPlugin]
   });
 
   if (watch) {

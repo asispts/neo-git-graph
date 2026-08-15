@@ -44,7 +44,8 @@ describe("loadCommits", () => {
       commits: expect.any(Array),
       head: expect.any(String),
       moreCommitsAvailable: false,
-      hard: false
+      hard: false,
+      uncommittedChanges: 0
     });
     expect(result.commits.length).toBeGreaterThan(0);
     expect(result.commits[0]).toEqual({
@@ -86,7 +87,8 @@ describe("loadCommits", () => {
       commits: expect.any(Array),
       head: expect.any(String),
       moreCommitsAvailable: true,
-      hard: false
+      hard: false,
+      uncommittedChanges: 0
     });
     expect(result.commits.length).toBe(1);
   });
@@ -104,7 +106,8 @@ describe("loadCommits", () => {
       commits: expect.any(Array),
       head: expect.any(String),
       moreCommitsAvailable: false,
-      hard: false
+      hard: false,
+      uncommittedChanges: 0
     });
   });
 
@@ -138,9 +141,10 @@ describe("loadCommits", () => {
         author: "*",
         email: "",
         date: expect.any(Number),
-        message: expect.stringMatching(/^Uncommitted Changes \(\d+\)$/),
+        message: "",
         refs: []
       });
+      expect(result.uncommittedChanges).toBe(1);
     } finally {
       fs.rmSync(dirtyRepo, { recursive: true, force: true });
     }
@@ -203,7 +207,8 @@ describe("loadCommits", () => {
       commits: expect.any(Array),
       head: expect.any(String),
       moreCommitsAvailable: false,
-      hard: true
+      hard: true,
+      uncommittedChanges: 0
     });
   });
 });

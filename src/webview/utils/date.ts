@@ -23,10 +23,9 @@ const getDateFormatter = memoizeByLocale(
   (locale) => new Intl.DateTimeFormat(locale, { year: "numeric", month: "short", day: "numeric" })
 );
 
-/** Format the date portion of a commit date using the VS Code display language. */
-export function formatShortDate(date: Date, locale: string): string {
-  return getDateFormatter(locale).format(date);
-}
+const getFullDateFormatter = memoizeByLocale(
+  (locale) => new Intl.DateTimeFormat(locale, { dateStyle: "full", timeStyle: "long" })
+);
 
 const getRelativeFormatter = memoizeByLocale(
   (locale) => new Intl.RelativeTimeFormat(locale, { numeric: "always" })
@@ -48,7 +47,7 @@ const RELATIVE_UNITS: [threshold: number, unit: Intl.RelativeTimeFormatUnit, sec
  * display language. Intl supplies the locale's own plural rules and word order,
  * so no part of this string is localized by the extension itself.
  */
-export function formatRelativeDate(date: Date, now: Date, locale: string): string {
+function formatRelativeDate(date: Date, now: Date, locale: string): string {
   const diff = Math.round((now.getTime() - date.getTime()) / 1000);
   const abs = Math.abs(diff);
   const [, unit, seconds] = RELATIVE_UNITS.find(([threshold]) => abs < threshold)!;
@@ -56,6 +55,33 @@ export function formatRelativeDate(date: Date, now: Date, locale: string): strin
   return getRelativeFormatter(locale).format(-Math.round(diff / seconds), unit);
 }
 
-export function pad2(i: number) {
-  return i > 9 ? i : "0" + i;
+function pad2(value: number): string {
+  return value > 9 ? String(value) : "0" + value;
+}
+
+export type CommitDate = {
+  /** Absolute date and time, always shown as the cell tooltip. */
+  title: string;
+  /** Cell text, in the format the user configured. */
+  value: string;
+};
+
+/** Full date and time, as shown in the commit details view. */
+export function getFullDate(seconds: number): string {
+  return getFullDateFormatter(viewState.locale).format(new Date(seconds * 1000));
+}
+
+export function getCommitDate(seconds: number): CommitDate {
+  const date = new Date(seconds * 1000);
+  const dateStr = getDateFormatter(viewState.locale).format(date);
+  const title = `${dateStr} ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+
+  switch (viewState.dateFormat) {
+    case "Date Only":
+      return { title, value: dateStr };
+    case "Relative":
+      return { title, value: formatRelativeDate(date, new Date(), viewState.locale) };
+    default:
+      return { title, value: title };
+  }
 }

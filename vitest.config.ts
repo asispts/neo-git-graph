@@ -33,20 +33,10 @@ export default defineConfig({
         }
       },
       {
-        resolve: {
-          alias: [
-            ...alias,
-            {
-              find: "vscode",
-              replacement: path.resolve(__dirname, "tests/webview/__mocks__/vscode.ts")
-            }
-          ]
-        },
+        resolve: { alias },
         test: {
           name: "webview",
-          environment: "jsdom",
-          include: ["tests/webview/**/*.test.ts"],
-          setupFiles: ["tests/webview/setup.ts"]
+          include: ["tests/webview/**/*.test.ts"]
         }
       }
     ]

@@ -8,6 +8,11 @@ import {
 
 export type GitRepoSet = { [repo: string]: GitRepoState };
 export type GitRepoState = {
+  /**
+   * Width of the graph, date, author and commit column of the commit table, in
+   * pixels, padding included. `null` while the browser sizes the table itself.
+   * The description column takes the width the others leave.
+   */
   columnWidths: number[] | null;
 };
 

@@ -26,6 +26,7 @@
     "unicorn/require-post-message-target-origin": "allow", // false-positive
     "eslint/curly": "error",
     "unicorn/prefer-node-protocol": "error",
+    "import/no-unassigned-import": ["error", { "allow": ["**/*.css"] }],
     "import-js/order": [
       "error",
       {
@@ -76,10 +77,33 @@
       }
     },
     {
-      "files": ["src/webview/**/*.ts"],
+      "files": ["src/webview/**/*.{ts,tsx}"],
       "env": {
         "node": false,
         "browser": true
+      },
+      // Injected into the page by the extension host, see webviewHtml.ts.
+      "globals": {
+        "viewState": "readonly",
+        "l10n": "readonly"
+      }
+    },
+    {
+      // Response handlers reduce state only. Requests belong in lib/sync.ts.
+      "files": ["src/webview/lib/handler/**/*.ts", "src/webview/lib/actions.ts"],
+      "rules": {
+        "eslint/no-restricted-imports": [
+          "error",
+          {
+            "paths": [
+              {
+                "name": "@/webview/lib/vscode",
+                "message": "Handlers and actions write signals only. Post messages from lib/sync.ts."
+              }
+            ],
+            "patterns": ["*/vscode", "./vscode"]
+          }
+        ]
       }
     }
   ]

@@ -6,8 +6,14 @@ type QueryPayloads = {
     response: { commitDetails: GitCommitDetails | null };
   };
   loadBranches: {
-    request: { showRemoteBranches: boolean; hard: boolean };
-    response: { branches: string[]; head: string | null; hard: boolean; isRepo: boolean };
+    request: { repo: string; showRemoteBranches: boolean; hard: boolean };
+    response: {
+      repo: string;
+      branches: string[];
+      head: string | null;
+      hard: boolean;
+      isRepo: boolean;
+    };
   };
   loadCommits: {
     request: {
@@ -18,10 +24,14 @@ type QueryPayloads = {
       hard: boolean;
     };
     response: {
+      repo: string;
+      branchName: string;
       commits: GitCommitNode[];
       head: string | null;
       moreCommitsAvailable: boolean;
       hard: boolean;
+      /** Number of unsaved changes. `0` when the uncommitted row is absent. */
+      uncommittedChanges: number;
     };
   };
 };

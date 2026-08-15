@@ -12,6 +12,9 @@ export function getWebviewLocalizedStrings() {
     // UI labels
     repo: vscode.l10n.t("Repo"),
     branch: vscode.l10n.t("Branch"),
+    showRemoteBranches: vscode.l10n.t("Show Remote Branches"),
+    refresh: vscode.l10n.t("Refresh"),
+    close: vscode.l10n.t("Close"),
     loading: vscode.l10n.t("Loading ..."),
     loadMore: vscode.l10n.t("Load More Commits"),
     showAll: vscode.l10n.t("Show All"),
@@ -24,6 +27,10 @@ export function getWebviewLocalizedStrings() {
     commit: vscode.l10n.t("Commit"),
 
     // Error messages
+    unableToLoad: vscode.l10n.t("Unable to load Git Graph"),
+    portableGitHint: vscode.l10n.t(
+      'If you are using a portable Git installation, make sure you have set the Visual Studio Code Setting "git.path" to the path of your portable installation (e.g. "C:\\Program Files\\Git\\bin\\git.exe" on Windows).'
+    ),
     unableToLoadCommitDetails: vscode.l10n.t("Unable to load commit details"),
     unableToCopyToClipboard: vscode.l10n.t("Unable to Copy {0} to Clipboard"),
     unableToViewDiff: vscode.l10n.t("Unable to view diff of file"),
