@@ -46,6 +46,13 @@ Search for `neo-git-graph` in Extensions, or install from:
 - [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=asispts.neo-git-graph)
 - [Open VSX Registry](https://open-vsx.org/extension/asispts/neo-git-graph)
 
+## Roadmap
+
+- **v0.6.0:** Migrate the legacy webview to Preact
+- **v0.7.0:** Refine the extension and backend APIs after the webview migration
+- **v0.8.0:** Redesign the user interface and commit list
+- **v0.9.0 and later:** Close the main feature gaps with the original Git Graph
+
 ## Configuration
 
 All settings use the `neo-git-graph` prefix.
@@ -65,6 +72,14 @@ All settings use the `neo-git-graph` prefix.
 | `showStatusBarItem`           | `true`          | Show status bar button                           |
 | `showUncommittedChanges`      | `true`          | Show uncommitted changes node                    |
 | `tabIconColourTheme`          | `"colour"`      | `"colour"` or `"grey"`                           |
+
+## Contributing
+
+Pull requests from external contributors are currently limited while the project undergoes heavy refactoring.
+
+Please use [Issues](https://github.com/asispts/neo-git-graph/issues) for bug reports, feature requests, and discussion.
+
+See the [Roadmap](#roadmap) for the project's current direction.
 
 ## License
 
