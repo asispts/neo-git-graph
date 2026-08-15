@@ -2,7 +2,7 @@
   <img src="./resources/icon.png" height="128"/>
   <samp>
     <h1>(neo) Git Graph for Visual Studio Code</h1>
-    <h3>A clean MIT fork of Git Graph. Visual history, branch actions, and devcontainer support.</h3>
+    <h3>An MIT-licensed fork of Git Graph with visual history, branch actions, and devcontainer support.</h3>
   </samp>
 </div>
 
@@ -19,11 +19,13 @@
 ## Why this fork
 
 The original [Git Graph](https://github.com/mhutchie/vscode-git-graph) by mhutchie changed its license in May 2019.
-Everything after [commit 4af8583](https://github.com/mhutchie/vscode-git-graph/commit/4af8583a42082b2c230d2c0187d4eaff4b69c665) is no longer MIT.
+This fork is based on the last MIT-licensed commit, [`4af8583`](https://github.com/mhutchie/vscode-git-graph/commit/4af8583a42082b2c230d2c0187d4eaff4b69c665).
 
-This fork is based on the last MIT commit and:
+Everything after that commit is no longer MIT-licensed.
 
-- Keeps MIT license
+This fork:
+
+- Remains MIT-licensed
 - Adds devcontainer support
 - Adds internationalization support (English, zh-CN, zh-TW)
 - Improves codebase, tooling, and maintainability
@@ -37,7 +39,14 @@ This fork is based on the last MIT commit and:
 - **Commit actions**: Checkout, cherry-pick, revert, and reset
 - **Avatar support**: Optional avatars from GitHub, GitLab, or Gravatar
 - **Multi-repo**: Work with multiple repositories in one workspace
-- **Devcontainer ready**: Works in remote and container environments
+- **Devcontainer support**: Works in remote and container environments
+
+## Installation
+
+Search for `neo-git-graph` in Extensions, or install from:
+
+- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=asispts.neo-git-graph)
+- [Open VSX Registry](https://open-vsx.org/extension/asispts/neo-git-graph)
 
 ## Configuration
 
@@ -58,13 +67,6 @@ All settings use the `neo-git-graph` prefix.
 | `showStatusBarItem`           | `true`          | Show status bar button                           |
 | `showUncommittedChanges`      | `true`          | Show uncommitted changes node                    |
 | `tabIconColourTheme`          | `"colour"`      | `"colour"` or `"grey"`                           |
-
-## Installation
-
-Search for `neo-git-graph` in Extensions, or install from:
-
-- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=asispts.neo-git-graph)
-- [Open VSX Registry](https://open-vsx.org/extension/asispts/neo-git-graph)
 
 ## License
 

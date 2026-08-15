@@ -1,5 +1,5 @@
 {
-  "description": "Git Graph 的纯净 MIT 分支。可视化历史记录、分支操作和开发容器支持。",
+  "description": "Git Graph 的 MIT 许可分支，提供可视化历史记录、分支操作和开发容器支持。",
   "command.view": "查看 Git Graph (git log)",
   "command.clearAvatarCache": "清除头像缓存",
   "config.autoCenterCommitDetailsView": "打开提交详情视图时自动居中显示。",

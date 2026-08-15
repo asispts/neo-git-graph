@@ -1,5 +1,5 @@
 {
-  "description": "A clean MIT fork of Git Graph. Visual history, branch actions, and devcontainer support.",
+  "description": "An MIT-licensed fork of Git Graph with visual history, branch actions, and devcontainer support.",
   "command.view": "View Git Graph (git log)",
   "command.clearAvatarCache": "Clear Avatar Cache",
   "config.autoCenterCommitDetailsView": "Automatically center the commit details view when it is opened.",
