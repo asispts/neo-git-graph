@@ -5,7 +5,7 @@ import { Icon } from "@/webview/components/ui/Icons";
 import { viewDiff } from "@/webview/lib/actions";
 import type { FileTreeNode } from "@/webview/utils/fileTree";
 
-const ICON_CLASS = "mr-2 size-[13px] shrink-0 fill-fg opacity-60";
+const ICON_CLASS = "mr-2 size-3.25 shrink-0 fill-fg opacity-60";
 const ENTRY_CLASS = "flex w-full items-center overflow-hidden text-left whitespace-nowrap";
 
 const FILE_COLOUR: Record<GitFileChange["type"], string> = {
@@ -52,7 +52,7 @@ function FileAddDel({ file }: { file: GitFileChange }) {
     <span class="ml-2 text-fg">
       (
       <span
-        class="cursor-help px-[3px] text-git-added"
+        class="cursor-help px-0.75 text-git-added"
         title={(additions === 1
           ? window.l10n.tooltipAddition
           : window.l10n.tooltipAdditions
@@ -62,7 +62,7 @@ function FileAddDel({ file }: { file: GitFileChange }) {
       </span>
       |
       <span
-        class="cursor-help px-[3px] text-git-deleted"
+        class="cursor-help px-0.75 text-git-deleted"
         title={(deletions === 1
           ? window.l10n.tooltipDeletion
           : window.l10n.tooltipDeletions
@@ -122,7 +122,7 @@ type TreeProps = {
 
 function Tree({ nodes, commitHash, closed, onToggle, root = false }: TreeProps) {
   return (
-    <ul class={`list-none ${root ? "pl-2.5" : "pl-[30px]"}`}>
+    <ul class={`list-none ${root ? "pl-2.5" : "pl-7.5"}`}>
       {nodes.map((node) => {
         if (node.type === "file") {
           return (

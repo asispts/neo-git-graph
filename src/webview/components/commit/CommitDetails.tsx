@@ -55,7 +55,7 @@ function DetailRow({ template, children }: { template: string; children: Compone
 
 function Summary({ details }: { details: GitCommitDetails }) {
   return (
-    <div class="w-[45%] shrink-0 overflow-auto border-x border-line p-2.5 select-text">
+    <div class="w-9/20 shrink-0 overflow-auto border-x border-line p-2.5 select-text">
       <DetailRow template={window.l10n.detailCommit}>{details.hash}</DetailRow>
       <DetailRow template={window.l10n.detailParents}>{details.parents.join(", ")}</DetailRow>
       <DetailRow template={window.l10n.detailAuthor}>
@@ -90,7 +90,7 @@ export function CommitDetails({ details }: { details: GitCommitDetails | null })
       <td />
       <td
         colSpan={4}
-        class="relative bg-btn p-0 align-top text-[13px] leading-[18px] whitespace-normal after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-line"
+        class="relative bg-btn p-0 align-top text-ui leading-4.5 whitespace-normal after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:bg-line"
       >
         <div
           class="overflow-hidden"

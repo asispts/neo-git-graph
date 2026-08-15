@@ -4,10 +4,10 @@ import { branchStrokes } from "@/webview/graph/strokes";
 import type { GraphExpansion, GraphLayout } from "@/webview/graph/types";
 import { expandOffset, graphHeight, graphWidth, laneX, rowY } from "@/webview/graph/utils";
 
-const SHADOW_CLASS = "fill-none stroke-editor [stroke-opacity:0.75] [stroke-width:4]";
-const LINE_CLASS = "fill-none [stroke-width:2]";
-const HEAD_DOT_CLASS = "fill-editor [stroke-width:2]";
-const DOT_CLASS = "stroke-editor [stroke-opacity:0.75] [stroke-width:1]";
+const SHADOW_CLASS = "fill-none stroke-editor/75 stroke-4";
+const LINE_CLASS = "fill-none stroke-2";
+const HEAD_DOT_CLASS = "fill-editor stroke-2";
+const DOT_CLASS = "stroke-editor/75 stroke-1";
 
 /**
  * The branch lines and commit dots, drawn behind the first column of the commit

@@ -27,10 +27,10 @@ type CommitTableProps = {
 };
 
 const HEADER_CLASS =
-  "relative h-[32px] overflow-hidden border-b border-line px-3 text-left font-semibold" +
+  "relative h-8 overflow-hidden border-b border-line px-3 text-left font-semibold" +
   " text-ellipsis whitespace-nowrap";
 
-const HANDLE_CLASS = "absolute top-0 h-full w-[6px] cursor-col-resize";
+const HANDLE_CLASS = "absolute top-0 h-full w-1.5 cursor-col-resize";
 
 /** Distance over which the graph fades out, where the column cuts it off. */
 const GRAPH_FADE = 12;
@@ -97,7 +97,7 @@ export function CommitTable({ commits, head, headBranch }: CommitTableProps) {
         <CommitGraph layout={layout} expansion={expansion} />
       </div>
       <table
-        class={`w-full cursor-default border-collapse text-[13px] select-none ${
+        class={`w-full cursor-default border-collapse text-ui select-none ${
           sized ? "table-fixed" : ""
         }`}
       >

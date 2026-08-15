@@ -7,7 +7,22 @@
   --default-font-family: var(--vscode-font-family);
   --default-mono-font-family: var(--vscode-editor-font-family);
 
+  /* Size of the interface text. VS Code uses it for its own views as well. */
+  --text-ui: 13px;
+
+  /* Radius of a dialog, a ref label, and every other rounded panel. */
+  --radius-md: 5px;
+
+  --container-dialog: min(360px, calc(100vw - 2rem));
+
+  --grid-template-columns-labelled: auto 1fr;
+
+  --shadow-head: inset 2px 0 0 var(--color-graph);
+  --shadow-dialog: 0 0 30px 5px var(--vscode-widget-shadow);
+  --shadow-scroll: 0 -6px 6px 6px var(--vscode-scrollbar-shadow);
+
   --color-fg: var(--vscode-foreground);
+  --color-muted: #808080;
   --color-dropdown: var(--vscode-dropdown-background);
   --color-dropdown-fg: var(--vscode-dropdown-foreground);
   --color-dropdown-border: var(--vscode-dropdown-border);
@@ -45,16 +60,22 @@
 
   /* Colour of the graph branch a row belongs to. Overridden per commit table. */
   --color-graph: var(--vscode-focusBorder);
+}
 
-  /* Driven by a scroll timeline, so the range is a distance, not a duration. */
-  --animate-scroll-shadow: scroll-shadow linear both;
+@keyframes scroll-shadow {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
 
-  @keyframes scroll-shadow {
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
+@layer components {
+  /* A scroll timeline drives the fade, so the range is a distance, not a duration. */
+  .animate-scroll-shadow {
+    animation: scroll-shadow linear both;
+    animation-range: 0 1px;
+    animation-timeline: scroll(root block);
   }
 }

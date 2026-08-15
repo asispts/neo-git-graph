@@ -23,7 +23,7 @@ type CommitRowProps = {
   onSelect: (() => void) | undefined;
 };
 
-const CELL_CLASS = "h-[24px] overflow-hidden text-ellipsis whitespace-nowrap px-1 leading-[24px]";
+const CELL_CLASS = "h-6 overflow-hidden text-ellipsis whitespace-nowrap px-1 leading-6";
 
 function isActiveRef(gitRef: GitRef, headBranch: string | null) {
   return gitRef.type === "head" && gitRef.name === headBranch;
@@ -85,13 +85,9 @@ export function CommitRow({
       }
     >
       <td class={CELL_CLASS} />
-      <td
-        class={`${CELL_CLASS} w-full max-w-0 pl-2.5 ${
-          isHead ? "shadow-[inset_2px_0_0_var(--color-graph)]" : ""
-        }`}
-      >
+      <td class={`${CELL_CLASS} w-full max-w-0 pl-2.5 ${isHead ? "shadow-head" : ""}`}>
         {isHead && (
-          <span class="mt-[7px] mr-[5px] inline-block size-[6px] box-content rounded-full border-2 border-graph align-top" />
+          <span class="mt-1.75 mr-1.25 inline-block size-1.5 box-content rounded-full border-2 border-graph align-top" />
         )}
         {orderRefs(commit.refs, headBranch).map((gitRef) => (
           <RefLabel
@@ -105,7 +101,7 @@ export function CommitRow({
       <td class={CELL_CLASS} title={date.title}>
         {date.value}
       </td>
-      <td class={`${CELL_CLASS} max-w-[124px]`} title={`${commit.author} <${commit.email}>`}>
+      <td class={`${CELL_CLASS} max-w-31`} title={`${commit.author} <${commit.email}>`}>
         {commit.author}
       </td>
       <td class={`${CELL_CLASS} font-mono`} title={commit.hash}>

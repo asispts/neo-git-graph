@@ -4,7 +4,7 @@ import { openContextMenu } from "@/webview/lib/actions";
 import { checkoutBranchAction, refMenu, refMenuSource } from "@/webview/lib/menus";
 import { activeSource } from "@/webview/lib/stores";
 
-const ICON_CLASS = "mr-[5px] size-[18px] shrink-0 rounded-l-[4px] bg-graph fill-editor p-[2px]";
+const ICON_CLASS = "mr-1.25 size-4.5 shrink-0 rounded-l-sm bg-graph fill-editor p-0.5";
 
 function RefIcon({ type }: { type: GitRef["type"] }) {
   if (type === "tag") {
@@ -28,7 +28,7 @@ export function RefLabel({ gitRef, active }: { gitRef: GitRef; active: boolean }
 
   return (
     <span
-      class={`mt-[2px] mr-[5px] inline-flex h-[18px] max-w-full items-center overflow-hidden rounded-[5px] border pr-[5px] align-top text-xs box-content ${
+      class={`mt-0.5 mr-1.25 inline-flex h-4.5 max-w-full items-center overflow-hidden rounded-md border pr-1.25 align-top text-xs box-content ${
         active ? "border-graph" : "border-line"
       } ${menuOpen ? "bg-btn-hover" : "bg-btn"}`}
       title={gitRef.name}

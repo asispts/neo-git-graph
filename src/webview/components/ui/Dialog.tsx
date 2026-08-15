@@ -13,10 +13,9 @@ import { hasInvalidRefChars } from "@/webview/utils/ref";
 const FOCUSABLE = "input:not([disabled]), select, button:not([disabled])";
 
 const PANEL_CLASS = [
-  "fixed left-1/2 top-1/2 z-40 max-h-[80%] w-[min(360px,calc(100vw-2rem))]",
-  "-translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-[5px] border border-line",
-  "bg-menu p-2.5 text-center text-menu-fg outline-none",
-  "shadow-[0_0_30px_5px_var(--vscode-widget-shadow)]"
+  "fixed left-1/2 top-1/2 z-40 max-h-4/5 w-dialog",
+  "-translate-x-1/2 -translate-y-1/2 overflow-y-auto rounded-md border border-line",
+  "bg-menu p-2.5 text-center text-menu-fg outline-none shadow-dialog"
 ].join(" ");
 
 const INPUT_CLASS =
@@ -209,7 +208,7 @@ function FormBody({
       {state.inputs.length > 0 && (
         <div
           class={`mt-2.5 grid gap-2.5 text-left ${
-            labelled ? "grid-cols-[auto_1fr] items-center" : ""
+            labelled ? "grid-cols-labelled items-center" : ""
           }`}
         >
           {state.inputs.map((input, index) => (
@@ -249,11 +248,11 @@ function MessageBody({
     <>
       <p id={labelledBy} class="flex items-center justify-center gap-1.5">
         {state.kind === "running" ? (
-          <Icon class="size-5 shrink-0 animate-spin text-[#808080]" viewBox="0 0 12 16">
+          <Icon class="size-5 shrink-0 animate-spin text-muted" viewBox="0 0 12 16">
             <path d="M10.24 7.4a4.15 4.15 0 0 1-1.2 3.6 4.346 4.346 0 0 1-5.41.54L4.8 10.4.5 9.8l.6 4.2 1.31-1.26c2.36 1.74 5.7 1.57 7.84-.54a5.876 5.876 0 0 0 1.74-4.46l-1.75-.34zM2.96 5a4.346 4.346 0 0 1 5.41-.54L7.2 5.6l4.3.6-.6-4.2-1.31 1.26c-2.36-1.74-5.7-1.57-7.85.54C.5 5.03-.06 6.65.01 8.26l1.75.35A4.17 4.17 0 0 1 2.96 5z" />
           </Icon>
         ) : (
-          <Icon class="shrink-0 text-[#808080]">
+          <Icon class="shrink-0 text-muted">
             <path d="M8.893 1.5c-.183-.31-.52-.5-.887-.5s-.703.19-.886.5L.138 13.499a.98.98 0 0 0 0 1.001c.193.31.53.501.886.501h13.964c.367 0 .704-.19.877-.5a1.03 1.03 0 0 0 .01-1.002L8.893 1.5zm.133 11.497H6.987v-2.003h2.039v2.003zm0-3.004H6.987V5.987h2.039v4.006z" />
           </Icon>
         )}

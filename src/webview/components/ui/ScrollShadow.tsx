@@ -1,8 +1,5 @@
-const SHADOW_CLASS = [
-  "pointer-events-none fixed inset-x-0 top-0 z-1 h-0",
-  "shadow-[0_-6px_6px_6px_var(--vscode-scrollbar-shadow)]",
-  "animate-scroll-shadow [animation-range:0_1px] [animation-timeline:scroll(root_block)]"
-].join(" ");
+const SHADOW_CLASS =
+  "pointer-events-none fixed inset-x-0 top-0 z-1 h-0 shadow-scroll animate-scroll-shadow";
 
 /**
  * A shade along the top edge of the window, shown while the page is scrolled.
