@@ -6,9 +6,10 @@
   </samp>
 </div>
 
-[![](https://img.shields.io/github/license/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph?tab=MIT-1-ov-file)
+[![License](https://img.shields.io/github/license/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph?tab=MIT-1-ov-file)
 [![GitHub release](https://img.shields.io/github/v/release/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph/releases)
 [![open-vsx downloads](https://img.shields.io/open-vsx/dt/asispts/neo-git-graph?label=open-vsx)](https://open-vsx.org/extension/asispts/neo-git-graph)
+[![GitHub Sponsors](https://img.shields.io/github/sponsors/asispts?label=sponsors)](https://github.com/sponsors/asispts)
 
 ![demo](resources/demo.gif)
 
@@ -58,7 +59,7 @@ Search for `neo-git-graph` in Extensions, or install from:
 All settings use the `neo-git-graph` prefix.
 
 | Setting                       | Default         | Description                                      |
-| ----------------------------- | --------------- | ------------------------------------------------ |
+|-------------------------------|-----------------|--------------------------------------------------|
 | `autoCenterCommitDetailsView` | `true`          | Center commit details when opened                |
 | `dateFormat`                  | `"Date & Time"` | `"Date & Time"`, `"Date Only"`, or `"Relative"`  |
 | `dateType`                    | `"Author Date"` | `"Author Date"` or `"Commit Date"`               |
@@ -80,6 +81,12 @@ Pull requests from external contributors are currently limited while the project
 Please use [Issues](https://github.com/asispts/neo-git-graph/issues) for bug reports, feature requests, and discussion.
 
 See the [Roadmap](#roadmap) for the project's current direction.
+
+## Sponsors
+
+This extension is free and MIT-licensed. [Sponsorship](https://github.com/sponsors/asispts) pays for the time I spend on it.
+
+<!-- Sponsor names and logos go here -->
 
 ## License
 
