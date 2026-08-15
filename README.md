@@ -8,8 +8,6 @@
 
 [![](https://img.shields.io/github/license/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph?tab=MIT-1-ov-file)
 [![GitHub release](https://img.shields.io/github/v/release/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph/releases)
-[![vscode downloads](https://img.shields.io/visual-studio-marketplace/d/asispts.neo-git-graph?label=download)](https://marketplace.visualstudio.com/items?itemName=asispts.neo-git-graph)
-[![vscode installs](https://img.shields.io/visual-studio-marketplace/i/asispts.neo-git-graph?label=install)](https://marketplace.visualstudio.com/items?itemName=asispts.neo-git-graph)
 [![open-vsx downloads](https://img.shields.io/open-vsx/dt/asispts/neo-git-graph?label=open-vsx)](https://open-vsx.org/extension/asispts/neo-git-graph)
 
 ![demo](resources/demo.gif)
