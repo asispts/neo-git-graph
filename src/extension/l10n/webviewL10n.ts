@@ -25,6 +25,8 @@ export function getWebviewLocalizedStrings() {
     date: vscode.l10n.t("Date"),
     author: vscode.l10n.t("Author"),
     commit: vscode.l10n.t("Commit"),
+    noCommits: vscode.l10n.t("No commits yet"),
+    createFirstCommit: vscode.l10n.t("Create the first commit to start the graph."),
 
     // Error messages
     unableToLoad: vscode.l10n.t("Unable to load Git Graph"),

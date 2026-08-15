@@ -4,7 +4,14 @@ import { Dropdown } from "@/webview/components/ui/Dropdown";
 import { Icon } from "@/webview/components/ui/Icons";
 import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import { refresh, selectBranch, selectRepo, setShowRemoteBranch } from "@/webview/lib/actions";
-import { branchList, selectedBranch, selectedRepo, showRemoteBranch } from "@/webview/lib/stores";
+import {
+  branchList,
+  commitHead,
+  commitList,
+  selectedBranch,
+  selectedRepo,
+  showRemoteBranch
+} from "@/webview/lib/stores";
 
 function repoOption(value: string) {
   return { label: value.split(/[\\/]/).findLast(Boolean) ?? value, value };
@@ -15,6 +22,8 @@ function branchOption(value: string) {
 }
 
 export function MainHeader({ repos }: { repos: Array<string> }) {
+  const noCommits = commitList.value?.length === 0 && commitHead.value === null;
+
   return (
     <header class="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 border-b border-line py-4">
       <Button aria-label={window.l10n.refresh} title={window.l10n.refresh} onClick={refresh}>
@@ -23,33 +32,39 @@ export function MainHeader({ repos }: { repos: Array<string> }) {
         </Icon>
         {window.l10n.refresh}
       </Button>
-      <div class="flex flex-wrap items-center justify-center gap-4">
-        {repos.length > 1 && (
-          <Dropdown
-            label={window.l10n.repo}
-            class="max-w-48"
-            options={repos.map(repoOption)}
-            value={selectedRepo.value}
-            onChange={selectRepo}
-          />
-        )}
-        <Dropdown
-          label={window.l10n.branch}
-          class="max-w-64"
-          options={[
-            { label: window.l10n.showAll, value: SHOW_ALL_BRANCHES },
-            ...(branchList.value ?? []).map(branchOption)
-          ]}
-          value={selectedBranch.value}
-          onChange={selectBranch}
-          disabled={branchList.value === undefined}
-        />
-        <Checkbox
-          label={window.l10n.showRemoteBranches}
-          checked={showRemoteBranch.value}
-          onInput={(e) => setShowRemoteBranch(e.currentTarget.checked)}
-        />
-      </div>
+      {(repos.length > 1 || !noCommits) && (
+        <div class="flex flex-wrap items-center justify-center gap-4">
+          {repos.length > 1 && (
+            <Dropdown
+              label={window.l10n.repo}
+              class="max-w-48"
+              options={repos.map(repoOption)}
+              value={selectedRepo.value}
+              onChange={selectRepo}
+            />
+          )}
+          {!noCommits && (
+            <>
+              <Dropdown
+                label={window.l10n.branch}
+                class="max-w-64"
+                options={[
+                  { label: window.l10n.showAll, value: SHOW_ALL_BRANCHES },
+                  ...(branchList.value ?? []).map(branchOption)
+                ]}
+                value={selectedBranch.value}
+                onChange={selectBranch}
+                disabled={branchList.value === undefined}
+              />
+              <Checkbox
+                label={window.l10n.showRemoteBranches}
+                checked={showRemoteBranch.value}
+                onInput={(e) => setShowRemoteBranch(e.currentTarget.checked)}
+              />
+            </>
+          )}
+        </div>
+      )}
     </header>
   );
 }

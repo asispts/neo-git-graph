@@ -19,6 +19,8 @@
   "Date": "Date",
   "Author": "Author",
   "Commit": "Commit",
+  "No commits yet": "No commits yet",
+  "Create the first commit to start the graph.": "Create the first commit to start the graph.",
   "Unable to load Git Graph": "Unable to load Git Graph",
   "If you are using a portable Git installation, make sure you have set the Visual Studio Code Setting \"git.path\" to the path of your portable installation (e.g. \"C:\\Program Files\\Git\\bin\\git.exe\" on Windows).": "If you are using a portable Git installation, make sure you have set the Visual Studio Code Setting \"git.path\" to the path of your portable installation (e.g. \"C:\\Program Files\\Git\\bin\\git.exe\" on Windows).",
   "Unable to load commit details": "Unable to load commit details",

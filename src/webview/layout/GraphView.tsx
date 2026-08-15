@@ -9,12 +9,17 @@ import {
   maxCommits,
   moreCommitsAvailable
 } from "@/webview/lib/stores";
+import { NoCommitsPage } from "@/webview/pages/NoCommitsPage";
 
 export function GraphView() {
   const commits = commitList.value;
 
   if (commits === undefined) {
     return <Loading />;
+  }
+
+  if (commits.length === 0 && commitHead.value === null) {
+    return <NoCommitsPage />;
   }
 
   const loadingMore = commits.length < maxCommits.value;
