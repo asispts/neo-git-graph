@@ -1,5 +1,0 @@
-{
-  "$schema": "../../node_modules/oxlint/configuration_schema.json",
-  // Reference-only: ported from, never built. Excluded from linting.
-  "ignorePatterns": ["**"]
-}
