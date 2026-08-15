@@ -61,8 +61,8 @@
   "devDependencies": {
     "@tailwindcss/postcss": "^4.3.3",
     "@types/mocha": "^10.0.10",
-    "@types/node": "~20.19.43",
-    "@types/vscode": "~1.98.0",
+    "@types/node": "~24.13.3",
+    "@types/vscode": "~1.125.0",
     "@vscode/l10n-dev": "^0.0.35",
     "@vscode/test-cli": "^0.0.15",
     "@vscode/test-electron": "^3.1.0",
@@ -233,7 +233,7 @@
   ],
   "icon": "resources/icon.png",
   "engines": {
-    "vscode": "^1.98.0"
+    "vscode": "^1.125.0"
   },
   "packageManager": "pnpm@11.15.1"
 }

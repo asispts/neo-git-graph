@@ -11,7 +11,7 @@
     {
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShellNoCC {
-          packages = [ pkgs.nodejs_22 pkgs.pnpm pkgs.vsce ];
+          packages = [ pkgs.nodejs_24 pkgs.pnpm pkgs.vsce ];
         };
       });
     };
