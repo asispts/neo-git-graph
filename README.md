@@ -9,7 +9,6 @@
 [![License](https://img.shields.io/github/license/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph?tab=MIT-1-ov-file)
 [![GitHub release](https://img.shields.io/github/v/release/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph/releases)
 [![open-vsx downloads](https://img.shields.io/open-vsx/dt/asispts/neo-git-graph?label=open-vsx)](https://open-vsx.org/extension/asispts/neo-git-graph)
-[![GitHub Sponsors](https://img.shields.io/github/sponsors/asispts?label=sponsors)](https://github.com/sponsors/asispts)
 
 ![demo](resources/demo.gif)
 
@@ -84,7 +83,8 @@ See the [Roadmap](#roadmap) for the project's current direction.
 
 ## Sponsors
 
-This extension is free and MIT-licensed. [Sponsorship](https://github.com/sponsors/asispts) pays for the time I spend on it.
+If you find this extension useful, consider [sponsoring its development](https://github.com/sponsors/asispts).
+Your support helps keep it maintained and improving.
 
 <!-- Sponsor names and logos go here -->
 
