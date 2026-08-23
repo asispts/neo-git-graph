@@ -72,13 +72,13 @@
     "esbuild": "^0.28.2",
     "eslint-plugin-import": "^2.32.0",
     "jsdom": "^30.0.1",
-    "oxfmt": "^0.63.0",
-    "oxlint": "^1.78.0",
+    "oxfmt": "^0.64.0",
+    "oxlint": "^1.79.0",
     "postcss": "^8.5.26",
     "tailwindcss": "^4.3.3",
-    "tsc-alias": "^1.9.1",
+    "tsc-alias": "^1.9.2",
     "typescript": "^7.0.2",
-    "vitest": "^4.1.10"
+    "vitest": "^4.1.11"
   },
   "l10n": "./l10n",
   "contributes": {
