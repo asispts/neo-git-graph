@@ -40,7 +40,7 @@ export function RefLabel({ gitRef, active }: { gitRef: GitRef; active: boolean }
       }}
     >
       <RefIcon type={gitRef.type} />
-      <span class="truncate">{gitRef.name}</span>
+      <span class={`truncate ${active ? "font-bold" : ""}`}>{gitRef.name}</span>
     </span>
   );
 }
