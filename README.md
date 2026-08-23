@@ -6,11 +6,23 @@
   </samp>
 </div>
 
-[![License](https://img.shields.io/github/license/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph?tab=MIT-1-ov-file)
-[![GitHub release](https://img.shields.io/github/v/release/asispts/neo-git-graph)](https://github.com/asispts/neo-git-graph/releases)
-[![open-vsx downloads](https://img.shields.io/open-vsx/dt/asispts/neo-git-graph?label=open-vsx)](https://open-vsx.org/extension/asispts/neo-git-graph)
+<h4 align="center">
+  <a href="#why-this-fork">Why this fork</a> |
+  <a href="#features">Features</a> |
+  <a href="#installation">Installation</a> |
+  <a href="#roadmap">Roadmap</a> |
+  <a href="#configuration">Configuration</a> |
+  <a href="#contributing">Contributing</a> |
+  <a href="#sponsors">Sponsors</a>
+</h4>
 
-![demo](resources/demo.gif)
+<p align="center">
+  <a href="./LICENSE"><img src="https://img.shields.io/github/license/asispts/neo-git-graph" alt="License"></a>
+  <a href="https://github.com/asispts/neo-git-graph/releases"><img alt="GitHub release" src="https://img.shields.io/github/v/release/asispts/neo-git-graph"></a>
+  <a href="https://open-vsx.org/extension/asispts/neo-git-graph"><img alt="open-vsx downloads" src="https://img.shields.io/open-vsx/dt/asispts/neo-git-graph?label=open-vsx"></a>
+</p>
+
+<!-- ![demo](resources/demo.gif) -->
 
 <p>&nbsp;</p>
 
