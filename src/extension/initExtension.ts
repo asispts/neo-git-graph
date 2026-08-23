@@ -42,6 +42,7 @@ function registerViewCommand(
         vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
         {
           enableScripts: true,
+          retainContextWhenHidden: true,
           localResourceRoots: [
             buildExtensionUri(ctx.extensionPath, "media"),
             buildExtensionUri(ctx.extensionPath, "out")
