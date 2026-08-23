@@ -72,6 +72,7 @@ export function CommitRow({
   const date = getCommitDate(commit.date);
   const source = commitMenuSource(commit.hash);
   const menuOpen = activeSource.value === source;
+  const refs = orderRefs(commit.refs, headBranch);
 
   return (
     <tr
@@ -86,17 +87,28 @@ export function CommitRow({
     >
       <td class={CELL_CLASS} />
       <td class={`${CELL_CLASS} w-full max-w-0 pl-2.5 ${isHead ? "shadow-head" : ""}`}>
-        {isHead && (
-          <span class="mt-1.75 mr-1.25 inline-block size-1.5 box-content rounded-full border-2 border-graph align-top" />
-        )}
-        {orderRefs(commit.refs, headBranch).map((gitRef) => (
-          <RefLabel
-            key={`${gitRef.type}-${gitRef.name}`}
-            gitRef={gitRef}
-            active={isActiveRef(gitRef, headBranch)}
-          />
-        ))}
-        {isHead || uncommitted ? <b>{message}</b> : message}
+        <div class="flex min-w-0 items-center">
+          {isHead && (
+            <span class="mr-1.25 size-1.5 shrink-0 box-content rounded-full border-2 border-graph" />
+          )}
+          {refs.length > 0 && (
+            <span class="flex min-w-0 max-w-1/2 shrink-0 overflow-hidden">
+              {refs.map((gitRef) => (
+                <RefLabel
+                  key={`${gitRef.type}-${gitRef.name}`}
+                  gitRef={gitRef}
+                  active={isActiveRef(gitRef, headBranch)}
+                />
+              ))}
+            </span>
+          )}
+          <span
+            class="min-w-0 flex-1 truncate"
+            title={typeof message === "string" ? message : message.join("")}
+          >
+            {isHead || uncommitted ? <b>{message}</b> : message}
+          </span>
+        </div>
       </td>
       <td class={CELL_CLASS} title={date.title}>
         {date.value}
