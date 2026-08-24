@@ -12,8 +12,11 @@ export function webviewBridgeFactory(webview: vscode.Webview, repoFileWatcher: R
       return;
     }
     repoFileWatcher.mute();
-    await handler(msg);
-    repoFileWatcher.unmute();
+    try {
+      await handler(msg);
+    } finally {
+      repoFileWatcher.unmute();
+    }
   });
 
   return {

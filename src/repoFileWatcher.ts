@@ -10,7 +10,7 @@ export class RepoFileWatcher {
   private readonly repoChangeCallback: () => void;
   private fsWatcher: vscode.FileSystemWatcher | null = null;
   private refreshTimeout: NodeJS.Timeout | null = null;
-  private muted: boolean = false;
+  private muteDepth: number = 0;
   private resumeAt: number = 0;
 
   constructor(repoChangeCallback: () => void) {
@@ -37,16 +37,22 @@ export class RepoFileWatcher {
   }
 
   public mute() {
-    this.muted = true;
+    this.muteDepth++;
   }
 
   public unmute() {
-    this.muted = false;
-    this.resumeAt = new Date().getTime() + 1500;
+    if (this.muteDepth === 0) {
+      return;
+    }
+
+    this.muteDepth--;
+    if (this.muteDepth === 0) {
+      this.resumeAt = new Date().getTime() + 1500;
+    }
   }
 
   private async refresh(uri: vscode.Uri) {
-    if (this.muted) {
+    if (this.muteDepth > 0) {
       return;
     }
     if (
