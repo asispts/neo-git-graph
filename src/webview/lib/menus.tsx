@@ -64,7 +64,7 @@ function confirmOnParent(options: {
 }) {
   const { command, message, action, commit, messages, source } = options;
 
-  if (commit.parentHashes.length === 1) {
+  if (commit.parentHashes.length < 2) {
     openFormDialog({
       message,
       inputs: [],
