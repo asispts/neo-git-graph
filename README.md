@@ -12,8 +12,7 @@
   <a href="#installation">Installation</a> |
   <a href="#roadmap">Roadmap</a> |
   <a href="#configuration">Configuration</a> |
-  <a href="#contributing">Contributing</a> |
-  <a href="#sponsors">Sponsors</a>
+  <a href="#contributing">Contributing</a>
 </h4>
 
 <p align="center">
@@ -47,7 +46,7 @@ This fork:
 - **Branch actions**: Create, checkout, rename, delete, and merge
 - **Tag actions**: Create, delete, and push tags
 - **Commit actions**: Checkout, cherry-pick, revert, and reset
-- **Avatar support**: Optional avatars from GitHub, GitLab, or Gravatar
+- **Avatar support (deprecated in v0.6.0)**: Optional avatars from GitHub, GitLab, or Gravatar
 - **Multi-repo**: Work with multiple repositories in one workspace
 - **Devcontainer support**: Works in remote and container environments
 
@@ -69,21 +68,21 @@ Search for `neo-git-graph` in Extensions, or install from:
 
 All settings use the `neo-git-graph` prefix.
 
-| Setting                       | Default         | Description                                      |
-| ----------------------------- | --------------- | ------------------------------------------------ |
-| `autoCenterCommitDetailsView` | `true`          | Center commit details when opened                |
-| `dateFormat`                  | `"Date & Time"` | `"Date & Time"`, `"Date Only"`, or `"Relative"`  |
-| `dateType`                    | `"Author Date"` | `"Author Date"` or `"Commit Date"`               |
-| `fetchAvatars`                | `false`         | Fetch avatars (sends email to external services) |
-| `graphColours`                | 12 defaults     | Colors for graph lines                           |
-| `graphStyle`                  | `"rounded"`     | `"rounded"` or `"angular"`                       |
-| `initialLoadCommits`          | `300`           | Commits to load on open                          |
-| `loadMoreCommits`             | `100`           | Commits to load on demand                        |
-| `maxDepthOfRepoSearch`        | `0`             | Folder depth for repo search                     |
-| `showCurrentBranchByDefault`  | `false`         | Show only current branch on open                 |
-| `showStatusBarItem`           | `true`          | Show status bar button                           |
-| `showUncommittedChanges`      | `true`          | Show uncommitted changes node                    |
-| `tabIconColourTheme`          | `"colour"`      | `"colour"` or `"grey"`                           |
+| Setting                       | Default         | Description                                                            |
+| ----------------------------- | --------------- | ---------------------------------------------------------------------- |
+| `autoCenterCommitDetailsView` | `true`          | Center commit details when opened                                      |
+| `dateFormat`                  | `"Date & Time"` | `"Date & Time"`, `"Date Only"`, or `"Relative"`                        |
+| `dateType`                    | `"Author Date"` | `"Author Date"` or `"Commit Date"`                                     |
+| `fetchAvatars`                | `false`         | Fetch avatars (sends email to external services); deprecated in v0.6.0 |
+| `graphColours`                | 12 defaults     | Colors for graph lines                                                 |
+| `graphStyle`                  | `"rounded"`     | `"rounded"` or `"angular"`                                             |
+| `initialLoadCommits`          | `300`           | Commits to load on open                                                |
+| `loadMoreCommits`             | `100`           | Commits to load on demand                                              |
+| `maxDepthOfRepoSearch`        | `0`             | Folder depth for repo search                                           |
+| `showCurrentBranchByDefault`  | `false`         | Show only current branch on open                                       |
+| `showStatusBarItem`           | `true`          | Show status bar button                                                 |
+| `showUncommittedChanges`      | `true`          | Show uncommitted changes node                                          |
+| `tabIconColourTheme`          | `"colour"`      | `"colour"` or `"grey"`                                                 |
 
 ## Contributing
 
@@ -93,10 +92,10 @@ Please use [Issues](https://github.com/asispts/neo-git-graph/issues) for bug rep
 
 See the [Roadmap](#roadmap) for the project's current direction.
 
-## Sponsors
+<!-- ## Sponsors
 
 If you find this extension useful, consider [sponsoring its development](https://github.com/sponsors/asispts).
-Your support helps keep it maintained and improving.
+Your support helps keep it maintained and improving. -->
 
 <!-- Sponsor names and logos go here -->
 

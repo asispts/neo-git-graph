@@ -147,7 +147,8 @@
         "neo-git-graph.fetchAvatars": {
           "type": "boolean",
           "default": false,
-          "description": "%config.fetchAvatars%"
+          "description": "%config.fetchAvatars%",
+          "deprecationMessage": "%config.fetchAvatars.deprecation%"
         },
         "neo-git-graph.graphColours": {
           "type": "array",
