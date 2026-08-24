@@ -37,7 +37,6 @@ export function createWebviewPanel(opts: {
   } = opts;
 
   const disposables: vscode.Disposable[] = [];
-  let isGraphViewLoaded = false;
   let isPanelVisible = true;
 
   panel.iconPath =
@@ -47,18 +46,6 @@ export function createWebviewPanel(opts: {
           light: buildExtensionUri(extensionPath, "resources", "webview-icon-light.svg"),
           dark: buildExtensionUri(extensionPath, "resources", "webview-icon-dark.svg")
         };
-
-  function update() {
-    const result = buildWebviewHtml({
-      webview: panel.webview,
-      config,
-      extensionPath,
-      extensionState,
-      repoManager
-    });
-    panel.webview.html = result.html;
-    isGraphViewLoaded = result.isGraphLoaded;
-  }
 
   function dispose() {
     onDispose();
@@ -74,14 +61,25 @@ export function createWebviewPanel(opts: {
     }
   }
 
-  update();
+  panel.webview.html = buildWebviewHtml({
+    webview: panel.webview,
+    config,
+    extensionPath,
+    extensionState,
+    repoManager
+  }).html;
   panel.onDidDispose(() => dispose(), null, disposables);
   panel.onDidChangeViewState(
     () => {
       if (panel.visible !== isPanelVisible) {
         if (panel.visible) {
           onPanelShown();
-          update();
+          bridge.post({
+            command: "loadRepos",
+            repos: repoManager.getRepos(),
+            lastActiveRepo: extensionState.getLastActiveRepo()
+          });
+          bridge.post({ command: "refresh" });
         } else {
           repoFileWatcher.stop();
         }
@@ -92,19 +90,15 @@ export function createWebviewPanel(opts: {
     disposables
   );
 
-  repoManager.registerViewCallback((repos: GitRepoSet, numRepos: number) => {
+  repoManager.registerViewCallback((repos: GitRepoSet) => {
     if (!panel.visible) {
       return;
     }
-    if ((numRepos === 0 && isGraphViewLoaded) || (numRepos > 0 && !isGraphViewLoaded)) {
-      update();
-    } else {
-      bridge.post({
-        command: "loadRepos",
-        repos,
-        lastActiveRepo: extensionState.getLastActiveRepo()
-      });
-    }
+    bridge.post({
+      command: "loadRepos",
+      repos,
+      lastActiveRepo: extensionState.getLastActiveRepo()
+    });
   });
 
   return {
