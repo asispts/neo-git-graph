@@ -2,9 +2,8 @@ import * as assert from "node:assert";
 import * as fs from "node:fs";
 
 import { Config } from "@/config";
-import { createRepoManager } from "@/extension/repoManager";
 import { ExtensionState } from "@/extensionState";
-import { StatusBarItem } from "@/statusBarItem";
+import { createRepoManager } from "@/old-extension/repoManager";
 import { GitRepoSet } from "@/types";
 
 import { makeRepo } from "@tests/backend/helpers";
@@ -19,19 +18,12 @@ function makeManager(initialRepos: GitRepoSet = {}) {
       saveCount++;
     }
   };
-  const statusBar = {
-    lastCount: -1,
-    setNumRepos(n: number) {
-      this.lastCount = n;
-    }
-  };
   const config = { gitPath: () => "git" };
   const manager = createRepoManager(
     extensionState as unknown as ExtensionState,
-    statusBar as unknown as StatusBarItem,
     config as unknown as Config
   );
-  return { manager, store, statusBar, getSaveCount: () => saveCount };
+  return { manager, store, getSaveCount: () => saveCount };
 }
 
 suite("repoManager", () => {
@@ -183,20 +175,17 @@ suite("repoManager", () => {
   });
 
   suite("sendRepos / registerViewCallback", () => {
-    test("calls the view callback with sorted repos and count", () => {
+    test("calls the view callback with sorted repos", () => {
       const { manager } = makeManager({
         "/z": { columnWidths: null },
         "/a": { columnWidths: null }
       });
       let cbRepos: GitRepoSet | null = null;
-      let cbCount = -1;
-      manager.registerViewCallback((r, n) => {
+      manager.registerViewCallback((r) => {
         cbRepos = r;
-        cbCount = n;
       });
       manager.sendRepos();
       assert.deepStrictEqual(Object.keys(cbRepos!), ["/a", "/z"]);
-      assert.strictEqual(cbCount, 2);
     });
 
     test("does not call the callback after deregistering", () => {
@@ -208,15 +197,6 @@ suite("repoManager", () => {
       manager.deregisterViewCallback();
       manager.sendRepos();
       assert.strictEqual(called, false);
-    });
-
-    test("updates statusBar with repo count", () => {
-      const { manager, statusBar } = makeManager({
-        "/a": { columnWidths: null },
-        "/b": { columnWidths: null }
-      });
-      manager.sendRepos();
-      assert.strictEqual(statusBar.lastCount, 2);
     });
   });
 
@@ -250,9 +230,13 @@ suite("repoManager", () => {
 
     test("calls sendRepos when repos are removed", async () => {
       fs.rmSync(repo, { recursive: true, force: true });
-      const { manager, statusBar } = makeManager({ [repo]: { columnWidths: null } });
+      const { manager } = makeManager({ [repo]: { columnWidths: null } });
+      let called = false;
+      manager.registerViewCallback(() => {
+        called = true;
+      });
       await manager.checkReposExist();
-      assert.ok(statusBar.lastCount >= 0);
+      assert.strictEqual(called, true);
     });
   });
 });

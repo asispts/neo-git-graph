@@ -3,7 +3,7 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { GitCommitNode } from "@/backend/types";
-import type { LocalizedStrings } from "@/extension/l10n/webviewL10n";
+import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
 import type { GitGraphViewState } from "@/types";
 
 let commitMenu: typeof import("@/webview/lib/menus").commitMenu;

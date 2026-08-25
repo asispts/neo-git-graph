@@ -4,8 +4,8 @@ import * as path from "node:path";
 
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 
-import type { InitExtension } from "@/extension/initExtension";
-import { watchForRepos } from "@/extension/watchForRepos";
+import type { InitExtension } from "@/old-extension/initExtension";
+import { watchForRepos } from "@/old-extension/watchForRepos";
 
 import { makeRepo } from "@tests/backend/helpers";
 

@@ -1,15 +1,16 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { webviewBridgeFactory } from "@/extension/webviewBridge";
+import { webviewBridgeFactory } from "@/old-extension/webviewBridge";
 import type { RepoFileWatcher } from "@/repoFileWatcher";
 import type { RequestMessage } from "@/types";
 
 function createBridge() {
   let receiveMessage: ((message: RequestMessage) => Promise<void>) | undefined;
+  const dispose = vi.fn();
   const webview = {
     onDidReceiveMessage: vi.fn((handler: (message: RequestMessage) => Promise<void>) => {
       receiveMessage = handler;
-      return { dispose: vi.fn() };
+      return { dispose };
     }),
     postMessage: vi.fn()
   };
@@ -21,6 +22,7 @@ function createBridge() {
 
   return {
     bridge,
+    dispose,
     repoFileWatcher,
     receive: (message: RequestMessage) => receiveMessage!(message)
   };
@@ -35,6 +37,14 @@ function deferred() {
 }
 
 describe("webviewBridgeFactory", () => {
+  it("disposes its message listener", () => {
+    const { bridge, dispose } = createBridge();
+
+    bridge.dispose();
+
+    expect(dispose).toHaveBeenCalledOnce();
+  });
+
   it("unmutes the repository watcher when a handler rejects", async () => {
     const { bridge, repoFileWatcher, receive } = createBridge();
     const failure = new Error("failed");

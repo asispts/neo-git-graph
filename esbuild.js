@@ -69,7 +69,7 @@ const tailwindPlugin = {
 
 async function main() {
   const extension = await esbuild.context({
-    entryPoints: ["src/extension/main.ts"],
+    entryPoints: ["src/main.ts"],
     bundle: true,
     format: "cjs",
     minify: production,

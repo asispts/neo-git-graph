@@ -6,7 +6,7 @@ import { RequestMessage, ResponseMessage } from "@/types";
 export function webviewBridgeFactory(webview: vscode.Webview, repoFileWatcher: RepoFileWatcher) {
   const handlers = new Map<string, (msg: RequestMessage) => void | Promise<void>>();
 
-  webview.onDidReceiveMessage(async (msg: RequestMessage) => {
+  const listener = webview.onDidReceiveMessage(async (msg: RequestMessage) => {
     const handler = handlers.get(msg.command);
     if (!handler) {
       return;
@@ -20,6 +20,7 @@ export function webviewBridgeFactory(webview: vscode.Webview, repoFileWatcher: R
   });
 
   return {
+    dispose: () => listener.dispose(),
     post: (msg: ResponseMessage) => webview.postMessage(msg),
     onMessage: <T extends RequestMessage["command"]>(
       command: T,

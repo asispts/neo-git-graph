@@ -8,14 +8,14 @@ import { findGitRepos } from "@/backend/queries/repoSearch";
 import { buildExtensionUri } from "@/backend/utils/path";
 import { config } from "@/config";
 import { DiffDocProvider } from "@/diffDocProvider";
-import { EXTENSION_NAME } from "@/extension/constant/const";
-import { createMaxDepthTracker } from "@/extension/maxDepthTracker";
-import { registerMessageHandlers } from "@/extension/messageHandler";
-import { createRepoManager, RepoManager } from "@/extension/repoManager";
-import { logger } from "@/extension/utils/logger";
-import { WebviewBridge, webviewBridgeFactory } from "@/extension/webviewBridge";
-import { createWebviewPanel, WebviewPanel } from "@/extension/webviewPanel";
 import { ExtensionState } from "@/extensionState";
+import { EXTENSION_NAME } from "@/old-extension/constant/const";
+import { createMaxDepthTracker } from "@/old-extension/maxDepthTracker";
+import { registerMessageHandlers } from "@/old-extension/messageHandler";
+import { createRepoManager, RepoManager } from "@/old-extension/repoManager";
+import { logger } from "@/old-extension/utils/logger";
+import { WebviewBridge, webviewBridgeFactory } from "@/old-extension/webviewBridge";
+import { createWebviewPanel, WebviewPanel } from "@/old-extension/webviewPanel";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { StatusBarItem } from "@/statusBarItem";
 
@@ -112,7 +112,7 @@ export function initExtension(
     );
 
     const maxDepth = createMaxDepthTracker(config.maxDepthOfRepoSearch());
-    const repoManager = createRepoManager(extensionState, statusBarItem, config);
+    const repoManager = createRepoManager(extensionState, config);
     repoManager.setRepos(repos);
     repoManager.sendRepos();
     registerViewCommand(ctx, repoManager, extensionState, avatarManager, gitClient);
