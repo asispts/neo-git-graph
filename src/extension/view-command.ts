@@ -1,21 +1,22 @@
 import * as vscode from "vscode";
 
-import { logger } from "@/old-extension/utils/logger";
-import { RequestMessage } from "@/types";
-
 import { EXTENSION_NAME } from "./constants";
 import { createWevbviewHtml } from "./html";
+import { createMessageProtocol } from "./legacy";
 
 export function createViewCommand(ctx: vscode.ExtensionContext) {
   let currentPanel: vscode.WebviewPanel | undefined = undefined;
+  const messageProtocol = createMessageProtocol(ctx);
 
-  return () => {
+  return async () => {
+    await messageProtocol.ready;
+
     if (currentPanel) {
       currentPanel.reveal(vscode.window.activeTextEditor?.viewColumn);
       return;
     }
 
-    const vsPanel = vscode.window.createWebviewPanel(
+    const webPanel = vscode.window.createWebviewPanel(
       "neo-git-graph",
       EXTENSION_NAME,
       vscode.window.activeTextEditor?.viewColumn ?? vscode.ViewColumn.One,
@@ -29,16 +30,13 @@ export function createViewCommand(ctx: vscode.ExtensionContext) {
       }
     );
 
-    vsPanel.webview.html = createWevbviewHtml(ctx, vsPanel.webview);
+    webPanel.webview.html = createWevbviewHtml(ctx, webPanel.webview);
+    const messageProtocolAttachment = messageProtocol.attach(webPanel);
 
-    const messageListener = vsPanel.webview.onDidReceiveMessage(async (msg: RequestMessage) => {
-      logger.log(msg.command);
-    });
-
-    vsPanel.onDidDispose(() => {
-      messageListener.dispose();
+    webPanel.onDidDispose(() => {
+      messageProtocolAttachment.dispose();
       currentPanel = undefined;
     });
-    currentPanel = vsPanel;
+    currentPanel = webPanel;
   };
 }

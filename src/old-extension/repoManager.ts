@@ -2,7 +2,6 @@ import { isGitRepository } from "@/backend/utils/git";
 import { evalPromises } from "@/backend/utils/promise";
 import { Config } from "@/config";
 import { ExtensionState } from "@/extensionState";
-import { StatusBarItem } from "@/statusBarItem";
 import { GitRepoSet, GitRepoState } from "@/types";
 
 function sortRepos(repos: GitRepoSet) {
@@ -14,13 +13,9 @@ function sortRepos(repos: GitRepoSet) {
   return sorted;
 }
 
-export function createRepoManager(
-  extensionState: ExtensionState,
-  statusBarItem: StatusBarItem,
-  config: Config
-) {
+export function createRepoManager(extensionState: ExtensionState, config: Config) {
   let repos = extensionState.getRepos();
-  let viewCallback: ((repos: GitRepoSet, numRepos: number) => void) | null = null;
+  let viewCallback: ((repos: GitRepoSet) => void) | null = null;
 
   function setRepos(repoDirs: string[]) {
     const next: GitRepoSet = {};
@@ -37,10 +32,8 @@ export function createRepoManager(
 
   function sendRepos() {
     const sorted = getRepos();
-    const numRepos = Object.keys(sorted).length;
-    statusBarItem.setNumRepos(numRepos);
     if (viewCallback !== null) {
-      viewCallback(sorted, numRepos);
+      viewCallback(sorted);
     }
   }
 
@@ -49,7 +42,7 @@ export function createRepoManager(
     extensionState.saveRepos(repos);
   }
 
-  function registerViewCallback(cb: (repos: GitRepoSet, numRepos: number) => void) {
+  function registerViewCallback(cb: (repos: GitRepoSet) => void) {
     viewCallback = cb;
   }
 

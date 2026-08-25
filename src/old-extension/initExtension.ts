@@ -112,7 +112,7 @@ export function initExtension(
     );
 
     const maxDepth = createMaxDepthTracker(config.maxDepthOfRepoSearch());
-    const repoManager = createRepoManager(extensionState, statusBarItem, config);
+    const repoManager = createRepoManager(extensionState, config);
     repoManager.setRepos(repos);
     repoManager.sendRepos();
     registerViewCommand(ctx, repoManager, extensionState, avatarManager, gitClient);
