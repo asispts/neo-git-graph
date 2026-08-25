@@ -2,8 +2,8 @@ import * as assert from "node:assert";
 import * as fs from "node:fs";
 
 import { Config } from "@/config";
-import { createRepoManager } from "@/extension/repoManager";
 import { ExtensionState } from "@/extensionState";
+import { createRepoManager } from "@/old-extension/repoManager";
 import { StatusBarItem } from "@/statusBarItem";
 import { GitRepoSet } from "@/types";
 

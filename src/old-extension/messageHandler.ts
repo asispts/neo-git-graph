@@ -18,8 +18,8 @@ import { GitFileChangeType } from "@/backend/types";
 import { abbrevCommit } from "@/backend/utils/string";
 import { Config } from "@/config";
 import { encodeDiffDocUri } from "@/diffDocProvider";
-import { copyToClipboard } from "@/extension/utils/clipboard";
 import { ExtensionState } from "@/extensionState";
+import { copyToClipboard } from "@/old-extension/utils/clipboard";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { RequestMessage, ResponseMessage } from "@/types";
 

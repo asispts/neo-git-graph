@@ -1,5 +1,5 @@
 import type { ActionResponse } from "@/backend/types";
-import type { LocalizedStrings } from "@/extension/l10n/webviewL10n";
+import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
 import { closeDialog, openErrorDialog, refresh } from "@/webview/lib/actions";
 
 const ERROR_KEY: Record<ActionResponse["command"], keyof LocalizedStrings> = {

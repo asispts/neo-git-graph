@@ -2,9 +2,9 @@ import * as vscode from "vscode";
 
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { config } from "@/config";
-import { EXTENSION_NAME } from "@/extension/constant/const";
-import type { InitExtension } from "@/extension/initExtension";
-import { createMaxDepthTracker } from "@/extension/maxDepthTracker";
+import { EXTENSION_NAME } from "@/old-extension/constant/const";
+import type { InitExtension } from "@/old-extension/initExtension";
+import { createMaxDepthTracker } from "@/old-extension/maxDepthTracker";
 import { StatusBarItem } from "@/statusBarItem";
 
 type WatcherState = {

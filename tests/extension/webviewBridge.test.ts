@@ -1,6 +1,6 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { webviewBridgeFactory } from "@/extension/webviewBridge";
+import { webviewBridgeFactory } from "@/old-extension/webviewBridge";
 import type { RepoFileWatcher } from "@/repoFileWatcher";
 import type { RequestMessage } from "@/types";
 

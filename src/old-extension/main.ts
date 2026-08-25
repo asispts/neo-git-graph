@@ -3,9 +3,9 @@ import * as vscode from "vscode";
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { getGitVersion } from "@/backend/utils/git";
 import { config } from "@/config";
-import { initExtension } from "@/extension/initExtension";
-import { logger } from "@/extension/utils/logger";
-import { watchForRepos } from "@/extension/watchForRepos";
+import { initExtension } from "@/old-extension/initExtension";
+import { logger } from "@/old-extension/utils/logger";
+import { watchForRepos } from "@/old-extension/watchForRepos";
 import { StatusBarItem } from "@/statusBarItem";
 
 export async function activate(ctx: vscode.ExtensionContext) {

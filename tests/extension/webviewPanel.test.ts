@@ -1,12 +1,12 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-import { createWebviewPanel } from "@/extension/webviewPanel";
+import { createWebviewPanel } from "@/old-extension/webviewPanel";
 
 const mocks = vi.hoisted(() => ({
   buildWebviewHtml: vi.fn(() => ({ html: "<html>initial</html>", isGraphLoaded: true }))
 }));
 
-vi.mock("@/extension/webviewHtml", () => ({ buildWebviewHtml: mocks.buildWebviewHtml }));
+vi.mock("@/old-extension/webviewHtml", () => ({ buildWebviewHtml: mocks.buildWebviewHtml }));
 vi.mock("@/backend/utils/path", () => ({
   buildExtensionUri: (...parts: string[]) => parts.join("/")
 }));
@@ -48,7 +48,7 @@ describe("createWebviewPanel", () => {
 
     createWebviewPanel({
       panel: panel as unknown as import("vscode").WebviewPanel,
-      bridge: bridge as unknown as import("@/extension/webviewBridge").WebviewBridge,
+      bridge: bridge as unknown as import("@/old-extension/webviewBridge").WebviewBridge,
       config: {
         tabIconColourTheme: () => "colour"
       } as unknown as import("@/config").Config,
@@ -60,7 +60,7 @@ describe("createWebviewPanel", () => {
       avatarManager: {
         deregisterBridge: vi.fn()
       } as unknown as import("@/avatarManager").AvatarManager,
-      repoManager: repoManager as unknown as import("@/extension/repoManager").RepoManager,
+      repoManager: repoManager as unknown as import("@/old-extension/repoManager").RepoManager,
       onDispose: vi.fn(),
       onPanelShown
     });

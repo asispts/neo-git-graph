@@ -8,6 +8,6 @@
     "./backend/**/*.ts",
     "./extension/**/*.ts",
     "../src/backend/**/*.ts",
-    "../src/extension/**/*.ts"
+    "../src/old-extension/**/*.ts"
   ]
 }
