@@ -2,6 +2,25 @@
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-08-25
+
+### Added
+
+- View for repositories without commits
+- Faster tab restoration by retaining the webview context
+
+### Changed
+
+- Migrate the webview to Preact
+- Improve long branch name display and emphasize the checked-out branch
+- Deprecate the `fetchAvatars` setting
+
+### Fixed
+
+- Handle root commit actions correctly
+- Avoid reloading a retained panel when it is restored
+- Make repository watcher muting safe
+
 ## [0.5.0] - 2026-07-24
 
 ### Added
@@ -65,7 +84,8 @@
 
 Initial release
 
-[Unreleased]: https://github.com/asispts/neo-git-graph/compare/v0.5.0...HEAD
+[Unreleased]: https://github.com/asispts/neo-git-graph/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/asispts/neo-git-graph/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/asispts/neo-git-graph/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/asispts/neo-git-graph/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/asispts/neo-git-graph/compare/v0.2.0...v0.3.0
