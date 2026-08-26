@@ -76,17 +76,6 @@ export type RequestSaveRepoState = {
   state: GitRepoState;
 };
 
-export type RequestCopyToClipboard = {
-  command: "copyToClipboard";
-  type: string;
-  data: string;
-};
-export type ResponseCopyToClipboard = {
-  command: "copyToClipboard";
-  type: string;
-  success: boolean;
-};
-
 export type RequestViewDiff = {
   command: "viewDiff";
   repo: string;
@@ -111,7 +100,6 @@ export type RequestMessage =
   | RequestSelectRepo
   | RequestLoadRepos
   | RequestSaveRepoState
-  | RequestCopyToClipboard
   | RequestViewDiff;
 
 export type ResponseMessage =
@@ -119,6 +107,5 @@ export type ResponseMessage =
   | QueryResponse
   | ResponseFetchAvatar
   | ResponseLoadRepos
-  | ResponseCopyToClipboard
   | ResponseViewDiff
   | ResponseRefresh;

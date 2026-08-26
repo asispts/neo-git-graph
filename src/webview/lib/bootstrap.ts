@@ -1,8 +1,8 @@
 import type { ResponseMessage } from "@/types";
+import { handleRpcResponse } from "@/webview/lib/rpc/rpc-client";
 
 import { handleActionResult } from "./handler/action-result";
 import { handleCommitDetails } from "./handler/commit-details";
-import { handleCopyToClipboard } from "./handler/copy-to-clipboard";
 import { handleLoadBranches } from "./handler/load-branches";
 import { handleLoadCommits } from "./handler/load-commits";
 import { handleLoadRepos } from "./handler/load-repo";
@@ -32,7 +32,6 @@ const handlers: Handlers = {
   resetToCommit: handleActionResult,
   revertCommit: handleActionResult,
   commitDetails: handleCommitDetails,
-  copyToClipboard: handleCopyToClipboard,
   loadRepos: handleLoadRepos,
   loadBranches: handleLoadBranches,
   loadCommits: handleLoadCommits,
@@ -53,8 +52,11 @@ function dispatch(msg: ResponseMessage): void {
 }
 
 export function initWebview() {
-  window.addEventListener("message", (e: MessageEvent<ResponseMessage>) => {
-    dispatch(e.data);
+  window.addEventListener("message", (e: MessageEvent<unknown>) => {
+    if (handleRpcResponse(e.data)) {
+      return;
+    }
+    dispatch(e.data as ResponseMessage);
   });
 
   startSync();

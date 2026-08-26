@@ -36,7 +36,8 @@ export default defineConfig({
         resolve: { alias },
         test: {
           name: "webview",
-          include: ["tests/webview/**/*.test.ts"]
+          include: ["tests/webview/**/*.test.ts"],
+          setupFiles: ["tests/webview/setup.ts"]
         }
       }
     ]

@@ -5,7 +5,6 @@ import type { ActionRequest, GitFileChange } from "@/backend/types";
 import {
   actionRequest,
   branchList,
-  clipboardRequest,
   commitDetails,
   commitHead,
   commitList,
@@ -210,15 +209,6 @@ export function runAction(command: ActionCommand) {
   actionRequest.value = {
     action: { ...command, repo } as ActionRequest,
     token: (actionRequest.value?.token ?? 0) + 1
-  };
-}
-
-/** Ask the editor to put text on the clipboard. `type` names it in error messages. */
-export function copyToClipboard(type: string, data: string) {
-  clipboardRequest.value = {
-    type,
-    data,
-    token: (clipboardRequest.value?.token ?? 0) + 1
   };
 }
 
