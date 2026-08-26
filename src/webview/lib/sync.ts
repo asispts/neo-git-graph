@@ -5,7 +5,6 @@ import {
   expandedCommit,
   maxCommits,
   refreshToken,
-  repoStateRequest,
   selectedBranch,
   selectedRepo,
   showRemoteBranch
@@ -101,19 +100,6 @@ export function startSync() {
       command: "commitDetails",
       repo: query.repo,
       commitHash: query.commitHash
-    });
-  });
-
-  effect(() => {
-    const request = repoStateRequest.value;
-    if (request === null) {
-      return;
-    }
-
-    vscode.postMessage({
-      command: "saveRepoState",
-      repo: request.repo,
-      state: request.state
     });
   });
 }

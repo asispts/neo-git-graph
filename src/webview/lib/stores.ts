@@ -2,12 +2,7 @@ import { computed, signal } from "@preact/signals";
 
 import type { GitCommitDetails, GitCommitNode } from "@/backend/types";
 import type { GitRepoSet } from "@/types";
-import type {
-  CommitBranchType,
-  ContextMenuState,
-  DialogState,
-  RepoStateRequest
-} from "@/webview/types";
+import type { CommitBranchType, ContextMenuState, DialogState } from "@/webview/types";
 import { isColumnWidths } from "@/webview/utils/columns";
 
 export const repoList = signal<Array<string> | undefined>(undefined);
@@ -59,9 +54,6 @@ export const columnWidths = computed(() => {
 
   return isColumnWidths(widths) ? widths : null;
 });
-
-/** Last repo state the user changed. `lib/sync.ts` saves it in the editor. */
-export const repoStateRequest = signal<RepoStateRequest | null>(null);
 
 export const selectedBranch = signal<CommitBranchType | undefined>(undefined);
 export const showRemoteBranch = signal<boolean>(true);

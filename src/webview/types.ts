@@ -1,7 +1,6 @@
 import type { ComponentChildren } from "preact";
 
 import type { ActionRequest } from "@/backend/types";
-import type { GitRepoState } from "@/types";
 
 export type CommitBranchType = "*" | (string & {});
 
@@ -65,11 +64,3 @@ type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K>
 
 /** An `ActionRequest` before `lib/actions.ts` fills in the selected repo. */
 export type ActionCommand = DistributiveOmit<ActionRequest, "repo">;
-
-/** State of one repo the user changed, for example its column widths. */
-export type RepoStateRequest = {
-  repo: string;
-  state: GitRepoState;
-  /** Bumped per request, so that saving the same state twice is sent twice. */
-  token: number;
-};

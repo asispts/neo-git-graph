@@ -14,7 +14,6 @@ import {
   maxCommits,
   moreCommitsAvailable,
   refreshToken,
-  repoStateRequest,
   repoStates,
   selectedBranch,
   selectedRepo,
@@ -85,13 +84,11 @@ export function saveColumnWidths(widths: Array<number>) {
     return;
   }
 
-  batch(() => {
-    setColumnWidths(widths);
-    repoStateRequest.value = {
-      repo,
-      state: repoStates.value[repo],
-      token: (repoStateRequest.value?.token ?? 0) + 1
-    };
+  setColumnWidths(widths);
+  vscode.postMessage({
+    command: "saveRepoState",
+    repo,
+    state: repoStates.value[repo]
   });
 }
 
