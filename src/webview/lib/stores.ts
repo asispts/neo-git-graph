@@ -4,7 +4,6 @@ import type { GitCommitDetails, GitCommitNode } from "@/backend/types";
 import type { GitRepoSet } from "@/types";
 import type {
   ActionRequestState,
-  ClipboardRequest,
   CommitBranchType,
   ContextMenuState,
   DialogState,
@@ -31,8 +30,6 @@ export const expandedCommit = signal<string | null>(null);
 export const commitDetails = signal<GitCommitDetails | null>(null);
 /** Last file diff the user asked for. `lib/sync.ts` sends it to the editor. */
 export const diffRequest = signal<DiffRequest | null>(null);
-/** Last copy the user asked for. `lib/sync.ts` sends it to the editor. */
-export const clipboardRequest = signal<ClipboardRequest | null>(null);
 /** Last git action the user confirmed. `lib/sync.ts` sends it to the editor. */
 export const actionRequest = signal<ActionRequestState | null>(null);
 

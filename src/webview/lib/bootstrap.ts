@@ -3,7 +3,6 @@ import { handleRpcResponse } from "@/webview/rpc/rpc-client";
 
 import { handleActionResult } from "./handler/action-result";
 import { handleCommitDetails } from "./handler/commit-details";
-import { handleCopyToClipboard } from "./handler/copy-to-clipboard";
 import { handleLoadBranches } from "./handler/load-branches";
 import { handleLoadCommits } from "./handler/load-commits";
 import { handleLoadRepos } from "./handler/load-repo";
@@ -33,7 +32,6 @@ const handlers: Handlers = {
   resetToCommit: handleActionResult,
   revertCommit: handleActionResult,
   commitDetails: handleCommitDetails,
-  copyToClipboard: handleCopyToClipboard,
   loadRepos: handleLoadRepos,
   loadBranches: handleLoadBranches,
   loadCommits: handleLoadCommits,

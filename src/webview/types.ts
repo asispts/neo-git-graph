@@ -73,14 +73,6 @@ export type ActionRequestState = {
   token: number;
 };
 
-/** Text the user asked to put on the clipboard. `type` names it in error messages. */
-export type ClipboardRequest = {
-  type: string;
-  data: string;
-  /** Bumped per request, so that copying the same text twice is sent twice. */
-  token: number;
-};
-
 /** State of one repo the user changed, for example its column widths. */
 export type RepoStateRequest = {
   repo: string;

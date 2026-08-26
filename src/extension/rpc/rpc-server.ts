@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 
-import { copyToClipboard } from "@/old-extension/utils/clipboard";
 import type { RpcMethod, RpcMethodMap, RpcResponse } from "@/rpc/types";
 
 type RpcHandlers = {
@@ -15,7 +14,12 @@ const handlers = {
       throw new Error("Invalid copyToClipboard parameters");
     }
 
-    return copyToClipboard(params);
+    try {
+      await vscode.env.clipboard.writeText(params);
+      return true;
+    } catch {
+      return false;
+    }
   }
 } satisfies RpcHandlers;
 

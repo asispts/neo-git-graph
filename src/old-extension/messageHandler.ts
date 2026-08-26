@@ -19,7 +19,6 @@ import { abbrevCommit } from "@/backend/utils/string";
 import { Config } from "@/config";
 import { encodeDiffDocUri } from "@/diffDocProvider";
 import { ExtensionState } from "@/extensionState";
-import { copyToClipboard } from "@/old-extension/utils/clipboard";
 import { RepoFileWatcher } from "@/repoFileWatcher";
 import { RequestMessage, ResponseMessage } from "@/types";
 
@@ -178,14 +177,6 @@ export function registerMessageHandlers(
 
   bridge.onMessage("saveRepoState", (msg) => {
     repoManager.setRepoState(msg.repo, msg.state);
-  });
-
-  bridge.onMessage("copyToClipboard", async (msg) => {
-    bridge.post({
-      command: "copyToClipboard",
-      type: msg.type,
-      success: await copyToClipboard(msg.data)
-    });
   });
 
   bridge.onMessage("viewDiff", async (msg) => {
