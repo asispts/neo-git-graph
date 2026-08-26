@@ -2,27 +2,25 @@ import { batch } from "@preact/signals";
 import type { ComponentChildren } from "preact";
 
 import type { ActionRequest, GitFileChange } from "@/backend/types";
+import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import {
-  actionRequest,
   branchList,
   commitDetails,
   commitHead,
   commitList,
   contextMenu,
   dialog,
-  diffRequest,
   expandedCommit,
   headBranch,
   maxCommits,
   moreCommitsAvailable,
-  refreshToken,
-  repoStateRequest,
   repoStates,
   selectedBranch,
   selectedRepo,
   showRemoteBranch,
   uncommittedChanges
 } from "@/webview/lib/stores";
+import { vscode } from "@/webview/lib/vscode";
 import type {
   ActionCommand,
   CommitBranchType,
@@ -31,6 +29,26 @@ import type {
   DialogInput,
   DialogValues
 } from "@/webview/types";
+
+function requestBranches(repo: string) {
+  vscode.postMessage({
+    command: "loadBranches",
+    repo,
+    showRemoteBranches: showRemoteBranch.value,
+    hard: true
+  });
+}
+
+function requestCommits(repo: string, branch: CommitBranchType) {
+  vscode.postMessage({
+    command: "loadCommits",
+    repo,
+    branchName: branch === SHOW_ALL_BRANCHES ? "" : branch,
+    maxCommits: maxCommits.value,
+    showRemoteBranches: showRemoteBranch.value,
+    hard: true
+  });
+}
 
 function clearCommits() {
   commitList.value = undefined;
@@ -53,6 +71,9 @@ export function selectRepo(repo: string) {
     selectedBranch.value = undefined;
     clearCommits();
   });
+
+  vscode.postMessage({ command: "selectRepo", repo });
+  requestBranches(repo);
 }
 
 export function selectBranch(branch: CommitBranchType) {
@@ -64,6 +85,11 @@ export function selectBranch(branch: CommitBranchType) {
     selectedBranch.value = branch;
     clearCommits();
   });
+
+  const repo = selectedRepo.value;
+  if (repo !== undefined) {
+    requestCommits(repo, branch);
+  }
 }
 
 /** Resize the columns of the commit table, while the user drags a boundary. */
@@ -86,26 +112,54 @@ export function saveColumnWidths(widths: Array<number>) {
     return;
   }
 
-  batch(() => {
-    setColumnWidths(widths);
-    repoStateRequest.value = {
-      repo,
-      state: repoStates.value[repo],
-      token: (repoStateRequest.value?.token ?? 0) + 1
-    };
+  setColumnWidths(widths);
+  vscode.postMessage({
+    command: "saveRepoState",
+    repo,
+    state: repoStates.value[repo]
   });
 }
 
 export function setShowRemoteBranch(value: boolean) {
+  if (value === showRemoteBranch.value) {
+    return;
+  }
+
   showRemoteBranch.value = value;
+
+  const repo = selectedRepo.value;
+  if (repo === undefined) {
+    return;
+  }
+
+  requestBranches(repo);
+  const branch = selectedBranch.value;
+  if (branch !== undefined) {
+    requestCommits(repo, branch);
+  }
 }
 
 export function loadMoreCommits() {
   maxCommits.value += viewState.loadMoreCommits;
+
+  const repo = selectedRepo.value;
+  const branch = selectedBranch.value;
+  if (repo !== undefined && branch !== undefined) {
+    requestCommits(repo, branch);
+  }
 }
 
 export function refresh() {
-  refreshToken.value++;
+  const repo = selectedRepo.value;
+  if (repo === undefined) {
+    return;
+  }
+
+  requestBranches(repo);
+  const branch = selectedBranch.value;
+  if (branch !== undefined) {
+    requestCommits(repo, branch);
+  }
 }
 
 export function closeCommitDetails() {
@@ -122,10 +176,17 @@ export function toggleCommitDetails(hash: string) {
     return;
   }
 
+  const repo = selectedRepo.value;
   batch(() => {
     expandedCommit.value = hash;
     commitDetails.value = null;
   });
+
+  if (repo === undefined) {
+    return;
+  }
+
+  vscode.postMessage({ command: "commitDetails", repo, commitHash: hash });
 }
 
 /**
@@ -206,10 +267,7 @@ export function runAction(command: ActionCommand) {
     return;
   }
 
-  actionRequest.value = {
-    action: { ...command, repo } as ActionRequest,
-    token: (actionRequest.value?.token ?? 0) + 1
-  };
+  vscode.postMessage({ ...command, repo } as ActionRequest);
 }
 
 /** Ask the editor to open the diff of a file of a commit. */
@@ -219,10 +277,12 @@ export function viewDiff(commitHash: string, file: GitFileChange) {
     return;
   }
 
-  diffRequest.value = {
+  vscode.postMessage({
+    command: "viewDiff",
     repo,
     commitHash,
-    file,
-    token: (diffRequest.value?.token ?? 0) + 1
-  };
+    oldFilePath: file.oldFilePath,
+    newFilePath: file.newFilePath,
+    type: file.type
+  });
 }

@@ -17,9 +17,9 @@ export function handleLoadRepos(msg: LoadRepoMessage) {
   batch(() => {
     repoList.value = repos;
     repoStates.value = msg.repos;
-
-    if (next !== undefined) {
-      selectRepo(next);
-    }
   });
+
+  if (next !== undefined) {
+    selectRepo(next);
+  }
 }

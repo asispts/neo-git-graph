@@ -2,14 +2,7 @@ import { computed, signal } from "@preact/signals";
 
 import type { GitCommitDetails, GitCommitNode } from "@/backend/types";
 import type { GitRepoSet } from "@/types";
-import type {
-  ActionRequestState,
-  CommitBranchType,
-  ContextMenuState,
-  DialogState,
-  DiffRequest,
-  RepoStateRequest
-} from "@/webview/types";
+import type { CommitBranchType, ContextMenuState, DialogState } from "@/webview/types";
 import { isColumnWidths } from "@/webview/utils/columns";
 
 export const repoList = signal<Array<string> | undefined>(undefined);
@@ -28,10 +21,6 @@ export const uncommittedChanges = signal<number>(0);
 export const expandedCommit = signal<string | null>(null);
 /** Details of `expandedCommit`, or `null` while they load. */
 export const commitDetails = signal<GitCommitDetails | null>(null);
-/** Last file diff the user asked for. `lib/sync.ts` sends it to the editor. */
-export const diffRequest = signal<DiffRequest | null>(null);
-/** Last git action the user confirmed. `lib/sync.ts` sends it to the editor. */
-export const actionRequest = signal<ActionRequestState | null>(null);
 
 /** The open context menu, or `null` when none is open. Only one opens at a time. */
 export const contextMenu = signal<ContextMenuState | null>(null);
@@ -66,16 +55,6 @@ export const columnWidths = computed(() => {
   return isColumnWidths(widths) ? widths : null;
 });
 
-/** Last repo state the user changed. `lib/sync.ts` saves it in the editor. */
-export const repoStateRequest = signal<RepoStateRequest | null>(null);
-
 export const selectedBranch = signal<CommitBranchType | undefined>(undefined);
 export const showRemoteBranch = signal<boolean>(true);
 export const maxCommits = signal<number>(viewState.initialLoadCommits);
-
-/**
- * Bump to refetch `loadBranches` and `loadCommits` in `lib/sync.ts`.
- * This refreshes `branchList`, `headBranch`, and the commit list.
- * Selections (`selectedRepo`, `selectedBranch`) stay unchanged.
- */
-export const refreshToken = signal<number>(0);
