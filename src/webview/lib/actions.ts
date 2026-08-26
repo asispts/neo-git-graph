@@ -2,6 +2,7 @@ import { batch } from "@preact/signals";
 import type { ComponentChildren } from "preact";
 
 import type { ActionRequest, GitFileChange } from "@/backend/types";
+import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import {
   branchList,
   commitDetails,
@@ -13,7 +14,6 @@ import {
   headBranch,
   maxCommits,
   moreCommitsAvailable,
-  refreshToken,
   repoStates,
   selectedBranch,
   selectedRepo,
@@ -29,6 +29,26 @@ import type {
   DialogInput,
   DialogValues
 } from "@/webview/types";
+
+function requestBranches(repo: string) {
+  vscode.postMessage({
+    command: "loadBranches",
+    repo,
+    showRemoteBranches: showRemoteBranch.value,
+    hard: true
+  });
+}
+
+function requestCommits(repo: string, branch: CommitBranchType) {
+  vscode.postMessage({
+    command: "loadCommits",
+    repo,
+    branchName: branch === SHOW_ALL_BRANCHES ? "" : branch,
+    maxCommits: maxCommits.value,
+    showRemoteBranches: showRemoteBranch.value,
+    hard: true
+  });
+}
 
 function clearCommits() {
   commitList.value = undefined;
@@ -51,6 +71,9 @@ export function selectRepo(repo: string) {
     selectedBranch.value = undefined;
     clearCommits();
   });
+
+  vscode.postMessage({ command: "selectRepo", repo });
+  requestBranches(repo);
 }
 
 export function selectBranch(branch: CommitBranchType) {
@@ -62,6 +85,11 @@ export function selectBranch(branch: CommitBranchType) {
     selectedBranch.value = branch;
     clearCommits();
   });
+
+  const repo = selectedRepo.value;
+  if (repo !== undefined) {
+    requestCommits(repo, branch);
+  }
 }
 
 /** Resize the columns of the commit table, while the user drags a boundary. */
@@ -93,15 +121,45 @@ export function saveColumnWidths(widths: Array<number>) {
 }
 
 export function setShowRemoteBranch(value: boolean) {
+  if (value === showRemoteBranch.value) {
+    return;
+  }
+
   showRemoteBranch.value = value;
+
+  const repo = selectedRepo.value;
+  if (repo === undefined) {
+    return;
+  }
+
+  requestBranches(repo);
+  const branch = selectedBranch.value;
+  if (branch !== undefined) {
+    requestCommits(repo, branch);
+  }
 }
 
 export function loadMoreCommits() {
   maxCommits.value += viewState.loadMoreCommits;
+
+  const repo = selectedRepo.value;
+  const branch = selectedBranch.value;
+  if (repo !== undefined && branch !== undefined) {
+    requestCommits(repo, branch);
+  }
 }
 
 export function refresh() {
-  refreshToken.value++;
+  const repo = selectedRepo.value;
+  if (repo === undefined) {
+    return;
+  }
+
+  requestBranches(repo);
+  const branch = selectedBranch.value;
+  if (branch !== undefined) {
+    requestCommits(repo, branch);
+  }
 }
 
 export function closeCommitDetails() {

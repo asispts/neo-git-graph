@@ -58,10 +58,3 @@ export const columnWidths = computed(() => {
 export const selectedBranch = signal<CommitBranchType | undefined>(undefined);
 export const showRemoteBranch = signal<boolean>(true);
 export const maxCommits = signal<number>(viewState.initialLoadCommits);
-
-/**
- * Bump to refetch `loadBranches` and `loadCommits` in `lib/sync.ts`.
- * This refreshes `branchList`, `headBranch`, and the commit list.
- * Selections (`selectedRepo`, `selectedBranch`) stay unchanged.
- */
-export const refreshToken = signal<number>(0);

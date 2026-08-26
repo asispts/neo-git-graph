@@ -1,5 +1,5 @@
-import { refreshToken } from "@/webview/lib/stores";
+import { refresh } from "@/webview/lib/actions";
 
 export function handleRefresh() {
-  refreshToken.value++;
+  refresh();
 }
