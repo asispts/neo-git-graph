@@ -1,4 +1,5 @@
 import type { ResponseMessage } from "@/types";
+import { handleRpcResponse } from "@/webview/rpc/rpc-client";
 
 import { handleActionResult } from "./handler/action-result";
 import { handleCommitDetails } from "./handler/commit-details";
@@ -53,8 +54,11 @@ function dispatch(msg: ResponseMessage): void {
 }
 
 export function initWebview() {
-  window.addEventListener("message", (e: MessageEvent<ResponseMessage>) => {
-    dispatch(e.data);
+  window.addEventListener("message", (e: MessageEvent<unknown>) => {
+    if (handleRpcResponse(e.data)) {
+      return;
+    }
+    dispatch(e.data as ResponseMessage);
   });
 
   startSync();
