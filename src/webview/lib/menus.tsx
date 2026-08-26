@@ -2,8 +2,8 @@ import type { ComponentChildren } from "preact";
 
 import type { GitCommitNode, GitRef, GitResetMode } from "@/backend/types";
 import { abbrevCommit } from "@/backend/utils/string";
-import { copyToClipboard } from "@/webview/actions/clipboard";
 import { openFormDialog, openRunningDialog, runAction } from "@/webview/lib/actions";
+import { copyToClipboard } from "@/webview/lib/actions/clipboard";
 import type { ContextMenuEntry } from "@/webview/types";
 import { format } from "@/webview/utils/format";
 
