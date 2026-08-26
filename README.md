@@ -59,10 +59,15 @@ Search for `neo-git-graph` in Extensions, or install from:
 
 ## Roadmap
 
-- **v0.6.0:** Migrate the legacy webview to Preact
-- **v0.7.0:** Refine the extension and backend APIs after the webview migration
-- **v0.8.0:** Redesign the user interface and commit list
-- **v0.9.0 and later:** Close the main feature gaps with the original Git Graph
+- **v0.6.0 (latest):**
+  - Migrate the legacy webview to Preact
+- **v0.7.0 (next):**
+  - Introduce RPC protocol
+  - Refine the extension and backend APIs after the webview migration
+- **v0.8.0:**
+  - Redesign the user interface and commit list
+- **v0.9.0 and later:**
+  - Close the main feature gaps with the original Git Graph
 
 ## Configuration
 
