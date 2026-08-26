@@ -1,9 +1,12 @@
 import type { RpcMethod, RpcMethodMap, RpcRequest, RpcResponse } from "@/rpc/types";
 import { vscode } from "@/webview/lib/vscode";
 
+const RPC_TIMEOUT_MS = 30_000;
+
 type PendingRequest = {
   resolve: (value: unknown) => void;
   reject: (value: unknown) => void;
+  timeout: ReturnType<typeof setTimeout>;
 };
 const requests = new Map<string, PendingRequest>();
 
@@ -15,9 +18,16 @@ export const rpc = {
     const id = crypto.randomUUID();
 
     return new Promise((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        if (requests.delete(id)) {
+          reject(new Error(`RPC request timed out: ${method}`));
+        }
+      }, RPC_TIMEOUT_MS);
+
       requests.set(id, {
         resolve: (value) => resolve(value as RpcMethodMap[M]["result"]),
-        reject
+        reject,
+        timeout
       });
 
       const request = {
@@ -27,7 +37,13 @@ export const rpc = {
         params
       } as RpcRequest<M>;
 
-      vscode.postMessage(request);
+      try {
+        vscode.postMessage(request);
+      } catch (error) {
+        clearTimeout(timeout);
+        requests.delete(id);
+        reject(error);
+      }
     });
   }
 };
@@ -42,6 +58,7 @@ export function handleRpcResponse(message: unknown): boolean {
     return true;
   }
   requests.delete(message.id);
+  clearTimeout(request.timeout);
 
   if (message.success) {
     request.resolve(message.result);

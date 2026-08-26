@@ -1,5 +1,5 @@
 import { openErrorDialog } from "@/webview/lib/actions";
-import { rpc } from "@/webview/rpc/rpc-client";
+import { rpc } from "@/webview/lib/rpc/rpc-client";
 
 export async function copyToClipboard(type: string, data: string) {
   try {

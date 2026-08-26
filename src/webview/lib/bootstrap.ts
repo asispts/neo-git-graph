@@ -1,5 +1,5 @@
 import type { ResponseMessage } from "@/types";
-import { handleRpcResponse } from "@/webview/rpc/rpc-client";
+import { handleRpcResponse } from "@/webview/lib/rpc/rpc-client";
 
 import { handleActionResult } from "./handler/action-result";
 import { handleCommitDetails } from "./handler/commit-details";
