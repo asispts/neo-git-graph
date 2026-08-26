@@ -6,6 +6,8 @@ import type { GitCommitNode } from "@/backend/types";
 import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
 import type { GitGraphViewState } from "@/types";
 
+import { vscodeApi } from "@tests/webview/setup";
+
 let commitMenu: typeof import("@/webview/lib/menus").commitMenu;
 let stores: typeof import("@/webview/lib/stores");
 
@@ -44,7 +46,7 @@ beforeAll(async () => {
 });
 
 beforeEach(() => {
-  stores.actionRequest.value = null;
+  vscodeApi.postMessage.mockClear();
   stores.dialog.value = null;
   stores.selectedRepo.value = "repo";
 });
@@ -75,7 +77,7 @@ describe.each(["cherrypickCommit", "revertCommit"] as const)("%s menu", (command
 
     expect(form.inputs).toEqual([]);
     form.onSubmit([]);
-    expect(stores.actionRequest.value?.action).toEqual({
+    expect(vscodeApi.postMessage).toHaveBeenCalledWith({
       command,
       repo: "repo",
       commitHash: "commit",
@@ -97,7 +99,7 @@ describe.each(["cherrypickCommit", "revertCommit"] as const)("%s menu", (command
       }
     ]);
     form.onSubmit(["2"]);
-    expect(stores.actionRequest.value?.action).toEqual({
+    expect(vscodeApi.postMessage).toHaveBeenCalledWith({
       command,
       repo: "repo",
       commitHash: "commit",

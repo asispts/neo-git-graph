@@ -2,7 +2,6 @@ import { computed, effect } from "@preact/signals";
 
 import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import {
-  actionRequest,
   diffRequest,
   expandedCommit,
   maxCommits,
@@ -117,15 +116,6 @@ export function startSync() {
       repo: request.repo,
       state: request.state
     });
-  });
-
-  effect(() => {
-    const request = actionRequest.value;
-    if (request === null) {
-      return;
-    }
-
-    vscode.postMessage(request.action);
   });
 
   effect(() => {

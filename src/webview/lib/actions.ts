@@ -3,7 +3,6 @@ import type { ComponentChildren } from "preact";
 
 import type { ActionRequest, GitFileChange } from "@/backend/types";
 import {
-  actionRequest,
   branchList,
   commitDetails,
   commitHead,
@@ -23,6 +22,7 @@ import {
   showRemoteBranch,
   uncommittedChanges
 } from "@/webview/lib/stores";
+import { vscode } from "@/webview/lib/vscode";
 import type {
   ActionCommand,
   CommitBranchType,
@@ -206,10 +206,7 @@ export function runAction(command: ActionCommand) {
     return;
   }
 
-  actionRequest.value = {
-    action: { ...command, repo } as ActionRequest,
-    token: (actionRequest.value?.token ?? 0) + 1
-  };
+  vscode.postMessage({ ...command, repo } as ActionRequest);
 }
 
 /** Ask the editor to open the diff of a file of a commit. */

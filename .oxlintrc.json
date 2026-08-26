@@ -89,8 +89,8 @@
       }
     },
     {
-      // Response handlers reduce state only. Requests belong in lib/sync.ts.
-      "files": ["src/webview/lib/handler/**/*.ts", "src/webview/lib/actions.ts"],
+      // Response handlers reduce state only. Actions start requests.
+      "files": ["src/webview/lib/handler/**/*.ts"],
       "rules": {
         "eslint/no-restricted-imports": [
           "error",
@@ -98,7 +98,7 @@
             "paths": [
               {
                 "name": "@/webview/lib/vscode",
-                "message": "Handlers and actions write signals only. Post messages from lib/sync.ts."
+                "message": "Response handlers write state only. Start requests from actions."
               }
             ],
             "patterns": ["*/vscode", "./vscode"]

@@ -3,7 +3,6 @@ import { computed, signal } from "@preact/signals";
 import type { GitCommitDetails, GitCommitNode } from "@/backend/types";
 import type { GitRepoSet } from "@/types";
 import type {
-  ActionRequestState,
   CommitBranchType,
   ContextMenuState,
   DialogState,
@@ -30,8 +29,6 @@ export const expandedCommit = signal<string | null>(null);
 export const commitDetails = signal<GitCommitDetails | null>(null);
 /** Last file diff the user asked for. `lib/sync.ts` sends it to the editor. */
 export const diffRequest = signal<DiffRequest | null>(null);
-/** Last git action the user confirmed. `lib/sync.ts` sends it to the editor. */
-export const actionRequest = signal<ActionRequestState | null>(null);
 
 /** The open context menu, or `null` when none is open. Only one opens at a time. */
 export const contextMenu = signal<ContextMenuState | null>(null);

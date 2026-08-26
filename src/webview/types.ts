@@ -66,13 +66,6 @@ type DistributiveOmit<T, K extends PropertyKey> = T extends unknown ? Omit<T, K>
 /** An `ActionRequest` before `lib/actions.ts` fills in the selected repo. */
 export type ActionCommand = DistributiveOmit<ActionRequest, "repo">;
 
-/** A git action the user confirmed. `lib/sync.ts` sends it to the editor. */
-export type ActionRequestState = {
-  action: ActionRequest;
-  /** Bumped per request, so that running the same action twice is sent twice. */
-  token: number;
-};
-
 /** State of one repo the user changed, for example its column widths. */
 export type RepoStateRequest = {
   repo: string;
