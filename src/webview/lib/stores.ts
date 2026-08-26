@@ -6,7 +6,6 @@ import type {
   CommitBranchType,
   ContextMenuState,
   DialogState,
-  DiffRequest,
   RepoStateRequest
 } from "@/webview/types";
 import { isColumnWidths } from "@/webview/utils/columns";
@@ -27,8 +26,6 @@ export const uncommittedChanges = signal<number>(0);
 export const expandedCommit = signal<string | null>(null);
 /** Details of `expandedCommit`, or `null` while they load. */
 export const commitDetails = signal<GitCommitDetails | null>(null);
-/** Last file diff the user asked for. `lib/sync.ts` sends it to the editor. */
-export const diffRequest = signal<DiffRequest | null>(null);
 
 /** The open context menu, or `null` when none is open. Only one opens at a time. */
 export const contextMenu = signal<ContextMenuState | null>(null);

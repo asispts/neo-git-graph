@@ -9,7 +9,6 @@ import {
   commitList,
   contextMenu,
   dialog,
-  diffRequest,
   expandedCommit,
   headBranch,
   maxCommits,
@@ -216,10 +215,12 @@ export function viewDiff(commitHash: string, file: GitFileChange) {
     return;
   }
 
-  diffRequest.value = {
+  vscode.postMessage({
+    command: "viewDiff",
     repo,
     commitHash,
-    file,
-    token: (diffRequest.value?.token ?? 0) + 1
-  };
+    oldFilePath: file.oldFilePath,
+    newFilePath: file.newFilePath,
+    type: file.type
+  });
 }

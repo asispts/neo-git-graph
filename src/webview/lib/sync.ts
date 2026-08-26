@@ -2,7 +2,6 @@ import { computed, effect } from "@preact/signals";
 
 import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import {
-  diffRequest,
   expandedCommit,
   maxCommits,
   refreshToken,
@@ -115,22 +114,6 @@ export function startSync() {
       command: "saveRepoState",
       repo: request.repo,
       state: request.state
-    });
-  });
-
-  effect(() => {
-    const request = diffRequest.value;
-    if (request === null) {
-      return;
-    }
-
-    vscode.postMessage({
-      command: "viewDiff",
-      repo: request.repo,
-      commitHash: request.commitHash,
-      oldFilePath: request.file.oldFilePath,
-      newFilePath: request.file.newFilePath,
-      type: request.file.type
     });
   });
 }
