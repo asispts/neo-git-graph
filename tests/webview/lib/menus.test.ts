@@ -4,7 +4,8 @@ import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { GitCommitNode } from "@/backend/types";
 import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
-import type { GitGraphViewState } from "@/types";
+import type { WebviewConfig } from "@/types";
+import { initializeWebviewConfig } from "@/webview/lib/webview-config";
 
 import { vscodeApi } from "@tests/webview/setup";
 
@@ -22,20 +23,18 @@ const commit: GitCommitNode = {
 };
 
 beforeAll(async () => {
-  const state: GitGraphViewState = {
+  const config: WebviewConfig = {
     autoCenterCommitDetailsView: true,
     dateFormat: "Date & Time",
     fetchAvatars: false,
     graphColours: [],
     graphStyle: "rounded",
     initialLoadCommits: 300,
-    lastActiveRepo: null,
     loadMoreCommits: 100,
     locale: "en",
-    repos: {},
     showCurrentBranchByDefault: false
   };
-  Object.defineProperty(globalThis, "viewState", { value: state, configurable: true });
+  initializeWebviewConfig(config);
   Object.defineProperty(window, "l10n", {
     value: new Proxy({}, { get: (_target, key) => String(key) }) as LocalizedStrings,
     configurable: true

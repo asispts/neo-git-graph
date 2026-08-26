@@ -8,7 +8,6 @@ import { handleLoadCommits } from "./handler/load-commits";
 import { handleLoadRepos } from "./handler/load-repo";
 import { handleRefresh } from "./handler/refresh";
 import { handleViewDiff } from "./handler/view-diff";
-import { vscode } from "./vscode";
 
 type Command = ResponseMessage["command"];
 
@@ -57,6 +56,4 @@ export function initWebview() {
     }
     dispatch(e.data as ResponseMessage);
   });
-
-  vscode.postMessage({ command: "loadRepos", check: false });
 }

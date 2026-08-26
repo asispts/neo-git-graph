@@ -1,3 +1,5 @@
+import { getWebviewConfig } from "@/webview/lib/webview-config";
+
 /** Colour of a line or dot that is not committed yet. */
 export const UNCOMMITTED_COLOUR = "#808080";
 
@@ -6,6 +8,6 @@ export const UNCOMMITTED_COLOUR = "#808080";
  * an empty palette falls back to the CSS `--color-graph` token.
  */
 export function branchColour(index: number): string | undefined {
-  const palette = viewState.graphColours;
+  const palette = getWebviewConfig().graphColours;
   return palette.length === 0 ? undefined : palette[index % palette.length];
 }

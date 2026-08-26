@@ -1,7 +1,7 @@
 import { computed, signal } from "@preact/signals";
 
 import type { GitCommitDetails, GitCommitNode } from "@/backend/types";
-import type { GitRepoSet } from "@/types";
+import type { GitRepoSet, WebviewConfig } from "@/types";
 import type { CommitBranchType, ContextMenuState, DialogState } from "@/webview/types";
 import { isColumnWidths } from "@/webview/utils/columns";
 
@@ -42,7 +42,7 @@ export const activeSource = computed(() => {
 });
 
 /** State the editor keeps per repo. `lib/handler/load-repo.ts` refreshes it. */
-export const repoStates = signal<GitRepoSet>(viewState.repos);
+export const repoStates = signal<GitRepoSet>({});
 
 /**
  * Widths of the resizable columns of the selected repo, or `null` while the
@@ -57,4 +57,8 @@ export const columnWidths = computed(() => {
 
 export const selectedBranch = signal<CommitBranchType | undefined>(undefined);
 export const showRemoteBranch = signal<boolean>(true);
-export const maxCommits = signal<number>(viewState.initialLoadCommits);
+export const maxCommits = signal<number>(0);
+
+export function initializeStores(config: WebviewConfig): void {
+  maxCommits.value = config.initialLoadCommits;
+}

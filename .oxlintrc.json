@@ -81,11 +81,6 @@
       "env": {
         "node": false,
         "browser": true
-      },
-      // Injected into the page by the extension host, see webviewHtml.ts.
-      "globals": {
-        "viewState": "readonly",
-        "l10n": "readonly"
       }
     },
     {

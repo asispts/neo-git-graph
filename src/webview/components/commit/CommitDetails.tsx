@@ -7,6 +7,7 @@ import { Icon } from "@/webview/components/ui/Icons";
 import { Loading } from "@/webview/components/ui/Loading";
 import { COMMIT_DETAILS_HEIGHT, ROW_HEIGHT } from "@/webview/constants";
 import { closeCommitDetails } from "@/webview/lib/actions";
+import { getWebviewConfig } from "@/webview/lib/webview-config";
 import { getFullDate } from "@/webview/utils/date";
 import { buildFileTree } from "@/webview/utils/fileTree";
 
@@ -25,7 +26,7 @@ function useScrollIntoView(row: RefObject<HTMLTableRowElement>) {
 
     const box = row.current.getBoundingClientRect();
 
-    if (viewState.autoCenterCommitDetailsView) {
+    if (getWebviewConfig().autoCenterCommitDetailsView) {
       window.scrollBy({ top: box.top + box.height / 2 - window.innerHeight / 2 });
       return;
     }

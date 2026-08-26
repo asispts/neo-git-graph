@@ -1,7 +1,17 @@
+import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
+import type { WebviewConfig } from "@/types";
+
 export type RpcMethodMap = {
   "clipboard.copy": {
     params: string;
     result: boolean;
+  };
+  "webview.initialize": {
+    params: null;
+    result: {
+      l10n: LocalizedStrings;
+      webviewConfig: WebviewConfig;
+    };
   };
 };
 

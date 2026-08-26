@@ -4,26 +4,25 @@ import { h, render } from "preact";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import type { GitRef } from "@/backend/types";
-import type { GitGraphViewState } from "@/types";
+import type { WebviewConfig } from "@/types";
+import { initializeWebviewConfig } from "@/webview/lib/webview-config";
 
 let RefLabel: typeof import("@/webview/components/commit/RefLabel").RefLabel;
 let container: HTMLDivElement;
 
 beforeAll(async () => {
-  const state: GitGraphViewState = {
+  const config: WebviewConfig = {
     autoCenterCommitDetailsView: true,
     dateFormat: "Date & Time",
     fetchAvatars: false,
     graphColours: [],
     graphStyle: "rounded",
     initialLoadCommits: 300,
-    lastActiveRepo: null,
     loadMoreCommits: 100,
     locale: "en",
-    repos: {},
     showCurrentBranchByDefault: false
   };
-  Object.defineProperty(globalThis, "viewState", { value: state, configurable: true });
+  initializeWebviewConfig(config);
   ({ RefLabel } = await import("@/webview/components/commit/RefLabel"));
 });
 

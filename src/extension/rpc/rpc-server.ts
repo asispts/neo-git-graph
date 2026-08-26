@@ -1,27 +1,33 @@
 import * as vscode from "vscode";
 
-import type { RpcMethod, RpcMethodMap, RpcResponse } from "@/rpc/types";
+import type { RpcMethod, RpcResponse } from "@/rpc/types";
 
-type RpcHandlers = {
-  [M in RpcMethod]: (
-    params: unknown
-  ) => RpcMethodMap[M]["result"] | Promise<RpcMethodMap[M]["result"]>;
+import { rpcHandlers } from "./handlers";
+
+function isRpcMethod(method: string): method is RpcMethod {
+  return Object.hasOwn(rpcHandlers, method);
+}
+
+type RpcRequestEnvelope = {
+  kind: "rpc.request";
+  id: string;
+  method: string;
+  params: unknown;
 };
 
-const handlers = {
-  "clipboard.copy": async (params: unknown) => {
-    if (typeof params !== "string") {
-      throw new Error("Invalid copyToClipboard parameters");
-    }
-
-    try {
-      await vscode.env.clipboard.writeText(params);
-      return true;
-    } catch {
-      return false;
-    }
-  }
-} satisfies RpcHandlers;
+function isRpcRequest(message: unknown): message is RpcRequestEnvelope {
+  return (
+    typeof message === "object" &&
+    message !== null &&
+    "kind" in message &&
+    message.kind === "rpc.request" &&
+    "id" in message &&
+    typeof message.id === "string" &&
+    "method" in message &&
+    typeof message.method === "string" &&
+    "params" in message
+  );
+}
 
 export function createRpcServer() {
   return {
@@ -44,7 +50,7 @@ export function createRpcServer() {
         }
 
         try {
-          const result = await handlers[message.method](message.params);
+          const result = await rpcHandlers[message.method](message.params);
 
           const response: RpcResponse = {
             kind: "rpc.response",
@@ -69,29 +75,4 @@ export function createRpcServer() {
       return listener;
     }
   };
-}
-
-function isRpcMethod(method: string): method is RpcMethod {
-  return Object.hasOwn(handlers, method);
-}
-
-type RpcRequestEnvelope = {
-  kind: "rpc.request";
-  id: string;
-  method: string;
-  params: unknown;
-};
-
-function isRpcRequest(message: unknown): message is RpcRequestEnvelope {
-  return (
-    typeof message === "object" &&
-    message !== null &&
-    "kind" in message &&
-    message.kind === "rpc.request" &&
-    "id" in message &&
-    typeof message.id === "string" &&
-    "method" in message &&
-    typeof message.method === "string" &&
-    "params" in message
-  );
 }

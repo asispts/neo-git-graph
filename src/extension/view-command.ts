@@ -32,9 +32,10 @@ export function createViewCommand(ctx: vscode.ExtensionContext) {
       }
     );
 
-    webPanel.webview.html = createWevbviewHtml(ctx, webPanel.webview);
     const messageProtocolAttachment = messageProtocol.attach(webPanel);
     const rpcListener = rpcServer.attach(webPanel.webview);
+
+    webPanel.webview.html = createWevbviewHtml(ctx, webPanel.webview);
 
     webPanel.onDidDispose(() => {
       messageProtocolAttachment.dispose();

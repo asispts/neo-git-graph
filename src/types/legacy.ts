@@ -16,30 +16,12 @@ export type GitRepoState = {
   columnWidths: number[] | null;
 };
 
-export type GitGraphViewState = {
-  autoCenterCommitDetailsView: boolean;
-  dateFormat: DateFormat;
-  fetchAvatars: boolean;
-  graphColours: string[];
-  graphStyle: GraphStyle;
-  initialLoadCommits: number;
-  lastActiveRepo: string | null;
-  loadMoreCommits: number;
-  /** VS Code display language (vscode.env.language), used for Intl date formatting */
-  locale: string;
-  repos: GitRepoSet;
-  showCurrentBranchByDefault: boolean;
-};
-
 export type Avatar = {
   image: string;
   timestamp: number;
   identicon: boolean;
 };
 export type AvatarCache = { [email: string]: Avatar };
-
-export type DateFormat = "Date & Time" | "Date Only" | "Relative";
-export type GraphStyle = "rounded" | "angular";
 
 /* Infrastructure Request / Response Messages */
 
