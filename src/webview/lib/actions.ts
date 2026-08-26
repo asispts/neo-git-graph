@@ -118,10 +118,17 @@ export function toggleCommitDetails(hash: string) {
     return;
   }
 
+  const repo = selectedRepo.value;
   batch(() => {
     expandedCommit.value = hash;
     commitDetails.value = null;
   });
+
+  if (repo === undefined) {
+    return;
+  }
+
+  vscode.postMessage({ command: "commitDetails", repo, commitHash: hash });
 }
 
 /**

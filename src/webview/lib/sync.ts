@@ -2,7 +2,6 @@ import { computed, effect } from "@preact/signals";
 
 import { SHOW_ALL_BRANCHES } from "@/webview/constants";
 import {
-  expandedCommit,
   maxCommits,
   refreshToken,
   selectedBranch,
@@ -38,16 +37,6 @@ export const commitQuery = computed(() => {
     maxCommits: maxCommits.value,
     token: refreshToken.value
   };
-});
-
-export const commitDetailsQuery = computed(() => {
-  const repo = selectedRepo.value;
-  const commitHash = expandedCommit.value;
-  if (repo === undefined || commitHash === null) {
-    return null;
-  }
-
-  return { repo, commitHash };
 });
 
 export function startSync() {
@@ -87,19 +76,6 @@ export function startSync() {
       maxCommits: query.maxCommits,
       showRemoteBranches: query.showRemoteBranches,
       hard: true
-    });
-  });
-
-  effect(() => {
-    const query = commitDetailsQuery.value;
-    if (query === null) {
-      return;
-    }
-
-    vscode.postMessage({
-      command: "commitDetails",
-      repo: query.repo,
-      commitHash: query.commitHash
     });
   });
 }
