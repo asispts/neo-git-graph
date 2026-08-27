@@ -1,5 +1,14 @@
 import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
-import type { WebviewConfig } from "@/types";
+import type { GitRepo, WebviewConfig } from "@/types";
+
+export type WebviewInitialize = {
+  l10n: LocalizedStrings;
+  config: WebviewConfig;
+};
+
+export type ScanRepoResult = {
+  repos: GitRepo[];
+};
 
 export type RpcMethodMap = {
   "clipboard.copy": {
@@ -8,10 +17,11 @@ export type RpcMethodMap = {
   };
   "webview.initialize": {
     params: null;
-    result: {
-      l10n: LocalizedStrings;
-      config: WebviewConfig;
-    };
+    result: WebviewInitialize;
+  };
+  "repo.scan": {
+    params: null;
+    result: ScanRepoResult;
   };
 };
 

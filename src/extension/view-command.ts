@@ -10,9 +10,7 @@ export function createViewCommand(ctx: vscode.ExtensionContext) {
   const messageProtocol = createMessageProtocol(ctx);
   const rpcServer = createRpcServer();
 
-  return async () => {
-    await messageProtocol.ready;
-
+  return () => {
     if (currentPanel) {
       currentPanel.reveal(vscode.window.activeTextEditor?.viewColumn);
       return;

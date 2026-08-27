@@ -6,7 +6,6 @@ import { App } from "./App";
 import { initDispatcher } from "./lib/dispatcher";
 import { rpc } from "./lib/rpc/rpc-client";
 import { initializeStores } from "./lib/stores";
-import { vscode } from "./lib/vscode";
 import { initializeWebviewConfig } from "./lib/webview-config";
 
 void main().catch((error: unknown) => {
@@ -25,8 +24,6 @@ async function main() {
   window.l10n = l10n;
   initializeWebviewConfig(config);
   initializeStores(config.initialLoadCommits);
-
-  vscode.postMessage({ command: "loadRepos", check: false });
 
   render(<App />, document.getElementById("app")!);
 }

@@ -5,7 +5,6 @@ import type { GitRepoSet } from "@/types";
 import type { CommitBranchType, ContextMenuState, DialogState } from "@/webview/types";
 import { isColumnWidths } from "@/webview/utils/columns";
 
-export const repoList = signal<Array<string> | undefined>(undefined);
 export const selectedRepo = signal<string | undefined>(undefined);
 export const branchList = signal<Array<string> | undefined>(undefined);
 export const headBranch = signal<string | null>(null);

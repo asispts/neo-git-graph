@@ -5,7 +5,6 @@ import { handleActionResult } from "./handler/action-result";
 import { handleCommitDetails } from "./handler/commit-details";
 import { handleLoadBranches } from "./handler/load-branches";
 import { handleLoadCommits } from "./handler/load-commits";
-import { handleLoadRepos } from "./handler/load-repo";
 import { handleRefresh } from "./handler/refresh";
 import { handleViewDiff } from "./handler/view-diff";
 
@@ -30,7 +29,6 @@ const handlers: Handlers = {
   resetToCommit: handleActionResult,
   revertCommit: handleActionResult,
   commitDetails: handleCommitDetails,
-  loadRepos: handleLoadRepos,
   loadBranches: handleLoadBranches,
   loadCommits: handleLoadCommits,
   refresh: handleRefresh,

@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 
 import { getWebviewLocalizedStrings } from "@/old-extension/l10n/webviewL10n";
-import type { WebviewConfig } from "@/types";
+import type { WebviewConfig, WebviewInitialize } from "@/types";
 
-export function webviewInitialize() {
+export async function webviewInitialize(): Promise<WebviewInitialize> {
   const config: WebviewConfig = {
     autoCenterCommitDetailsView: true,
     dateFormat: "Date & Time",
