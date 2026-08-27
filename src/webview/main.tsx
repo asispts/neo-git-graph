@@ -3,7 +3,7 @@ import "./styles.css";
 import { render } from "preact";
 
 import { App } from "./App";
-import { initWebview } from "./lib/bootstrap";
+import { initDispatcher } from "./lib/dispatcher";
 import { rpc } from "./lib/rpc/rpc-client";
 import { initializeStores } from "./lib/stores";
 import { vscode } from "./lib/vscode";
@@ -19,12 +19,12 @@ void main().catch((error: unknown) => {
 });
 
 async function main() {
-  initWebview();
+  initDispatcher();
 
   const { l10n, webviewConfig } = await rpc.call("webview.initialize", null);
   window.l10n = l10n;
   initializeWebviewConfig(webviewConfig);
-  initializeStores(webviewConfig);
+  initializeStores(webviewConfig.initialLoadCommits);
 
   vscode.postMessage({ command: "loadRepos", check: false });
 

@@ -37,6 +37,15 @@ const handlers: Handlers = {
   viewDiff: handleViewDiff
 };
 
+export function initDispatcher() {
+  window.addEventListener("message", (e: MessageEvent<unknown>) => {
+    if (handleRpcResponse(e.data)) {
+      return;
+    }
+    dispatch(e.data as ResponseMessage);
+  });
+}
+
 function dispatch(msg: ResponseMessage): void {
   const handle = handlers[msg.command] as ((m: ResponseMessage) => void) | undefined;
 
@@ -47,13 +56,4 @@ function dispatch(msg: ResponseMessage): void {
   }
 
   handle(msg);
-}
-
-export function initWebview() {
-  window.addEventListener("message", (e: MessageEvent<unknown>) => {
-    if (handleRpcResponse(e.data)) {
-      return;
-    }
-    dispatch(e.data as ResponseMessage);
-  });
 }

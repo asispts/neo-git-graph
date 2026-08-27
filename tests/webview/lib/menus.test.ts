@@ -3,11 +3,9 @@
 import { beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 import type { GitCommitNode } from "@/backend/types";
-import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
-import type { WebviewConfig } from "@/types";
-import { initializeWebviewConfig } from "@/webview/lib/webview-config";
 
 import { vscodeApi } from "@tests/webview/setup";
+import { setupWebviewTest } from "@tests/webview/test-utils";
 
 let commitMenu: typeof import("@/webview/lib/menus").commitMenu;
 let stores: typeof import("@/webview/lib/stores");
@@ -23,22 +21,7 @@ const commit: GitCommitNode = {
 };
 
 beforeAll(async () => {
-  const config: WebviewConfig = {
-    autoCenterCommitDetailsView: true,
-    dateFormat: "Date & Time",
-    fetchAvatars: false,
-    graphColours: [],
-    graphStyle: "rounded",
-    initialLoadCommits: 300,
-    loadMoreCommits: 100,
-    locale: "en",
-    showCurrentBranchByDefault: false
-  };
-  initializeWebviewConfig(config);
-  Object.defineProperty(window, "l10n", {
-    value: new Proxy({}, { get: (_target, key) => String(key) }) as LocalizedStrings,
-    configurable: true
-  });
+  setupWebviewTest();
 
   ({ commitMenu } = await import("@/webview/lib/menus"));
   stores = await import("@/webview/lib/stores");

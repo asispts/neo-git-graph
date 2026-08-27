@@ -4,25 +4,14 @@ import { h, render } from "preact";
 import { afterEach, beforeAll, describe, expect, it } from "vitest";
 
 import type { GitCommitNode } from "@/backend/types";
-import type { WebviewConfig } from "@/types";
-import { initializeWebviewConfig } from "@/webview/lib/webview-config";
+
+import { setupWebviewTest } from "@tests/webview/test-utils";
 
 let CommitRow: typeof import("@/webview/components/commit/CommitRow").CommitRow;
 let container: HTMLTableSectionElement;
 
 beforeAll(async () => {
-  const config: WebviewConfig = {
-    autoCenterCommitDetailsView: true,
-    dateFormat: "Date & Time",
-    fetchAvatars: false,
-    graphColours: [],
-    graphStyle: "rounded",
-    initialLoadCommits: 300,
-    loadMoreCommits: 100,
-    locale: "en",
-    showCurrentBranchByDefault: false
-  };
-  initializeWebviewConfig(config);
+  setupWebviewTest();
   ({ CommitRow } = await import("@/webview/components/commit/CommitRow"));
 });
 
