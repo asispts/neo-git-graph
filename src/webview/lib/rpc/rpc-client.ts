@@ -1,4 +1,4 @@
-import type { RpcMethod, RpcMethodMap, RpcRequest, RpcResponse } from "@/rpc/types";
+import type { RpcMethod, RpcMethodMap, RpcRequest, RpcResponse } from "@/types";
 import { vscode } from "@/webview/lib/vscode";
 
 const RPC_TIMEOUT_MS = 30_000;

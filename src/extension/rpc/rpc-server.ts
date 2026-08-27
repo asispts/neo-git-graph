@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import type { RpcMethod, RpcResponse } from "@/rpc/types";
+import type { RpcMethod, RpcResponse } from "@/types";
 
 import { rpcHandlers } from "./handlers";
 

@@ -10,7 +10,7 @@ export type RpcMethodMap = {
     params: null;
     result: {
       l10n: LocalizedStrings;
-      webviewConfig: WebviewConfig;
+      config: WebviewConfig;
     };
   };
 };

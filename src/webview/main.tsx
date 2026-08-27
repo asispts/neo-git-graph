@@ -21,10 +21,10 @@ void main().catch((error: unknown) => {
 async function main() {
   initDispatcher();
 
-  const { l10n, webviewConfig } = await rpc.call("webview.initialize", null);
+  const { l10n, config } = await rpc.call("webview.initialize", null);
   window.l10n = l10n;
-  initializeWebviewConfig(webviewConfig);
-  initializeStores(webviewConfig.initialLoadCommits);
+  initializeWebviewConfig(config);
+  initializeStores(config.initialLoadCommits);
 
   vscode.postMessage({ command: "loadRepos", check: false });
 

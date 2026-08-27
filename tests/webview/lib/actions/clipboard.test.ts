@@ -3,7 +3,7 @@
 import { beforeAll, beforeEach, expect, it, vi } from "vitest";
 
 import type { GitCommitNode } from "@/backend/types";
-import type { RpcRequest, RpcResponse } from "@/rpc/types";
+import type { RpcRequest, RpcResponse } from "@/types";
 import { commitMenu } from "@/webview/lib/menus";
 import * as stores from "@/webview/lib/stores";
 

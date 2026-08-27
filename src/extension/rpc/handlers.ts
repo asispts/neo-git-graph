@@ -1,6 +1,6 @@
 import { copyToClipboard } from "@/extension/handlers/clipboard";
 import { webviewInitialize } from "@/extension/handlers/initialize";
-import { RpcMethod, RpcMethodMap } from "@/rpc/types";
+import type { RpcMethod, RpcMethodMap } from "@/types";
 
 type RpcHandlers = {
   [M in RpcMethod]: (

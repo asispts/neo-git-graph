@@ -1,4 +1,5 @@
-import type { DateFormat, GraphStyle } from "./types";
+export type DateFormat = "Date & Time" | "Date Only" | "Relative";
+export type GraphStyle = "rounded" | "angular";
 
 export type WebviewConfig = Readonly<{
   autoCenterCommitDetailsView: boolean;

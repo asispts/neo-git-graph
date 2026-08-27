@@ -4,7 +4,7 @@ import { getWebviewLocalizedStrings } from "@/old-extension/l10n/webviewL10n";
 import type { WebviewConfig } from "@/types";
 
 export function webviewInitialize() {
-  const webviewConfig: WebviewConfig = {
+  const config: WebviewConfig = {
     autoCenterCommitDetailsView: true,
     dateFormat: "Date & Time",
     fetchAvatars: false,
@@ -18,6 +18,6 @@ export function webviewInitialize() {
 
   return {
     l10n: getWebviewLocalizedStrings(),
-    webviewConfig
+    config
   };
 }
