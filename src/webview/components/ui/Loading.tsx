@@ -35,9 +35,9 @@ export function Loading({ class: className, variant = "inline" }: LoadingProps) 
         </svg>
       </div>
       {page ? (
-        <h1 class="text-ui font-medium text-fg">{window.l10n.loading}</h1>
+        <h1 class="text-ui font-medium text-fg">Loading ...</h1>
       ) : (
-        <span class="text-ui font-medium text-fg">{window.l10n.loading}</span>
+        <span class="text-ui font-medium text-fg">Loading ...</span>
       )}
       {page && (
         <div class="mx-auto mt-3 h-px w-12 overflow-hidden bg-line-soft" aria-hidden="true">
