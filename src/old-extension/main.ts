@@ -2,11 +2,11 @@ import * as vscode from "vscode";
 
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { getGitVersion } from "@/backend/utils/git";
-import { config } from "@/config";
+import { config } from "@/old-extension/config";
 import { initExtension } from "@/old-extension/initExtension";
+import { StatusBarItem } from "@/old-extension/statusBarItem";
 import { logger } from "@/old-extension/utils/logger";
 import { watchForRepos } from "@/old-extension/watchForRepos";
-import { StatusBarItem } from "@/statusBarItem";
 
 export async function activate(ctx: vscode.ExtensionContext) {
   logger.init(ctx);

@@ -113,7 +113,7 @@ afterAll(() => {
 
 let watcher: ReturnType<typeof watchForRepos> | undefined;
 let onReposFound: ReturnType<typeof vi.fn<InitExtension>>;
-let mockStatusBarItem: import("@/statusBarItem").StatusBarItem;
+let mockStatusBarItem: import("@/old-extension/statusBarItem").StatusBarItem;
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -123,7 +123,7 @@ beforeEach(() => {
   mockStatusBarItem = {
     refresh: vi.fn(),
     setNumRepos: vi.fn()
-  } as unknown as import("@/statusBarItem").StatusBarItem;
+  } as unknown as import("@/old-extension/statusBarItem").StatusBarItem;
   watcher = undefined;
 });
 

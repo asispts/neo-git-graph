@@ -1,14 +1,14 @@
 import * as vscode from "vscode";
 
-import { AvatarManager } from "@/avatarManager";
 import { gitClientFactory } from "@/backend/gitClient";
-import { config } from "@/config";
-import { DiffDocProvider } from "@/diffDocProvider";
-import { ExtensionState } from "@/extensionState";
+import { AvatarManager } from "@/old-extension/avatarManager";
+import { config } from "@/old-extension/config";
+import { DiffDocProvider } from "@/old-extension/diffDocProvider";
+import { ExtensionState } from "@/old-extension/extensionState";
 import { registerMessageHandlers } from "@/old-extension/messageHandler";
+import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { createRepoManager } from "@/old-extension/repoManager";
 import { WebviewBridge, webviewBridgeFactory } from "@/old-extension/webviewBridge";
-import { RepoFileWatcher } from "@/repoFileWatcher";
 
 export function createMessageProtocol(ctx: vscode.ExtensionContext) {
   const extensionState = new ExtensionState(ctx);

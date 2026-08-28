@@ -51,15 +51,16 @@ describe("createWebviewPanel", () => {
       bridge: bridge as unknown as import("@/old-extension/webviewBridge").WebviewBridge,
       config: {
         tabIconColourTheme: () => "colour"
-      } as unknown as import("@/config").Config,
-      repoFileWatcher: repoFileWatcher as unknown as import("@/repoFileWatcher").RepoFileWatcher,
+      } as unknown as import("@/old-extension/config").Config,
+      repoFileWatcher:
+        repoFileWatcher as unknown as import("@/old-extension/repoFileWatcher").RepoFileWatcher,
       extensionPath: "/extension",
       extensionState: {
         getLastActiveRepo: () => "/repo"
-      } as unknown as import("@/extensionState").ExtensionState,
+      } as unknown as import("@/old-extension/extensionState").ExtensionState,
       avatarManager: {
         deregisterBridge: vi.fn()
-      } as unknown as import("@/avatarManager").AvatarManager,
+      } as unknown as import("@/old-extension/avatarManager").AvatarManager,
       repoManager: repoManager as unknown as import("@/old-extension/repoManager").RepoManager,
       onDispose: vi.fn(),
       onPanelShown

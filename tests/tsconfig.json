@@ -6,7 +6,7 @@
   },
   "include": [
     "./backend/**/*.ts",
-    "./extension/**/*.ts",
+    "./old-extension/**/*.ts",
     "../src/backend/**/*.ts",
     "../src/old-extension/**/*.ts"
   ]

@@ -2,22 +2,22 @@ import * as path from "node:path";
 
 import * as vscode from "vscode";
 
-import { AvatarManager } from "@/avatarManager";
 import { GitClient, gitClientFactory } from "@/backend/gitClient";
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { buildExtensionUri } from "@/backend/utils/path";
-import { config } from "@/config";
-import { DiffDocProvider } from "@/diffDocProvider";
-import { ExtensionState } from "@/extensionState";
+import { AvatarManager } from "@/old-extension/avatarManager";
+import { config } from "@/old-extension/config";
 import { EXTENSION_NAME } from "@/old-extension/constant/const";
+import { DiffDocProvider } from "@/old-extension/diffDocProvider";
+import { ExtensionState } from "@/old-extension/extensionState";
 import { createMaxDepthTracker } from "@/old-extension/maxDepthTracker";
 import { registerMessageHandlers } from "@/old-extension/messageHandler";
+import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { createRepoManager, RepoManager } from "@/old-extension/repoManager";
+import { StatusBarItem } from "@/old-extension/statusBarItem";
 import { logger } from "@/old-extension/utils/logger";
 import { WebviewBridge, webviewBridgeFactory } from "@/old-extension/webviewBridge";
 import { createWebviewPanel, WebviewPanel } from "@/old-extension/webviewPanel";
-import { RepoFileWatcher } from "@/repoFileWatcher";
-import { StatusBarItem } from "@/statusBarItem";
 
 export type InitExtension = typeof initExtension;
 

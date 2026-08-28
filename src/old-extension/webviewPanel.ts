@@ -1,10 +1,10 @@
 import * as vscode from "vscode";
 
-import { AvatarManager } from "@/avatarManager";
 import { buildExtensionUri } from "@/backend/utils/path";
-import { Config } from "@/config";
-import { ExtensionState } from "@/extensionState";
-import { RepoFileWatcher } from "@/repoFileWatcher";
+import { AvatarManager } from "@/old-extension/avatarManager";
+import { Config } from "@/old-extension/config";
+import { ExtensionState } from "@/old-extension/extensionState";
+import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { GitRepoSet } from "@/types";
 
 import { RepoManager } from "./repoManager";

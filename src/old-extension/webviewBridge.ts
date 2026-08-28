@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { RepoFileWatcher } from "@/repoFileWatcher";
+import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { RequestMessage, ResponseMessage } from "@/types";
 
 export function webviewBridgeFactory(webview: vscode.Webview, repoFileWatcher: RepoFileWatcher) {
