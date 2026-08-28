@@ -42,16 +42,6 @@ export type RequestSelectRepo = {
   repo: string;
 };
 
-export type RequestLoadRepos = {
-  command: "loadRepos";
-  check: boolean;
-};
-export type ResponseLoadRepos = {
-  command: "loadRepos";
-  repos: GitRepoSet;
-  lastActiveRepo: string | null;
-};
-
 export type RequestSaveRepoState = {
   command: "saveRepoState";
   repo: string;
@@ -80,7 +70,6 @@ export type RequestMessage =
   | QueryRequest
   | RequestFetchAvatar
   | RequestSelectRepo
-  | RequestLoadRepos
   | RequestSaveRepoState
   | RequestViewDiff;
 
@@ -88,6 +77,5 @@ export type ResponseMessage =
   | ActionResponse
   | QueryResponse
   | ResponseFetchAvatar
-  | ResponseLoadRepos
   | ResponseViewDiff
   | ResponseRefresh;

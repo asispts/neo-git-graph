@@ -18,7 +18,6 @@ describe("createWebviewPanel", () => {
 
   it("keeps the webview document and refreshes data after a hide-and-show cycle", () => {
     let viewStateHandler: (() => void) | undefined;
-    let repoHandler: ((repos: import("@/types").GitRepoSet, count: number) => void) | undefined;
     const webview = { html: "" };
     const panel = {
       visible: true,
@@ -34,15 +33,8 @@ describe("createWebviewPanel", () => {
     };
     const bridge = { post: vi.fn() };
     const repoFileWatcher = { stop: vi.fn() };
-    const repos = { "/repo": { columnWidths: null } };
     const repoManager = {
-      getRepos: vi.fn(() => repos),
-      registerViewCallback: vi.fn(
-        (handler: (nextRepos: import("@/types").GitRepoSet, count: number) => void) => {
-          repoHandler = handler;
-        }
-      ),
-      deregisterViewCallback: vi.fn()
+      getRepos: vi.fn(() => ({ "/repo": { columnWidths: null } }))
     };
     const onPanelShown = vi.fn();
 
@@ -77,21 +69,9 @@ describe("createWebviewPanel", () => {
     viewStateHandler?.();
 
     expect(onPanelShown).toHaveBeenCalledTimes(1);
-    expect(bridge.post).toHaveBeenNthCalledWith(1, {
-      command: "loadRepos",
-      repos,
-      lastActiveRepo: "/repo"
-    });
-    expect(bridge.post).toHaveBeenNthCalledWith(2, { command: "refresh" });
+    expect(bridge.post).toHaveBeenCalledOnce();
+    expect(bridge.post).toHaveBeenCalledWith({ command: "refresh" });
     expect(webview.html).toBe("<html>initial</html>");
-    expect(mocks.buildWebviewHtml).toHaveBeenCalledTimes(1);
-
-    repoHandler?.({}, 0);
-    expect(bridge.post).toHaveBeenNthCalledWith(3, {
-      command: "loadRepos",
-      repos: {},
-      lastActiveRepo: "/repo"
-    });
     expect(mocks.buildWebviewHtml).toHaveBeenCalledTimes(1);
   });
 });

@@ -161,16 +161,6 @@ export function registerMessageHandlers(
     setCurrentRepo(msg.repo);
   });
 
-  bridge.onMessage("loadRepos", async (msg) => {
-    if (!msg.check || !(await repoManager.checkReposExist())) {
-      bridge.post({
-        command: "loadRepos",
-        repos: repoManager.getRepos(),
-        lastActiveRepo: extensionState.getLastActiveRepo()
-      });
-    }
-  });
-
   bridge.onMessage("fetchAvatar", (msg) => {
     avatarManager.fetchAvatarImage(msg.email, msg.repo, msg.commits);
   });
