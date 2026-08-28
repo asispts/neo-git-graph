@@ -98,7 +98,7 @@ export function CommitDetails({ details }: { details: GitCommitDetails | null })
           style={`height: ${COMMIT_DETAILS_HEIGHT - SEPARATOR_HEIGHT}px`}
         >
           {details === null ? (
-            <Loading />
+            <Loading class="h-full" />
           ) : (
             <div class="flex h-full">
               <Summary details={details} />

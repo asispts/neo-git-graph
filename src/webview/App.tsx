@@ -34,12 +34,12 @@ export function App() {
   }
 
   return (
-    <>
+    <div class="flex min-h-screen flex-col">
       <MainHeader repos={repoState.repos} />
       <GraphView />
       <ScrollShadow />
       <ContextMenu />
       <Dialog />
-    </>
+    </div>
   );
 }
