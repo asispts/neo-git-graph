@@ -2,6 +2,8 @@ import * as vscode from "vscode";
 
 import type { DateFormat, GraphStyle } from "@/types";
 
+type TabIconColourTheme = "colour" | "grey";
+
 export const extConfig = {
   autoCenterCommitDetailsView: (): boolean => getConfig("autoCenterCommitDetailsView", true),
   dateFormat: (): DateFormat => getConfig("dateFormat", "Date & Time"),
@@ -13,7 +15,8 @@ export const extConfig = {
   initialLoadCommits: (): number => getConfig("initialLoadCommits", 300),
   loadMoreCommits: (): number => getConfig("loadMoreCommits", 75),
   maxDepth: (): number => getConfig("maxDepthOfRepoSearch", 0),
-  showCurrentBranchByDefault: (): boolean => getConfig("showCurrentBranchByDefault", false)
+  showCurrentBranchByDefault: (): boolean => getConfig("showCurrentBranchByDefault", false),
+  tabIconColourTheme: (): TabIconColourTheme => getConfig("tabIconColourTheme", "colour")
 };
 
 function getConfig<T>(key: string, defaultValue: T): T {
