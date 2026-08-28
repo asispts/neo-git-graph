@@ -2,8 +2,8 @@ import * as vscode from "vscode";
 
 import { getNonce } from "@/backend/utils/nonce";
 import { buildExtensionUri } from "@/backend/utils/path";
-import { Config } from "@/config";
-import { ExtensionState } from "@/extensionState";
+import { Config } from "@/old-extension/config";
+import { ExtensionState } from "@/old-extension/extensionState";
 import { GitGraphViewState } from "@/types";
 
 import { EXTENSION_NAME } from "./constant/const";

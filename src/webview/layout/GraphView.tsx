@@ -15,7 +15,11 @@ export function GraphView() {
   const commits = commitList.value;
 
   if (commits === undefined) {
-    return <Loading />;
+    return (
+      <main class="grid flex-1 place-items-center">
+        <Loading />
+      </main>
+    );
   }
 
   if (commits.length === 0 && commitHead.value === null) {

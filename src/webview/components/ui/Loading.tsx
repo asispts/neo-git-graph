@@ -1,14 +1,49 @@
-import { Icon } from "./Icons";
+type LoadingProps = {
+  class?: string;
+  variant?: "inline" | "page";
+};
 
-export function Loading({ class: className }: { class?: string }) {
+export function Loading({ class: className, variant = "inline" }: LoadingProps) {
+  const page = variant === "page";
+
   return (
-    <p
-      class={`flex items-center justify-center gap-2 py-4 text-lg font-semibold ${className ?? ""}`}
+    <div
+      class={`${
+        page ? "text-center" : "flex items-center justify-center gap-3 py-4"
+      } ${className ?? ""}`}
+      role="status"
+      aria-live="polite"
     >
-      <Icon class="size-6 animate-spin" viewBox="0 0 12 16">
-        <path d="M10.24 7.4a4.15 4.15 0 0 1-1.2 3.6 4.346 4.346 0 0 1-5.41.54L4.8 10.4.5 9.8l.6 4.2 1.31-1.26c2.36 1.74 5.7 1.57 7.84-.54a5.876 5.876 0 0 0 1.74-4.46l-1.75-.34zM2.96 5a4.346 4.346 0 0 1 5.41-.54L7.2 5.6l4.3.6-.6-4.2-1.31 1.26c-2.36-1.74-5.7-1.57-7.85.54C.5 5.03-.06 6.65.01 8.26l1.75.35A4.17 4.17 0 0 1 2.96 5z" />
-      </Icon>
-      {window.l10n.loading}
-    </p>
+      <div
+        class={`relative grid shrink-0 place-items-center ${page ? "mx-auto mb-6 size-20" : "size-8"}`}
+      >
+        <div class="absolute inset-0 animate-spin rounded-full border-2 border-line-soft border-t-focus motion-reduce:animate-none" />
+        <svg
+          class={`${page ? "size-10" : "size-4"} text-muted`}
+          viewBox="0 0 40 40"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          aria-hidden="true"
+        >
+          <path d="M12 11v16a7 7 0 0 0 7 7h9" />
+          <path d="M12 19h7a9 9 0 0 0 9-9" />
+          <circle cx="12" cy="8" r="3" class="fill-focus stroke-focus" />
+          <circle cx="28" cy="7" r="3" class="fill-editor stroke-fg" />
+          <circle cx="31" cy="34" r="3" class="fill-editor stroke-fg" />
+        </svg>
+      </div>
+      {page ? (
+        <h1 class="text-ui font-medium text-fg">Loading ...</h1>
+      ) : (
+        <span class="text-ui font-medium text-fg">Loading ...</span>
+      )}
+      {page && (
+        <div class="mx-auto mt-3 h-px w-12 overflow-hidden bg-line-soft" aria-hidden="true">
+          <div class="h-full w-1/2 animate-pulse bg-focus motion-reduce:animate-none" />
+        </div>
+      )}
+    </div>
   );
 }

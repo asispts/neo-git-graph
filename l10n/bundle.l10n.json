@@ -1,7 +1,7 @@
 {
-  "No Git repository found — watching for one": "No Git repository found — watching for one",
   "View Git Graph": "View Git Graph",
   "Either the current workspace does not contain a Git repository, or the Git repository is not configured correctly.": "Either the current workspace does not contain a Git repository, or the Git repository is not configured correctly.",
+  "No Git repository found — watching for one": "No Git repository found — watching for one",
   "Added in {0}": "Added in {0}",
   "Deleted in {0}": "Deleted in {0}",
   "Repo": "Repo",
@@ -9,7 +9,6 @@
   "Show Remote Branches": "Show Remote Branches",
   "Refresh": "Refresh",
   "Close": "Close",
-  "Loading ...": "Loading ...",
   "Load More Commits": "Load More Commits",
   "Show All": "Show All",
   "Filter {0}...": "Filter {0}...",

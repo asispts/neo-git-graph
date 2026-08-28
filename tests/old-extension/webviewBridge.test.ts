@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 
+import type { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { webviewBridgeFactory } from "@/old-extension/webviewBridge";
-import type { RepoFileWatcher } from "@/repoFileWatcher";
 import type { RequestMessage } from "@/types";
 
 function createBridge() {
@@ -48,11 +48,11 @@ describe("webviewBridgeFactory", () => {
   it("unmutes the repository watcher when a handler rejects", async () => {
     const { bridge, repoFileWatcher, receive } = createBridge();
     const failure = new Error("failed");
-    bridge.onMessage("loadRepos", async () => {
+    bridge.onMessage("selectRepo", async () => {
       throw failure;
     });
 
-    await expect(receive({ command: "loadRepos", check: false })).rejects.toBe(failure);
+    await expect(receive({ command: "selectRepo", repo: "/repo" })).rejects.toBe(failure);
 
     expect(repoFileWatcher.mute).toHaveBeenCalledOnce();
     expect(repoFileWatcher.unmute).toHaveBeenCalledOnce();
@@ -64,10 +64,10 @@ describe("webviewBridgeFactory", () => {
     const second = deferred();
     const handlers = [first, second];
     let nextHandler = 0;
-    bridge.onMessage("loadRepos", () => handlers[nextHandler++].promise);
+    bridge.onMessage("selectRepo", () => handlers[nextHandler++].promise);
 
-    const firstMessage = receive({ command: "loadRepos", check: false });
-    const secondMessage = receive({ command: "loadRepos", check: false });
+    const firstMessage = receive({ command: "selectRepo", repo: "/repo" });
+    const secondMessage = receive({ command: "selectRepo", repo: "/repo" });
     expect(repoFileWatcher.mute).toHaveBeenCalledTimes(2);
     expect(repoFileWatcher.unmute).not.toHaveBeenCalled();
 

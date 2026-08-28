@@ -5,7 +5,6 @@ import type { GitRepoSet } from "@/types";
 import type { CommitBranchType, ContextMenuState, DialogState } from "@/webview/types";
 import { isColumnWidths } from "@/webview/utils/columns";
 
-export const repoList = signal<Array<string> | undefined>(undefined);
 export const selectedRepo = signal<string | undefined>(undefined);
 export const branchList = signal<Array<string> | undefined>(undefined);
 export const headBranch = signal<string | null>(null);
@@ -42,7 +41,7 @@ export const activeSource = computed(() => {
 });
 
 /** State the editor keeps per repo. `lib/handler/load-repo.ts` refreshes it. */
-export const repoStates = signal<GitRepoSet>(viewState.repos);
+export const repoStates = signal<GitRepoSet>({});
 
 /**
  * Widths of the resizable columns of the selected repo, or `null` while the
@@ -57,4 +56,8 @@ export const columnWidths = computed(() => {
 
 export const selectedBranch = signal<CommitBranchType | undefined>(undefined);
 export const showRemoteBranch = signal<boolean>(true);
-export const maxCommits = signal<number>(viewState.initialLoadCommits);
+export const maxCommits = signal<number>(0);
+
+export function initializeStores(initialLoadCommits: number): void {
+  maxCommits.value = initialLoadCommits;
+}

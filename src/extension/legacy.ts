@@ -1,37 +1,20 @@
 import * as vscode from "vscode";
 
-import { AvatarManager } from "@/avatarManager";
 import { gitClientFactory } from "@/backend/gitClient";
-import { findGitRepos } from "@/backend/queries/repoSearch";
-import { config } from "@/config";
-import { DiffDocProvider } from "@/diffDocProvider";
-import { ExtensionState } from "@/extensionState";
+import { AvatarManager } from "@/old-extension/avatarManager";
+import { config } from "@/old-extension/config";
+import { DiffDocProvider } from "@/old-extension/diffDocProvider";
+import { ExtensionState } from "@/old-extension/extensionState";
 import { registerMessageHandlers } from "@/old-extension/messageHandler";
+import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { createRepoManager } from "@/old-extension/repoManager";
-import { logger } from "@/old-extension/utils/logger";
 import { WebviewBridge, webviewBridgeFactory } from "@/old-extension/webviewBridge";
-import { RepoFileWatcher } from "@/repoFileWatcher";
 
 export function createMessageProtocol(ctx: vscode.ExtensionContext) {
   const extensionState = new ExtensionState(ctx);
   const avatarManager = new AvatarManager(config.gitPath, extensionState);
   const gitClient = gitClientFactory(extensionState.getLastActiveRepo() ?? "", config.gitPath());
   const repoManager = createRepoManager(extensionState, config);
-  const workspacePaths = (vscode.workspace.workspaceFolders ?? []).map(
-    (folder) => folder.uri.fsPath
-  );
-  const ready = findGitRepos(workspacePaths, config.gitPath(), config.maxDepthOfRepoSearch()).then(
-    (repos) => {
-      repoManager.setRepos(repos);
-      repoManager.sendRepos();
-    },
-    (error: unknown) => {
-      logger.log(
-        `Failed to find Git repositories: ${error instanceof Error ? error.message : String(error)}`
-      );
-      repoManager.sendRepos();
-    }
-  );
 
   ctx.subscriptions.push(
     vscode.commands.registerCommand("neo-git-graph.clearAvatarCache", () => {
@@ -44,7 +27,6 @@ export function createMessageProtocol(ctx: vscode.ExtensionContext) {
   );
 
   return {
-    ready,
     attach(panel: vscode.WebviewPanel) {
       let isPanelVisible = panel.visible;
       let disposed = false;
@@ -71,26 +53,11 @@ export function createMessageProtocol(ctx: vscode.ExtensionContext) {
         }
         if (panel.visible) {
           onPanelShown();
-          bridge.post({
-            command: "loadRepos",
-            repos: repoManager.getRepos(),
-            lastActiveRepo: extensionState.getLastActiveRepo()
-          });
           bridge.post({ command: "refresh" });
         } else {
           repoFileWatcher.stop();
         }
         isPanelVisible = panel.visible;
-      });
-
-      repoManager.registerViewCallback((repos) => {
-        if (panel.visible) {
-          bridge.post({
-            command: "loadRepos",
-            repos,
-            lastActiveRepo: extensionState.getLastActiveRepo()
-          });
-        }
       });
 
       return {
@@ -103,7 +70,6 @@ export function createMessageProtocol(ctx: vscode.ExtensionContext) {
           viewStateListener.dispose();
           avatarManager.deregisterBridge();
           repoFileWatcher.stop();
-          repoManager.deregisterViewCallback();
         }
       };
     }

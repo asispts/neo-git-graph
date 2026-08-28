@@ -3,6 +3,7 @@ import { branchColour, UNCOMMITTED_COLOUR } from "@/webview/graph/palette";
 import { branchStrokes } from "@/webview/graph/strokes";
 import type { GraphExpansion, GraphLayout } from "@/webview/graph/types";
 import { expandOffset, graphHeight, graphWidth, laneX, rowY } from "@/webview/graph/utils";
+import { getWebviewConfig } from "@/webview/lib/webview-config";
 
 const SHADOW_CLASS = "fill-none stroke-editor/75 stroke-4";
 const LINE_CLASS = "fill-none stroke-2";
@@ -21,7 +22,7 @@ export function CommitGraph({
   layout: GraphLayout;
   expansion: GraphExpansion | null;
 }) {
-  const angular = viewState.graphStyle === "angular";
+  const angular = getWebviewConfig().graphStyle === "angular";
   const strokes = layout.branches.flatMap((branch) => branchStrokes(branch, angular, expansion));
 
   return (

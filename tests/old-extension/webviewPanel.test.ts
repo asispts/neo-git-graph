@@ -18,7 +18,6 @@ describe("createWebviewPanel", () => {
 
   it("keeps the webview document and refreshes data after a hide-and-show cycle", () => {
     let viewStateHandler: (() => void) | undefined;
-    let repoHandler: ((repos: import("@/types").GitRepoSet, count: number) => void) | undefined;
     const webview = { html: "" };
     const panel = {
       visible: true,
@@ -34,15 +33,8 @@ describe("createWebviewPanel", () => {
     };
     const bridge = { post: vi.fn() };
     const repoFileWatcher = { stop: vi.fn() };
-    const repos = { "/repo": { columnWidths: null } };
     const repoManager = {
-      getRepos: vi.fn(() => repos),
-      registerViewCallback: vi.fn(
-        (handler: (nextRepos: import("@/types").GitRepoSet, count: number) => void) => {
-          repoHandler = handler;
-        }
-      ),
-      deregisterViewCallback: vi.fn()
+      getRepos: vi.fn(() => ({ "/repo": { columnWidths: null } }))
     };
     const onPanelShown = vi.fn();
 
@@ -51,15 +43,16 @@ describe("createWebviewPanel", () => {
       bridge: bridge as unknown as import("@/old-extension/webviewBridge").WebviewBridge,
       config: {
         tabIconColourTheme: () => "colour"
-      } as unknown as import("@/config").Config,
-      repoFileWatcher: repoFileWatcher as unknown as import("@/repoFileWatcher").RepoFileWatcher,
+      } as unknown as import("@/old-extension/config").Config,
+      repoFileWatcher:
+        repoFileWatcher as unknown as import("@/old-extension/repoFileWatcher").RepoFileWatcher,
       extensionPath: "/extension",
       extensionState: {
         getLastActiveRepo: () => "/repo"
-      } as unknown as import("@/extensionState").ExtensionState,
+      } as unknown as import("@/old-extension/extensionState").ExtensionState,
       avatarManager: {
         deregisterBridge: vi.fn()
-      } as unknown as import("@/avatarManager").AvatarManager,
+      } as unknown as import("@/old-extension/avatarManager").AvatarManager,
       repoManager: repoManager as unknown as import("@/old-extension/repoManager").RepoManager,
       onDispose: vi.fn(),
       onPanelShown
@@ -76,21 +69,9 @@ describe("createWebviewPanel", () => {
     viewStateHandler?.();
 
     expect(onPanelShown).toHaveBeenCalledTimes(1);
-    expect(bridge.post).toHaveBeenNthCalledWith(1, {
-      command: "loadRepos",
-      repos,
-      lastActiveRepo: "/repo"
-    });
-    expect(bridge.post).toHaveBeenNthCalledWith(2, { command: "refresh" });
+    expect(bridge.post).toHaveBeenCalledOnce();
+    expect(bridge.post).toHaveBeenCalledWith({ command: "refresh" });
     expect(webview.html).toBe("<html>initial</html>");
-    expect(mocks.buildWebviewHtml).toHaveBeenCalledTimes(1);
-
-    repoHandler?.({}, 0);
-    expect(bridge.post).toHaveBeenNthCalledWith(3, {
-      command: "loadRepos",
-      repos: {},
-      lastActiveRepo: "/repo"
-    });
     expect(mocks.buildWebviewHtml).toHaveBeenCalledTimes(1);
   });
 });

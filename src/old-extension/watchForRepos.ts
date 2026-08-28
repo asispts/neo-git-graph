@@ -1,11 +1,11 @@
 import * as vscode from "vscode";
 
 import { findGitRepos } from "@/backend/queries/repoSearch";
-import { config } from "@/config";
+import { config } from "@/old-extension/config";
 import { EXTENSION_NAME } from "@/old-extension/constant/const";
 import type { InitExtension } from "@/old-extension/initExtension";
 import { createMaxDepthTracker } from "@/old-extension/maxDepthTracker";
-import { StatusBarItem } from "@/statusBarItem";
+import { StatusBarItem } from "@/old-extension/statusBarItem";
 
 type WatcherState = {
   disposed: boolean;

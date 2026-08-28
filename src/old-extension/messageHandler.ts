@@ -1,6 +1,5 @@
 import * as vscode from "vscode";
 
-import { AvatarManager } from "@/avatarManager";
 import { checkoutBranch, createBranch, deleteBranch, renameBranch } from "@/backend/actions/branch";
 import {
   checkoutCommit,
@@ -16,10 +15,11 @@ import { loadBranches } from "@/backend/queries/loadBranches";
 import { loadCommits } from "@/backend/queries/loadCommits";
 import { GitFileChangeType } from "@/backend/types";
 import { abbrevCommit } from "@/backend/utils/string";
-import { Config } from "@/config";
-import { encodeDiffDocUri } from "@/diffDocProvider";
-import { ExtensionState } from "@/extensionState";
-import { RepoFileWatcher } from "@/repoFileWatcher";
+import { AvatarManager } from "@/old-extension/avatarManager";
+import { Config } from "@/old-extension/config";
+import { encodeDiffDocUri } from "@/old-extension/diffDocProvider";
+import { ExtensionState } from "@/old-extension/extensionState";
+import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { RequestMessage, ResponseMessage } from "@/types";
 
 import { RepoManager } from "./repoManager";
@@ -159,16 +159,6 @@ export function registerMessageHandlers(
 
   bridge.onMessage("selectRepo", (msg) => {
     setCurrentRepo(msg.repo);
-  });
-
-  bridge.onMessage("loadRepos", async (msg) => {
-    if (!msg.check || !(await repoManager.checkReposExist())) {
-      bridge.post({
-        command: "loadRepos",
-        repos: repoManager.getRepos(),
-        lastActiveRepo: extensionState.getLastActiveRepo()
-      });
-    }
   });
 
   bridge.onMessage("fetchAvatar", (msg) => {

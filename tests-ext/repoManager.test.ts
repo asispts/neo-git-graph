@@ -1,8 +1,8 @@
 import * as assert from "node:assert";
 import * as fs from "node:fs";
 
-import { Config } from "@/config";
-import { ExtensionState } from "@/extensionState";
+import { Config } from "@/old-extension/config";
+import { ExtensionState } from "@/old-extension/extensionState";
 import { createRepoManager } from "@/old-extension/repoManager";
 import { GitRepoSet } from "@/types";
 

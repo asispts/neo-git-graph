@@ -1,3 +1,5 @@
+import { getWebviewConfig } from "@/webview/lib/webview-config";
+
 /**
  * Build a formatter once per locale. Constructing an Intl formatter is costly
  * enough to be worth caching when rendering a column of hundreds of commits.
@@ -68,19 +70,20 @@ export type CommitDate = {
 
 /** Full date and time, as shown in the commit details view. */
 export function getFullDate(seconds: number): string {
-  return getFullDateFormatter(viewState.locale).format(new Date(seconds * 1000));
+  return getFullDateFormatter(getWebviewConfig().locale).format(new Date(seconds * 1000));
 }
 
 export function getCommitDate(seconds: number): CommitDate {
+  const { dateFormat, locale } = getWebviewConfig();
   const date = new Date(seconds * 1000);
-  const dateStr = getDateFormatter(viewState.locale).format(date);
+  const dateStr = getDateFormatter(locale).format(date);
   const title = `${dateStr} ${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
 
-  switch (viewState.dateFormat) {
+  switch (dateFormat) {
     case "Date Only":
       return { title, value: dateStr };
     case "Relative":
-      return { title, value: formatRelativeDate(date, new Date(), viewState.locale) };
+      return { title, value: formatRelativeDate(date, new Date(), locale) };
     default:
       return { title, value: title };
   }

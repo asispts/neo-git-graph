@@ -21,6 +21,7 @@ import {
   uncommittedChanges
 } from "@/webview/lib/stores";
 import { vscode } from "@/webview/lib/vscode";
+import { getWebviewConfig } from "@/webview/lib/webview-config";
 import type {
   ActionCommand,
   CommitBranchType,
@@ -55,7 +56,7 @@ function clearCommits() {
   commitHead.value = null;
   moreCommitsAvailable.value = false;
   uncommittedChanges.value = 0;
-  maxCommits.value = viewState.initialLoadCommits;
+  maxCommits.value = getWebviewConfig().initialLoadCommits;
   closeCommitDetails();
 }
 
@@ -140,7 +141,7 @@ export function setShowRemoteBranch(value: boolean) {
 }
 
 export function loadMoreCommits() {
-  maxCommits.value += viewState.loadMoreCommits;
+  maxCommits.value += getWebviewConfig().loadMoreCommits;
 
   const repo = selectedRepo.value;
   const branch = selectedBranch.value;

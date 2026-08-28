@@ -3,15 +3,12 @@
 import { beforeAll, beforeEach, expect, it, vi } from "vitest";
 
 import type { GitCommitNode } from "@/backend/types";
-import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
-import type { RpcRequest, RpcResponse } from "@/rpc/types";
-import type { GitGraphViewState } from "@/types";
+import type { RpcRequest, RpcResponse } from "@/types";
+import { commitMenu } from "@/webview/lib/menus";
+import * as stores from "@/webview/lib/stores";
 
 import { vscodeApi } from "@tests/webview/setup";
-
-let initWebview: typeof import("@/webview/lib/bootstrap").initWebview;
-let commitMenu: typeof import("@/webview/lib/menus").commitMenu;
-let stores: typeof import("@/webview/lib/stores");
+import { setupWebviewTest } from "@tests/webview/test-utils";
 
 const commit: GitCommitNode = {
   hash: "commit",
@@ -23,30 +20,8 @@ const commit: GitCommitNode = {
   refs: []
 };
 
-beforeAll(async () => {
-  const state: GitGraphViewState = {
-    autoCenterCommitDetailsView: true,
-    dateFormat: "Date & Time",
-    fetchAvatars: false,
-    graphColours: [],
-    graphStyle: "rounded",
-    initialLoadCommits: 300,
-    lastActiveRepo: null,
-    loadMoreCommits: 100,
-    locale: "en",
-    repos: {},
-    showCurrentBranchByDefault: false
-  };
-  Object.defineProperty(globalThis, "viewState", { value: state, configurable: true });
-  Object.defineProperty(window, "l10n", {
-    value: new Proxy({}, { get: (_target, key) => String(key) }) as LocalizedStrings,
-    configurable: true
-  });
-
-  ({ initWebview } = await import("@/webview/lib/bootstrap"));
-  ({ commitMenu } = await import("@/webview/lib/menus"));
-  stores = await import("@/webview/lib/stores");
-  initWebview();
+beforeAll(() => {
+  setupWebviewTest({ dispatchMessages: true });
 });
 
 beforeEach(() => {

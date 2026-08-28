@@ -1,11 +1,10 @@
 import * as vscode from "vscode";
 
-import { AvatarManager } from "@/avatarManager";
 import { buildExtensionUri } from "@/backend/utils/path";
-import { Config } from "@/config";
-import { ExtensionState } from "@/extensionState";
-import { RepoFileWatcher } from "@/repoFileWatcher";
-import { GitRepoSet } from "@/types";
+import { AvatarManager } from "@/old-extension/avatarManager";
+import { Config } from "@/old-extension/config";
+import { ExtensionState } from "@/old-extension/extensionState";
+import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 
 import { RepoManager } from "./repoManager";
 import { WebviewBridge } from "./webviewBridge";
@@ -52,7 +51,6 @@ export function createWebviewPanel(opts: {
     panel.dispose();
     avatarManager.deregisterBridge();
     repoFileWatcher.stop();
-    repoManager.deregisterViewCallback();
     while (disposables.length) {
       const x = disposables.pop();
       if (x) {
@@ -74,11 +72,6 @@ export function createWebviewPanel(opts: {
       if (panel.visible !== isPanelVisible) {
         if (panel.visible) {
           onPanelShown();
-          bridge.post({
-            command: "loadRepos",
-            repos: repoManager.getRepos(),
-            lastActiveRepo: extensionState.getLastActiveRepo()
-          });
           bridge.post({ command: "refresh" });
         } else {
           repoFileWatcher.stop();
@@ -89,17 +82,6 @@ export function createWebviewPanel(opts: {
     null,
     disposables
   );
-
-  repoManager.registerViewCallback((repos: GitRepoSet) => {
-    if (!panel.visible) {
-      return;
-    }
-    bridge.post({
-      command: "loadRepos",
-      repos,
-      lastActiveRepo: extensionState.getLastActiveRepo()
-    });
-  });
 
   return {
     reveal(column?: vscode.ViewColumn) {

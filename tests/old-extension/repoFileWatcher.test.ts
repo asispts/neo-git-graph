@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as vscode from "vscode";
 
-import { RepoFileWatcher } from "@/repoFileWatcher";
+import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 
 afterEach(() => {
   vi.useRealTimers();

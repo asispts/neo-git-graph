@@ -1,3 +1,4 @@
+import type { GitRepo } from "@/types";
 import { Button } from "@/webview/components/ui/Button";
 import { Checkbox } from "@/webview/components/ui/Checkbox";
 import { Dropdown } from "@/webview/components/ui/Dropdown";
@@ -13,15 +14,15 @@ import {
   showRemoteBranch
 } from "@/webview/lib/stores";
 
-function repoOption(value: string) {
-  return { label: value.split(/[\\/]/).findLast(Boolean) ?? value, value };
+function repoOption(repo: GitRepo) {
+  return { label: repo.name, value: repo.path };
 }
 
 function branchOption(value: string) {
   return { label: value.startsWith("remotes/") ? value.slice(8) : value, value };
 }
 
-export function MainHeader({ repos }: { repos: Array<string> }) {
+export function MainHeader({ repos }: { repos: Array<GitRepo> }) {
   const noCommits = commitList.value?.length === 0 && commitHead.value === null;
 
   return (
