@@ -6,7 +6,7 @@ export function evalPromises<X, Y>(
 ) {
   return new Promise<Y[]>((resolve, reject) => {
     if (data.length === 1) {
-      createPromise(data[0])
+      createPromise(data[0]!)
         .then((v) => resolve([v]))
         .catch(() => reject());
     } else if (data.length === 0) {
@@ -19,7 +19,7 @@ export function evalPromises<X, Y>(
       function startNext() {
         let cur = nextPromise;
         nextPromise++;
-        createPromise(data[cur])
+        createPromise(data[cur]!)
           .then((result) => {
             if (!rejected) {
               results[cur] = result;

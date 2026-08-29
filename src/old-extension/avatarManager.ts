@@ -383,12 +383,15 @@ class AvatarRequestQueue {
   public add(email: string, repo: string, commits: string[], immediate: boolean) {
     let emailIndex = this.queue.findIndex((v) => v.email === email && v.repo === repo);
     if (emailIndex > -1) {
-      let l = commits.indexOf(
-        this.queue[emailIndex].commits[this.queue[emailIndex].commits.length - 1]
-      );
+      const existingRequest = this.queue[emailIndex];
+      const lastCommit = existingRequest?.commits.at(-1);
+      if (existingRequest === undefined || lastCommit === undefined) {
+        return;
+      }
+      let l = commits.indexOf(lastCommit);
       // Index of the last commit of the existing request, in the new request commits
       if (l > -1 && l < commits.length - 1) {
-        this.queue[emailIndex].commits.push(...commits.slice(l + 1)); // Append all new commits
+        existingRequest.commits.push(...commits.slice(l + 1)); // Append all new commits
       }
     } else {
       this.insertItem({

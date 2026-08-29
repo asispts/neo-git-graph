@@ -76,9 +76,9 @@ export function createRepoManager(extensionState: ExtensionState, config: Config
     const pathFolder = path + "/";
     const repoPaths = Object.keys(repos);
     let changes = false;
-    for (let i = 0; i < repoPaths.length; i++) {
-      if (repoPaths[i] === path || repoPaths[i].startsWith(pathFolder)) {
-        removeRepo(repoPaths[i]);
+    for (const repoPath of repoPaths) {
+      if (repoPath === path || repoPath.startsWith(pathFolder)) {
+        removeRepo(repoPath);
         changes = true;
       }
     }
@@ -96,9 +96,9 @@ export function createRepoManager(extensionState: ExtensionState, config: Config
       let changes = false;
       evalPromises(repoPaths, 3, (path) => isGitRepository(path, config.gitPath())).then(
         (results) => {
-          for (let i = 0; i < repoPaths.length; i++) {
+          for (const [i, repoPath] of repoPaths.entries()) {
             if (!results[i]) {
-              removeRepo(repoPaths[i]);
+              removeRepo(repoPath);
               changes = true;
             }
           }

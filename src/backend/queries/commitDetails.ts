@@ -91,31 +91,38 @@ export async function commitDetails(
 
     const fileLookup: { [file: string]: number } = {};
     for (let i = 1; i < nameStatusLines.length - 1; i++) {
-      const line = nameStatusLines[i].split("\t");
-      if (line.length < 2) {
+      const [status, oldPath, ...newPaths] = nameStatusLines[i].split("\t");
+      const type = status?.[0];
+      if (type === undefined || oldPath === undefined) {
         break;
       }
-      const oldFilePath = toPath(line[1]);
-      const newFilePath = toPath(line[line.length - 1]);
+      const oldFilePath = toPath(oldPath);
+      const newFilePath = toPath(newPaths.at(-1) ?? oldPath);
       fileLookup[newFilePath] = details.fileChanges.length;
       details.fileChanges.push({
         oldFilePath,
         newFilePath,
-        type: line[0][0] as GitFileChangeType,
+        type: type as GitFileChangeType,
         additions: null,
         deletions: null
       });
     }
 
     for (let i = 1; i < numStatLines.length - 1; i++) {
-      const line = numStatLines[i].split("\t");
-      if (line.length !== 3) {
+      const [additions, deletions, path, ...extraFields] = numStatLines[i].split("\t");
+      if (
+        additions === undefined ||
+        deletions === undefined ||
+        path === undefined ||
+        extraFields.length > 0
+      ) {
         break;
       }
-      const fileName = line[2].replace(/(.*){.* => (.*)}/, "$1$2").replace(/.* => (.*)/, "$1");
-      if (typeof fileLookup[fileName] === "number") {
-        details.fileChanges[fileLookup[fileName]].additions = parseInt(line[0]);
-        details.fileChanges[fileLookup[fileName]].deletions = parseInt(line[1]);
+      const fileName = path.replace(/(.*){.* => (.*)}/, "$1$2").replace(/.* => (.*)/, "$1");
+      const fileChange = details.fileChanges[fileLookup[fileName] ?? -1];
+      if (fileChange !== undefined) {
+        fileChange.additions = parseInt(additions);
+        fileChange.deletions = parseInt(deletions);
       }
     }
 
