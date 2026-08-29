@@ -245,9 +245,10 @@ export class AvatarManager {
             if (res.statusCode === 200) {
               // Sucess
               let users = JSON.parse(respBody) as { avatar_url?: string }[];
-              if (users.length > 0 && users[0].avatar_url) {
+              const avatarUrl = users[0]?.avatar_url;
+              if (avatarUrl !== undefined) {
                 // Avatar url found
-                let img = await this.downloadAvatarImage(avatarRequest.email, users[0].avatar_url);
+                let img = await this.downloadAvatarImage(avatarRequest.email, avatarUrl);
                 if (img !== null) {
                   this.saveAvatar(avatarRequest.email, img, false);
                 }
@@ -349,8 +350,9 @@ export class AvatarManager {
   }
 
   private sendAvatarToWebView(email: string, onError: () => void) {
-    if (this.postToWebview !== null) {
-      fs.readFile(this.avatarStorageFolder + "/" + this.avatars[email].image, (err, data) => {
+    const avatar = this.avatars[email];
+    if (this.postToWebview !== null && avatar !== undefined) {
+      fs.readFile(this.avatarStorageFolder + "/" + avatar.image, (err, data) => {
         if (err) {
           onError();
         } else if (this.postToWebview !== null) {
@@ -358,11 +360,7 @@ export class AvatarManager {
           this.postToWebview({
             command: "fetchAvatar",
             email: email,
-            image:
-              "data:image/" +
-              this.avatars[email].image!.split(".")[1] +
-              ";base64," +
-              data.toString("base64")
+            image: "data:image/" + avatar.image.split(".")[1] + ";base64," + data.toString("base64")
           });
         }
       });
@@ -399,9 +397,7 @@ class AvatarRequestQueue {
         repo: repo,
         commits: commits,
         checkAfter:
-          immediate || this.queue.length === 0
-            ? 0
-            : this.queue[this.queue.length - 1].checkAfter + 1,
+          immediate || this.queue.length === 0 ? 0 : (this.queue.at(-1)?.checkAfter ?? 0) + 1,
         attempts: 0
       });
     }
@@ -423,7 +419,8 @@ class AvatarRequestQueue {
 
   // Takes an item from the queue if possible, respecting the value set for checkAfter
   public takeItem() {
-    if (this.queue.length > 0 && this.queue[0].checkAfter < new Date().getTime()) {
+    const firstItem = this.queue[0];
+    if (firstItem !== undefined && firstItem.checkAfter < new Date().getTime()) {
       return this.queue.shift()!;
     }
     return null;
@@ -437,7 +434,11 @@ class AvatarRequestQueue {
       prevLength = this.queue.length;
     while (l <= r) {
       c = (l + r) >> 1;
-      if (this.queue[c].checkAfter <= item.checkAfter) {
+      const currentItem = this.queue[c];
+      if (currentItem === undefined) {
+        throw new Error("Invalid avatar queue index");
+      }
+      if (currentItem.checkAfter <= item.checkAfter) {
         l = c + 1;
       } else {
         r = c - 1;

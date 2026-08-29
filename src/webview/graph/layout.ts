@@ -14,6 +14,14 @@ import { createVertex } from "@/webview/graph/vertex";
 
 type BranchColours = ReturnType<typeof createBranchColours>;
 
+function vertexAt(vertices: Array<Vertex>, index: number): Vertex {
+  const vertex = vertices[index];
+  if (vertex === undefined) {
+    throw new Error("Invalid graph vertex index");
+  }
+  return vertex;
+}
+
 function nextParentOf(vertex: Vertex): Vertex | null {
   return vertex.parents[vertex.nextParent] ?? null;
 }
@@ -35,18 +43,19 @@ function buildVertices(commits: Array<GitCommitNode>, commitHead: string | null)
     for (const parentHash of commit.parentHashes) {
       const parent = lookup.get(parentHash);
       if (parent !== undefined) {
-        vertices[index].parents.push(vertices[parent]);
+        vertexAt(vertices, index).parents.push(vertexAt(vertices, parent));
       }
     }
   });
 
   if (commits[0]?.hash === UNCOMMITTED_CHANGES) {
-    vertices[0].isCurrent = true;
-    vertices[0].isCommitted = false;
+    const firstVertex = vertexAt(vertices, 0);
+    firstVertex.isCurrent = true;
+    firstVertex.isCommitted = false;
   } else {
     const head = commitHead === null ? undefined : lookup.get(commitHead);
     if (head !== undefined) {
-      vertices[head].isCurrent = true;
+      vertexAt(vertices, head).isCurrent = true;
     }
   }
 
@@ -59,23 +68,24 @@ function findStart(vertices: Array<Vertex>): number {
 
 /** Walk a merge into a parent that both already sit on a branch. */
 function traceMerge(vertices: Array<Vertex>, startAt: number) {
-  const vertex = vertices[startAt];
+  const vertex = vertexAt(vertices, startAt);
   const parentVertex = nextParentOf(vertex)!;
   const parentBranch = parentVertex.branch!;
 
   let lastPoint = pointOf(vertex);
   for (let i = startAt + 1; i < vertices.length; i++) {
-    const connection = connectionTo(vertices[i], parentVertex, parentBranch);
-    const curPoint = connection ?? nextPointOf(vertices[i]);
+    const currentVertex = vertexAt(vertices, i);
+    const connection = connectionTo(currentVertex, parentVertex, parentBranch);
+    const curPoint = connection ?? nextPointOf(currentVertex);
 
     addLine(parentBranch, {
       p1: lastPoint,
       p2: curPoint,
       isCommitted: vertex.isCommitted,
       lockedFirst:
-        connection === null && vertices[i] !== parentVertex ? lastPoint.x < curPoint.x : true
+        connection === null && currentVertex !== parentVertex ? lastPoint.x < curPoint.x : true
     });
-    takePoint(vertices[i], curPoint.x, parentVertex, parentBranch);
+    takePoint(currentVertex, curPoint.x, parentVertex, parentBranch);
     lastPoint = curPoint;
 
     if (connection !== null) {
@@ -90,7 +100,7 @@ function traceMerge(vertices: Array<Vertex>, startAt: number) {
 
 /** Walk a chain of commits down its parents, claiming one colour for it. */
 function traceBranch(vertices: Array<Vertex>, startAt: number, colours: BranchColours): Branch {
-  let vertex = vertices[startAt];
+  let vertex = vertexAt(vertices, startAt);
   let parentVertex = nextParentOf(vertex);
 
   const branch: Branch = { colour: colours.claim(startAt), lines: [], uncommitted: 0 };
@@ -100,9 +110,12 @@ function traceBranch(vertices: Array<Vertex>, startAt: number, colours: BranchCo
 
   let i = startAt + 1;
   for (; i < vertices.length; i++) {
-    const onParent = parentVertex === vertices[i];
+    const currentVertex = vertexAt(vertices, i);
+    const onParent = parentVertex === currentVertex;
     const curPoint =
-      onParent && parentVertex!.branch !== null ? pointOf(vertices[i]) : nextPointOf(vertices[i]);
+      onParent && parentVertex!.branch !== null
+        ? pointOf(currentVertex)
+        : nextPointOf(currentVertex);
 
     addLine(branch, {
       p1: lastPoint,
@@ -110,7 +123,7 @@ function traceBranch(vertices: Array<Vertex>, startAt: number, colours: BranchCo
       isCommitted: vertex.isCommitted,
       lockedFirst: lastPoint.x < curPoint.x
     });
-    takePoint(vertices[i], curPoint.x, parentVertex, branch);
+    takePoint(currentVertex, curPoint.x, parentVertex, branch);
     lastPoint = curPoint;
 
     if (onParent) {
@@ -164,7 +177,7 @@ export function computeGraphLayout(
 
   let startAt = findStart(vertices);
   while (startAt !== -1) {
-    const vertex = vertices[startAt];
+    const vertex = vertexAt(vertices, startAt);
     const parentVertex = nextParentOf(vertex);
     const isMergeOfTwoBranches =
       parentVertex !== null &&

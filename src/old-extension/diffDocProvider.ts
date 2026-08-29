@@ -34,6 +34,9 @@ export class DiffDocProvider implements vscode.TextDocumentContentProvider {
     }
 
     let request = decodeDiffDocUri(uri);
+    if (request.repo === undefined || request.commit === undefined) {
+      return "";
+    }
     return this.gitClient()
       .cwd(request.repo)
       .show([`${request.commit}:${request.filePath}`])

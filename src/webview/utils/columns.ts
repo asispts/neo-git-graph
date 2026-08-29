@@ -39,18 +39,28 @@ export function moveBoundary(
   let moved = delta;
 
   switch (boundary) {
-    case 0:
-      moved = allowed(moved, MIN_COLUMN - next[0], description - MIN_DESCRIPTION);
-      next[0] += moved;
+    case 0: {
+      const width = next[0];
+      if (width === undefined) return { widths: next, moved: 0 };
+      moved = allowed(moved, MIN_COLUMN - width, description - MIN_DESCRIPTION);
+      next[0] = width + moved;
       break;
-    case 1:
-      moved = allowed(moved, MIN_DESCRIPTION - description, next[1] - MIN_COLUMN);
-      next[1] -= moved;
+    }
+    case 1: {
+      const width = next[1];
+      if (width === undefined) return { widths: next, moved: 0 };
+      moved = allowed(moved, MIN_DESCRIPTION - description, width - MIN_COLUMN);
+      next[1] = width - moved;
       break;
-    default:
-      moved = allowed(moved, MIN_COLUMN - next[boundary - 1], next[boundary] - MIN_COLUMN);
-      next[boundary - 1] += moved;
-      next[boundary] -= moved;
+    }
+    default: {
+      const left = next[boundary - 1];
+      const right = next[boundary];
+      if (left === undefined || right === undefined) return { widths: next, moved: 0 };
+      moved = allowed(moved, MIN_COLUMN - left, right - MIN_COLUMN);
+      next[boundary - 1] = left + moved;
+      next[boundary] = right - moved;
+    }
   }
 
   return { widths: next, moved };

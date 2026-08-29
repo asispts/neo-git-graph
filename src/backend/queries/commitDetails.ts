@@ -27,7 +27,11 @@ async function fetchCommitInfo(
   while (lastLine >= 0 && lines[lastLine] === "") {
     lastLine--;
   }
-  const [hash, parents, author, email, date, committer] = lines[0].split(gitLogSeparator);
+  const firstLine = lines[0];
+  if (firstLine === undefined) {
+    throw new Error("No commit information returned by Git");
+  }
+  const [hash, parents, author, email, date, committer] = firstLine.split(gitLogSeparator);
   if (
     hash === undefined ||
     parents === undefined ||
@@ -90,8 +94,8 @@ export async function commitDetails(
     ]);
 
     const fileLookup: { [file: string]: number } = {};
-    for (let i = 1; i < nameStatusLines.length - 1; i++) {
-      const [status, oldPath, ...newPaths] = nameStatusLines[i].split("\t");
+    for (const nameStatusLine of nameStatusLines.slice(1, -1)) {
+      const [status, oldPath, ...newPaths] = nameStatusLine.split("\t");
       const type = status?.[0];
       if (type === undefined || oldPath === undefined) {
         break;
@@ -108,8 +112,8 @@ export async function commitDetails(
       });
     }
 
-    for (let i = 1; i < numStatLines.length - 1; i++) {
-      const [additions, deletions, path, ...extraFields] = numStatLines[i].split("\t");
+    for (const numStatLine of numStatLines.slice(1, -1)) {
+      const [additions, deletions, path, ...extraFields] = numStatLine.split("\t");
       if (
         additions === undefined ||
         deletions === undefined ||
