@@ -64,7 +64,13 @@ describe("webviewBridgeFactory", () => {
     const second = deferred();
     const handlers = [first, second];
     let nextHandler = 0;
-    bridge.onMessage("selectRepo", () => handlers[nextHandler++].promise);
+    bridge.onMessage("selectRepo", () => {
+      const handler = handlers[nextHandler++];
+      if (handler === undefined) {
+        throw new Error("Missing deferred handler");
+      }
+      return handler.promise;
+    });
 
     const firstMessage = receive({ command: "selectRepo", repo: "/repo" });
     const secondMessage = receive({ command: "selectRepo", repo: "/repo" });

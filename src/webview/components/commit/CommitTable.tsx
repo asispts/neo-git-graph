@@ -129,7 +129,7 @@ export function CommitTable({ commits, head, headBranch }: CommitTableProps) {
                 isHead={commit.hash === head}
                 headBranch={headBranch}
                 messages={messages}
-                colour={branchColour(layout.vertices[index].colour)}
+                colour={branchColour(layout.vertices[index]?.colour ?? 0)}
                 expanded={index === expandedRow}
                 onSelect={
                   commit.hash === UNCOMMITTED_CHANGES

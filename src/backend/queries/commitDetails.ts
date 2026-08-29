@@ -27,14 +27,28 @@ async function fetchCommitInfo(
   while (lastLine >= 0 && lines[lastLine] === "") {
     lastLine--;
   }
-  const commitInfo = lines[0].split(gitLogSeparator);
+  const firstLine = lines[0];
+  if (firstLine === undefined) {
+    throw new Error("No commit information returned by Git");
+  }
+  const [hash, parents, author, email, date, committer] = firstLine.split(gitLogSeparator);
+  if (
+    hash === undefined ||
+    parents === undefined ||
+    author === undefined ||
+    email === undefined ||
+    date === undefined ||
+    committer === undefined
+  ) {
+    throw new Error("Invalid commit information returned by Git");
+  }
   return {
-    hash: commitInfo[0],
-    parents: commitInfo[1].split(" "),
-    author: commitInfo[2],
-    email: commitInfo[3],
-    date: parseInt(commitInfo[4]),
-    committer: commitInfo[5],
+    hash,
+    parents: parents.split(" "),
+    author,
+    email,
+    date: parseInt(date),
+    committer,
     body: lines.slice(1, lastLine + 1).join("\n"),
     fileChanges: []
   };
@@ -80,32 +94,39 @@ export async function commitDetails(
     ]);
 
     const fileLookup: { [file: string]: number } = {};
-    for (let i = 1; i < nameStatusLines.length - 1; i++) {
-      const line = nameStatusLines[i].split("\t");
-      if (line.length < 2) {
+    for (const nameStatusLine of nameStatusLines.slice(1, -1)) {
+      const [status, oldPath, ...newPaths] = nameStatusLine.split("\t");
+      const type = status?.[0];
+      if (type === undefined || oldPath === undefined) {
         break;
       }
-      const oldFilePath = toPath(line[1]);
-      const newFilePath = toPath(line[line.length - 1]);
+      const oldFilePath = toPath(oldPath);
+      const newFilePath = toPath(newPaths.at(-1) ?? oldPath);
       fileLookup[newFilePath] = details.fileChanges.length;
       details.fileChanges.push({
         oldFilePath,
         newFilePath,
-        type: line[0][0] as GitFileChangeType,
+        type: type as GitFileChangeType,
         additions: null,
         deletions: null
       });
     }
 
-    for (let i = 1; i < numStatLines.length - 1; i++) {
-      const line = numStatLines[i].split("\t");
-      if (line.length !== 3) {
+    for (const numStatLine of numStatLines.slice(1, -1)) {
+      const [additions, deletions, path, ...extraFields] = numStatLine.split("\t");
+      if (
+        additions === undefined ||
+        deletions === undefined ||
+        path === undefined ||
+        extraFields.length > 0
+      ) {
         break;
       }
-      const fileName = line[2].replace(/(.*){.* => (.*)}/, "$1$2").replace(/.* => (.*)/, "$1");
-      if (typeof fileLookup[fileName] === "number") {
-        details.fileChanges[fileLookup[fileName]].additions = parseInt(line[0]);
-        details.fileChanges[fileLookup[fileName]].deletions = parseInt(line[1]);
+      const fileName = path.replace(/(.*){.* => (.*)}/, "$1$2").replace(/.* => (.*)/, "$1");
+      const fileChange = details.fileChanges[fileLookup[fileName] ?? -1];
+      if (fileChange !== undefined) {
+        fileChange.additions = parseInt(additions);
+        fileChange.deletions = parseInt(deletions);
       }
     }
 

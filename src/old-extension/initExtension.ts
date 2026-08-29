@@ -2,7 +2,8 @@ import * as path from "node:path";
 
 import * as vscode from "vscode";
 
-import { GitClient, gitClientFactory } from "@/backend/gitClient";
+import { gitClientFactory } from "@/backend/gitClient";
+import type { GitClient } from "@/backend/gitClient";
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { buildExtensionUri } from "@/backend/utils/path";
 import { AvatarManager } from "@/old-extension/avatarManager";
@@ -13,11 +14,14 @@ import { ExtensionState } from "@/old-extension/extensionState";
 import { createMaxDepthTracker } from "@/old-extension/maxDepthTracker";
 import { registerMessageHandlers } from "@/old-extension/messageHandler";
 import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
-import { createRepoManager, RepoManager } from "@/old-extension/repoManager";
+import { createRepoManager } from "@/old-extension/repoManager";
+import type { RepoManager } from "@/old-extension/repoManager";
 import { StatusBarItem } from "@/old-extension/statusBarItem";
 import { logger } from "@/old-extension/utils/logger";
-import { WebviewBridge, webviewBridgeFactory } from "@/old-extension/webviewBridge";
-import { createWebviewPanel, WebviewPanel } from "@/old-extension/webviewPanel";
+import { webviewBridgeFactory } from "@/old-extension/webviewBridge";
+import type { WebviewBridge } from "@/old-extension/webviewBridge";
+import { createWebviewPanel } from "@/old-extension/webviewPanel";
+import type { WebviewPanel } from "@/old-extension/webviewPanel";
 
 export type InitExtension = typeof initExtension;
 

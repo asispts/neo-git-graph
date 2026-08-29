@@ -39,7 +39,7 @@
   "publisher": "asispts",
   "main": "./out/extension.js",
   "scripts": {
-    "typecheck": "tsc -p . --noEmit && tsc -p ./src --noEmit && tsc -p ./src/webview --noEmit && tsc -p ./tests --noEmit && tsc -p ./tests/webview --noEmit && tsc -p ./tests-ext --noEmit",
+    "typecheck": "tsc -p . && tsc -p src/webview && tsc -p tests && tsc -p tests/webview && tsc -p tests-ext --noEmit",
     "vscode:prepublish": "pnpm run clean && pnpm run package",
     "package": "pnpm run typecheck && pnpm run lint && node esbuild.js --production",
     "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
@@ -48,7 +48,7 @@
     "test:ext": "pnpm run compile && pnpm run compile-tests && vscode-test",
     "compile-tests": "tsc -p tests-ext/tsconfig.json && tsc-alias -p tests-ext/tsconfig.json",
     "watch:esbuild": "node esbuild.js --watch",
-    "watch:tsc": "tsc -p ./src --noEmit --watch",
+    "watch:tsc": "tsc -p . --watch",
     "format": "oxfmt --check",
     "format:fix": "oxfmt .",
     "lint": "oxlint",

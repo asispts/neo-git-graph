@@ -1,13 +1,4 @@
 {
-  "extends": "../tsconfig.base.json",
-  "compilerOptions": {
-    "lib": ["es2023", "dom"],
-    "types": ["node", "vscode"]
-  },
-  "include": [
-    "./backend/**/*.ts",
-    "./old-extension/**/*.ts",
-    "../src/backend/**/*.ts",
-    "../src/old-extension/**/*.ts"
-  ]
+  "extends": "../tsconfig.json",
+  "include": ["./backend/**/*.ts", "./old-extension/**/*.ts"]
 }

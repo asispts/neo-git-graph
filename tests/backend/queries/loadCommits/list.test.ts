@@ -162,7 +162,9 @@ describe("loadCommits", () => {
         dateType: "Author Date",
         showUncommittedChanges: false
       });
-      expect(result.commits[0].hash).not.toBe("*");
+      const firstCommit = result.commits[0];
+      expect(firstCommit).toBeDefined();
+      expect(firstCommit?.hash).not.toBe("*");
     } finally {
       fs.rmSync(dirtyRepo, { recursive: true, force: true });
     }
@@ -191,7 +193,7 @@ describe("loadCommits", () => {
       showUncommittedChanges: false
     });
     expect(result.commits.length).toBeGreaterThan(0);
-    expect(result.commits[0].date).toBeGreaterThan(0);
+    expect(result.commits[0]?.date).toBeGreaterThan(0);
   });
 
   it("passes hard flag through to the result", async () => {

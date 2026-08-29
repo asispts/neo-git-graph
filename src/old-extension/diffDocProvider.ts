@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { GitInstance } from "@/backend/gitClient";
+import type { GitInstance } from "@/backend/gitClient";
 import { getPathFromStr } from "@/backend/utils/path";
 
 export class DiffDocProvider implements vscode.TextDocumentContentProvider {
@@ -34,6 +34,9 @@ export class DiffDocProvider implements vscode.TextDocumentContentProvider {
     }
 
     let request = decodeDiffDocUri(uri);
+    if (request.repo === undefined || request.commit === undefined) {
+      return "";
+    }
     return this.gitClient()
       .cwd(request.repo)
       .show([`${request.commit}:${request.filePath}`])
@@ -77,11 +80,14 @@ export function decodeDiffDocUri(uri: vscode.Uri) {
 
 function decodeUriQueryArgs(query: string) {
   let queryComps = query.split("&"),
-    queryArgs: { [key: string]: string } = {},
-    i;
-  for (i = 0; i < queryComps.length; i++) {
-    let pair = queryComps[i].split("=");
-    queryArgs[pair[0]] = decodeURIComponent(pair[1]);
+    queryArgs: { [key: string]: string } = {};
+  for (const queryComp of queryComps) {
+    const separatorIndex = queryComp.indexOf("=");
+    if (separatorIndex !== -1) {
+      const key = queryComp.slice(0, separatorIndex);
+      const value = queryComp.slice(separatorIndex + 1);
+      queryArgs[key] = decodeURIComponent(value);
+    }
   }
   return queryArgs;
 }

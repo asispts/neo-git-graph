@@ -30,8 +30,8 @@ async function getRefs(git: SimpleGit, showRemoteBranches: boolean): Promise<Git
     const stdout = await git.raw(args);
     const refData: GitRefData = { head: null, refs: [] };
     const lines = stdout.split(eolRegex);
-    for (let i = 0; i < lines.length - 1; i++) {
-      const parts = lines[i].split(" ");
+    for (const line of lines.slice(0, -1)) {
+      const parts = line.split(" ");
       if (parts.length < 2) {
         continue;
       }
@@ -79,18 +79,27 @@ async function getLog(
     const stdout = await git.raw(args);
     const lines = stdout.split(eolRegex);
     const commits: GitLogEntry[] = [];
-    for (let i = 0; i < lines.length - 1; i++) {
-      const line = lines[i].split(gitLogSeparator);
-      if (line.length !== 6) {
+    for (const line of lines.slice(0, -1)) {
+      const [hash, parents, author, email, date, message, ...extraFields] =
+        line.split(gitLogSeparator);
+      if (
+        hash === undefined ||
+        parents === undefined ||
+        author === undefined ||
+        email === undefined ||
+        date === undefined ||
+        message === undefined ||
+        extraFields.length > 0
+      ) {
         break;
       }
       commits.push({
-        hash: line[0],
-        parentHashes: line[1].split(" "),
-        author: line[2],
-        email: line[3],
-        date: parseInt(line[4]),
-        message: line[5]
+        hash,
+        parentHashes: parents.split(" "),
+        author,
+        email,
+        date: parseInt(date),
+        message
       });
     }
     return commits;
@@ -131,8 +140,8 @@ export async function loadCommits(
 
   let uncommittedChanges = 0;
   if (refData.head !== null && showUncommittedChanges) {
-    for (let i = 0; i < commits.length; i++) {
-      if (refData.head === commits[i].hash) {
+    for (const commit of commits) {
+      if (refData.head === commit.hash) {
         uncommittedChanges = await countUnsavedChanges(git);
         if (uncommittedChanges > 0) {
           // The webview names this row, so that the name is localized.
@@ -152,21 +161,22 @@ export async function loadCommits(
 
   const commitNodes: GitCommitNode[] = [];
   const commitLookup: { [hash: string]: number } = {};
-  for (let i = 0; i < commits.length; i++) {
-    commitLookup[commits[i].hash] = i;
+  for (const [i, commit] of commits.entries()) {
+    commitLookup[commit.hash] = i;
     commitNodes.push({
-      hash: commits[i].hash,
-      parentHashes: commits[i].parentHashes,
-      author: commits[i].author,
-      email: commits[i].email,
-      date: commits[i].date,
-      message: commits[i].message,
+      hash: commit.hash,
+      parentHashes: commit.parentHashes,
+      author: commit.author,
+      email: commit.email,
+      date: commit.date,
+      message: commit.message,
       refs: []
     });
   }
   for (const ref of refData.refs) {
-    if (typeof commitLookup[ref.hash] === "number") {
-      commitNodes[commitLookup[ref.hash]].refs.push(ref);
+    const commitIndex = commitLookup[ref.hash];
+    if (commitIndex !== undefined) {
+      commitNodes[commitIndex]?.refs.push(ref);
     }
   }
 

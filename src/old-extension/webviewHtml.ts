@@ -2,13 +2,13 @@ import * as vscode from "vscode";
 
 import { getNonce } from "@/backend/utils/nonce";
 import { buildExtensionUri } from "@/backend/utils/path";
-import { Config } from "@/old-extension/config";
+import type { Config } from "@/old-extension/config";
 import { ExtensionState } from "@/old-extension/extensionState";
-import { GitGraphViewState } from "@/types";
+import type { GitGraphViewState } from "@/types";
 
 import { EXTENSION_NAME } from "./constant/const";
 import { getWebviewLocalizedStrings } from "./l10n/webviewL10n";
-import { RepoManager } from "./repoManager";
+import type { RepoManager } from "./repoManager";
 
 /**
  * Safely escape JSON for embedding in HTML script tags.

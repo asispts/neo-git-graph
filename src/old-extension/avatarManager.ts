@@ -5,7 +5,7 @@ import * as https from "node:https";
 import * as url from "node:url";
 
 import { getRemoteUrl } from "@/backend/utils/git";
-import { AvatarCache, ResponseMessage } from "@/types";
+import type { AvatarCache, ResponseMessage } from "@/types";
 
 import { ExtensionState } from "./extensionState";
 
@@ -107,10 +107,11 @@ export class AvatarManager {
     }
   }
 
-  private async getRemoteSource(avatarRequest: AvatarRequestItem) {
-    if (typeof this.remoteSourceCache[avatarRequest.repo] === "string") {
+  private async getRemoteSource(avatarRequest: AvatarRequestItem): Promise<RemoteSource> {
+    const cachedRemoteSource = this.remoteSourceCache[avatarRequest.repo];
+    if (cachedRemoteSource !== undefined) {
       // If the repo exists in the cache of remote sources
-      return this.remoteSourceCache[avatarRequest.repo];
+      return cachedRemoteSource;
     } else {
       // Fetch the remote repo source
       let remoteUrl = await getRemoteUrl(avatarRequest.repo, this.gitPath()),
@@ -119,11 +120,12 @@ export class AvatarManager {
         // Depending on the domain of the remote repo source, determine the type of source it is
         if (remoteUrl.startsWith("https://github.com/")) {
           let remoteUrlComps = remoteUrl.split("/");
-          remoteSource = {
-            type: "github",
-            owner: remoteUrlComps[3],
-            repo: remoteUrlComps[4].replace(/\.git$/, "")
-          };
+          const owner = remoteUrlComps[3];
+          const repo = remoteUrlComps[4];
+          remoteSource =
+            owner !== undefined && repo !== undefined
+              ? { type: "github", owner, repo: repo.replace(/\.git$/, "") }
+              : { type: "gravatar" };
         } else if (remoteUrl.startsWith("https://gitlab.com/")) {
           remoteSource = { type: "gitlab" };
         } else {
@@ -243,9 +245,10 @@ export class AvatarManager {
             if (res.statusCode === 200) {
               // Sucess
               let users = JSON.parse(respBody) as { avatar_url?: string }[];
-              if (users.length > 0 && users[0].avatar_url) {
+              const avatarUrl = users[0]?.avatar_url;
+              if (avatarUrl !== undefined) {
                 // Avatar url found
-                let img = await this.downloadAvatarImage(avatarRequest.email, users[0].avatar_url);
+                let img = await this.downloadAvatarImage(avatarRequest.email, avatarUrl);
                 if (img !== null) {
                   this.saveAvatar(avatarRequest.email, img, false);
                 }
@@ -347,8 +350,9 @@ export class AvatarManager {
   }
 
   private sendAvatarToWebView(email: string, onError: () => void) {
-    if (this.postToWebview !== null) {
-      fs.readFile(this.avatarStorageFolder + "/" + this.avatars[email].image, (err, data) => {
+    const avatar = this.avatars[email];
+    if (this.postToWebview !== null && avatar !== undefined) {
+      fs.readFile(this.avatarStorageFolder + "/" + avatar.image, (err, data) => {
         if (err) {
           onError();
         } else if (this.postToWebview !== null) {
@@ -356,11 +360,7 @@ export class AvatarManager {
           this.postToWebview({
             command: "fetchAvatar",
             email: email,
-            image:
-              "data:image/" +
-              this.avatars[email].image!.split(".")[1] +
-              ";base64," +
-              data.toString("base64")
+            image: "data:image/" + avatar.image.split(".")[1] + ";base64," + data.toString("base64")
           });
         }
       });
@@ -381,12 +381,15 @@ class AvatarRequestQueue {
   public add(email: string, repo: string, commits: string[], immediate: boolean) {
     let emailIndex = this.queue.findIndex((v) => v.email === email && v.repo === repo);
     if (emailIndex > -1) {
-      let l = commits.indexOf(
-        this.queue[emailIndex].commits[this.queue[emailIndex].commits.length - 1]
-      );
+      const existingRequest = this.queue[emailIndex];
+      const lastCommit = existingRequest?.commits.at(-1);
+      if (existingRequest === undefined || lastCommit === undefined) {
+        return;
+      }
+      let l = commits.indexOf(lastCommit);
       // Index of the last commit of the existing request, in the new request commits
       if (l > -1 && l < commits.length - 1) {
-        this.queue[emailIndex].commits.push(...commits.slice(l + 1)); // Append all new commits
+        existingRequest.commits.push(...commits.slice(l + 1)); // Append all new commits
       }
     } else {
       this.insertItem({
@@ -394,9 +397,7 @@ class AvatarRequestQueue {
         repo: repo,
         commits: commits,
         checkAfter:
-          immediate || this.queue.length === 0
-            ? 0
-            : this.queue[this.queue.length - 1].checkAfter + 1,
+          immediate || this.queue.length === 0 ? 0 : (this.queue.at(-1)?.checkAfter ?? 0) + 1,
         attempts: 0
       });
     }
@@ -418,7 +419,8 @@ class AvatarRequestQueue {
 
   // Takes an item from the queue if possible, respecting the value set for checkAfter
   public takeItem() {
-    if (this.queue.length > 0 && this.queue[0].checkAfter < new Date().getTime()) {
+    const firstItem = this.queue[0];
+    if (firstItem !== undefined && firstItem.checkAfter < new Date().getTime()) {
       return this.queue.shift()!;
     }
     return null;
@@ -432,7 +434,11 @@ class AvatarRequestQueue {
       prevLength = this.queue.length;
     while (l <= r) {
       c = (l + r) >> 1;
-      if (this.queue[c].checkAfter <= item.checkAfter) {
+      const currentItem = this.queue[c];
+      if (currentItem === undefined) {
+        throw new Error("Invalid avatar queue index");
+      }
+      if (currentItem.checkAfter <= item.checkAfter) {
         l = c + 1;
       } else {
         r = c - 1;

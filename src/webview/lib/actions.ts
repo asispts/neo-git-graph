@@ -114,10 +114,14 @@ export function saveColumnWidths(widths: Array<number>) {
   }
 
   setColumnWidths(widths);
+  const state = repoStates.value[repo];
+  if (state === undefined) {
+    return;
+  }
   vscode.postMessage({
     command: "saveRepoState",
     repo,
-    state: repoStates.value[repo]
+    state
   });
 }
 

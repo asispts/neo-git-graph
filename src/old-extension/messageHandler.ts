@@ -9,21 +9,21 @@ import {
 } from "@/backend/actions/commit";
 import { mergeBranch, mergeCommit } from "@/backend/actions/merge";
 import { addTag, deleteTag, pushTag } from "@/backend/actions/tag";
-import { GitClient } from "@/backend/gitClient";
+import type { GitClient } from "@/backend/gitClient";
 import { commitDetails } from "@/backend/queries/commitDetails";
 import { loadBranches } from "@/backend/queries/loadBranches";
 import { loadCommits } from "@/backend/queries/loadCommits";
-import { GitFileChangeType } from "@/backend/types";
+import type { GitFileChangeType } from "@/backend/types";
 import { abbrevCommit } from "@/backend/utils/string";
 import { AvatarManager } from "@/old-extension/avatarManager";
-import { Config } from "@/old-extension/config";
+import type { Config } from "@/old-extension/config";
 import { encodeDiffDocUri } from "@/old-extension/diffDocProvider";
 import { ExtensionState } from "@/old-extension/extensionState";
 import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
-import { RequestMessage, ResponseMessage } from "@/types";
+import type { RequestMessage, ResponseMessage } from "@/types";
 
-import { RepoManager } from "./repoManager";
-import { WebviewBridge } from "./webviewBridge";
+import type { RepoManager } from "./repoManager";
+import type { WebviewBridge } from "./webviewBridge";
 
 function viewDiff(
   repo: string,

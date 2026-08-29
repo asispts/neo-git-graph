@@ -36,9 +36,13 @@ export function buildFileTree(files: Array<GitFileChange>): Array<FileTreeNode> 
 
   for (const file of files) {
     const parts = file.newFilePath.split("/");
+    const fileName = parts.pop();
+    if (fileName === undefined) {
+      continue;
+    }
     let folder = root;
 
-    for (const name of parts.slice(0, -1)) {
+    for (const name of parts) {
       const path = folder.path === "" ? name : `${folder.path}/${name}`;
       let child = folders.get(path);
 
@@ -51,7 +55,7 @@ export function buildFileTree(files: Array<GitFileChange>): Array<FileTreeNode> 
       folder = child;
     }
 
-    folder.children.push({ type: "file", name: parts[parts.length - 1], file });
+    folder.children.push({ type: "file", name: fileName, file });
   }
 
   return sortNodes(root.children);

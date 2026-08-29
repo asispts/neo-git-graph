@@ -1,14 +1,17 @@
 import { isGitRepository } from "@/backend/utils/git";
 import { evalPromises } from "@/backend/utils/promise";
-import { Config } from "@/old-extension/config";
+import type { Config } from "@/old-extension/config";
 import { ExtensionState } from "@/old-extension/extensionState";
-import { GitRepoSet, GitRepoState } from "@/types";
+import type { GitRepoSet, GitRepoState } from "@/types";
 
 function sortRepos(repos: GitRepoSet) {
   const repoPaths = Object.keys(repos).toSorted();
   const sorted: GitRepoSet = {};
-  for (let i = 0; i < repoPaths.length; i++) {
-    sorted[repoPaths[i]] = repos[repoPaths[i]];
+  for (const repoPath of repoPaths) {
+    const repo = repos[repoPath];
+    if (repo !== undefined) {
+      sorted[repoPath] = repo;
+    }
   }
   return sorted;
 }
@@ -73,9 +76,9 @@ export function createRepoManager(extensionState: ExtensionState, config: Config
     const pathFolder = path + "/";
     const repoPaths = Object.keys(repos);
     let changes = false;
-    for (let i = 0; i < repoPaths.length; i++) {
-      if (repoPaths[i] === path || repoPaths[i].startsWith(pathFolder)) {
-        removeRepo(repoPaths[i]);
+    for (const repoPath of repoPaths) {
+      if (repoPath === path || repoPath.startsWith(pathFolder)) {
+        removeRepo(repoPath);
         changes = true;
       }
     }
@@ -93,9 +96,9 @@ export function createRepoManager(extensionState: ExtensionState, config: Config
       let changes = false;
       evalPromises(repoPaths, 3, (path) => isGitRepository(path, config.gitPath())).then(
         (results) => {
-          for (let i = 0; i < repoPaths.length; i++) {
+          for (const [i, repoPath] of repoPaths.entries()) {
             if (!results[i]) {
-              removeRepo(repoPaths[i]);
+              removeRepo(repoPath);
               changes = true;
             }
           }

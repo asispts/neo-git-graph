@@ -7,7 +7,7 @@ import { columnWidths } from "@/webview/lib/stores";
 import { MIN_COLUMN, moveBoundary } from "@/webview/utils/columns";
 
 /** Custom property that carries the width of each resizable column. */
-const WIDTH_PROPERTIES = ["--col-graph", "--col-date", "--col-author", "--col-commit"];
+const WIDTH_PROPERTIES = ["--col-graph", "--col-date", "--col-author", "--col-commit"] as const;
 
 /** Pixels one arrow key moves a boundary. */
 const KEY_STEP = 8;
@@ -40,15 +40,26 @@ function applyWidths(
   }
 
   for (const [index, width] of widths.entries()) {
-    container.style.setProperty(WIDTH_PROPERTIES[index], `${width}px`);
+    const property = WIDTH_PROPERTIES[index];
+    if (property !== undefined) {
+      container.style.setProperty(property, `${width}px`);
+    }
   }
+}
+
+function cellWidth(row: HTMLTableRowElement, column: number) {
+  const cell = row.cells.item(column);
+  if (cell === null) {
+    throw new Error("Invalid commit table column");
+  }
+  return cell.clientWidth;
 }
 
 /** The widths the table shows now: the saved ones, or the ones the browser chose. */
 function shownWidths(row: HTMLTableRowElement) {
   return (
     columnWidths.peek() ??
-    RESIZABLE_COLUMNS.map((column) => Math.max(row.cells[column].clientWidth, MIN_COLUMN))
+    RESIZABLE_COLUMNS.map((column) => Math.max(cellWidth(row, column), MIN_COLUMN))
   );
 }
 
@@ -85,7 +96,7 @@ export function useColumnResize(graphColumn: number): ColumnResize {
       state.widths,
       state.boundary,
       clientX - state.x,
-      row.cells[DESCRIPTION_COLUMN].clientWidth
+      cellWidth(row, DESCRIPTION_COLUMN)
     );
 
     state.widths = moved.widths;
@@ -145,7 +156,7 @@ export function useColumnResize(graphColumn: number): ColumnResize {
       shownWidths(row),
       boundary,
       event.key === "ArrowLeft" ? -KEY_STEP : KEY_STEP,
-      row.cells[DESCRIPTION_COLUMN].clientWidth
+      cellWidth(row, DESCRIPTION_COLUMN)
     );
     saveColumnWidths(moved.widths);
   }
