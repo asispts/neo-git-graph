@@ -4,7 +4,7 @@ import { Button } from "@/webview/components/ui/Button";
 import { Icon } from "@/webview/components/ui/Icons";
 import { rpc } from "@/webview/lib/rpc/rpc-client";
 
-export function NoRepoPage({ onRescan }: { onRescan: () => void }) {
+export function NoRepoPage() {
   const [initializing, setInitializing] = useState(false);
   const [error, setError] = useState<string>();
 
@@ -14,10 +14,10 @@ export function NoRepoPage({ onRescan }: { onRescan: () => void }) {
 
     try {
       await rpc.call("git.init", null);
-      onRescan();
     } catch (reason: unknown) {
       const message = reason instanceof Error ? reason.message : String(reason);
       setError(window.l10n.unableToInitializeRepo.replace("{0}", message));
+    } finally {
       setInitializing(false);
     }
   };

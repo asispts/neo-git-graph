@@ -55,7 +55,7 @@ async function loadRepoList() {
   }
 
   if (repos.length === 0) {
-    render(<NoRepoPage onRescan={() => void loadRepoList()} />, root);
+    render(<NoRepoPage />, root);
     return;
   }
 
