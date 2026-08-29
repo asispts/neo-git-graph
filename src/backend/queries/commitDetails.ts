@@ -27,14 +27,24 @@ async function fetchCommitInfo(
   while (lastLine >= 0 && lines[lastLine] === "") {
     lastLine--;
   }
-  const commitInfo = lines[0].split(gitLogSeparator);
+  const [hash, parents, author, email, date, committer] = lines[0].split(gitLogSeparator);
+  if (
+    hash === undefined ||
+    parents === undefined ||
+    author === undefined ||
+    email === undefined ||
+    date === undefined ||
+    committer === undefined
+  ) {
+    throw new Error("Invalid commit information returned by Git");
+  }
   return {
-    hash: commitInfo[0],
-    parents: commitInfo[1].split(" "),
-    author: commitInfo[2],
-    email: commitInfo[3],
-    date: parseInt(commitInfo[4]),
-    committer: commitInfo[5],
+    hash,
+    parents: parents.split(" "),
+    author,
+    email,
+    date: parseInt(date),
+    committer,
     body: lines.slice(1, lastLine + 1).join("\n"),
     fileChanges: []
   };

@@ -120,11 +120,12 @@ export class AvatarManager {
         // Depending on the domain of the remote repo source, determine the type of source it is
         if (remoteUrl.startsWith("https://github.com/")) {
           let remoteUrlComps = remoteUrl.split("/");
-          remoteSource = {
-            type: "github",
-            owner: remoteUrlComps[3],
-            repo: remoteUrlComps[4].replace(/\.git$/, "")
-          };
+          const owner = remoteUrlComps[3];
+          const repo = remoteUrlComps[4];
+          remoteSource =
+            owner !== undefined && repo !== undefined
+              ? { type: "github", owner, repo: repo.replace(/\.git$/, "") }
+              : { type: "gravatar" };
         } else if (remoteUrl.startsWith("https://gitlab.com/")) {
           remoteSource = { type: "gitlab" };
         } else {

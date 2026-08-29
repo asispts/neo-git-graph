@@ -80,17 +80,26 @@ async function getLog(
     const lines = stdout.split(eolRegex);
     const commits: GitLogEntry[] = [];
     for (let i = 0; i < lines.length - 1; i++) {
-      const line = lines[i].split(gitLogSeparator);
-      if (line.length !== 6) {
+      const [hash, parents, author, email, date, message, ...extraFields] =
+        lines[i].split(gitLogSeparator);
+      if (
+        hash === undefined ||
+        parents === undefined ||
+        author === undefined ||
+        email === undefined ||
+        date === undefined ||
+        message === undefined ||
+        extraFields.length > 0
+      ) {
         break;
       }
       commits.push({
-        hash: line[0],
-        parentHashes: line[1].split(" "),
-        author: line[2],
-        email: line[3],
-        date: parseInt(line[4]),
-        message: line[5]
+        hash,
+        parentHashes: parents.split(" "),
+        author,
+        email,
+        date: parseInt(date),
+        message
       });
     }
     return commits;
