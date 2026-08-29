@@ -47,6 +47,9 @@
   --color-line-soft: rgba(128, 128, 128, 0.25);
   --color-btn: rgba(128, 128, 128, 0.1);
   --color-btn-hover: rgba(128, 128, 128, 0.2);
+  --color-action: var(--vscode-button-background);
+  --color-action-fg: var(--vscode-button-foreground);
+  --color-action-hover: var(--vscode-button-hoverBackground);
 
   --color-git-added: var(--vscode-gitDecoration-addedResourceForeground);
   --color-git-modified: var(--vscode-gitDecoration-modifiedResourceForeground);
