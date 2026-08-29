@@ -12,6 +12,7 @@ import { initializeStores } from "./lib/stores";
 import { repoListStore } from "./lib/stores/repo-list.store";
 import { initializeWebviewConfig } from "./lib/webview-config";
 import { LoadingPage } from "./pages/LoadingPage";
+import { NoRepoPage } from "./pages/NoRepoPage";
 
 const root = document.getElementById("app")!;
 
@@ -50,6 +51,11 @@ async function loadRepoList() {
       </div>,
       root
     );
+    return;
+  }
+
+  if (repos.length === 0) {
+    render(<NoRepoPage onRescan={() => void loadRepoList()} />, root);
     return;
   }
 

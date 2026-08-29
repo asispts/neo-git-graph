@@ -19,6 +19,10 @@ export type RpcMethodMap = {
     params: null;
     result: WebviewInitialize;
   };
+  "git.init": {
+    params: null;
+    result: boolean;
+  };
   "repo.scan": {
     params: null;
     result: ScanRepoResult;

@@ -5,13 +5,8 @@ import { Dialog } from "./components/ui/Dialog";
 import { ScrollShadow } from "./components/ui/ScrollShadow";
 import { GraphView } from "./layout/GraphView";
 import { MainHeader } from "./layout/MainHeader";
-import { NoRepoPage } from "./pages/NoRepoPage";
 
 export function App({ repos }: { repos: Array<GitRepo> }) {
-  if (repos.length === 0) {
-    return <NoRepoPage />;
-  }
-
   return (
     <div class="flex min-h-screen flex-col">
       <MainHeader repos={repos} />
