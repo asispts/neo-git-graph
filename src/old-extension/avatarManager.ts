@@ -107,10 +107,11 @@ export class AvatarManager {
     }
   }
 
-  private async getRemoteSource(avatarRequest: AvatarRequestItem) {
-    if (typeof this.remoteSourceCache[avatarRequest.repo] === "string") {
+  private async getRemoteSource(avatarRequest: AvatarRequestItem): Promise<RemoteSource> {
+    const cachedRemoteSource = this.remoteSourceCache[avatarRequest.repo];
+    if (cachedRemoteSource !== undefined) {
       // If the repo exists in the cache of remote sources
-      return this.remoteSourceCache[avatarRequest.repo];
+      return cachedRemoteSource;
     } else {
       // Fetch the remote repo source
       let remoteUrl = await getRemoteUrl(avatarRequest.repo, this.gitPath()),
