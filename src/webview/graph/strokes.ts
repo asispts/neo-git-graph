@@ -58,6 +58,9 @@ function placeLines(branch: GraphBranch, expansion: GraphExpansion | null): Arra
   for (let i = 0; i < lines.length - 1;) {
     const line = lines[i];
     const next = lines[i + 1];
+    if (line === undefined || next === undefined) {
+      break;
+    }
     const straight =
       line.x1 === line.x2 &&
       line.x2 === next.x1 &&

@@ -51,6 +51,9 @@ function trapTab(panel: HTMLElement, event: KeyboardEvent) {
 
   const first = items[0];
   const last = items[items.length - 1];
+  if (first === undefined || last === undefined) {
+    return;
+  }
 
   if (event.shiftKey && (document.activeElement === first || document.activeElement === panel)) {
     event.preventDefault();
@@ -215,7 +218,7 @@ function FormBody({
             <Field
               key={`${input.kind}-${index}`}
               input={input}
-              value={values[index]}
+              value={values[index] ?? input.value}
               labelled={labelled}
               labelledBy={labelledBy}
               onChange={(value) =>

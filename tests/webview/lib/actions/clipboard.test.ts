@@ -35,7 +35,9 @@ it("copies a commit hash through RPC", async () => {
   expect(entry).toBeDefined();
   entry!.onClick();
 
-  const request = vscodeApi.postMessage.mock.calls[0][0] as RpcRequest<"clipboard.copy">;
+  const message = vscodeApi.postMessage.mock.calls[0]?.[0];
+  expect(message).toBeDefined();
+  const request = message as RpcRequest<"clipboard.copy">;
   expect(request).toEqual({
     kind: "rpc.request",
     id: expect.any(String),
