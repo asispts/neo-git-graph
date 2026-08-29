@@ -27,11 +27,7 @@ export function getWebviewLocalizedStrings() {
     noCommits: vscode.l10n.t("No commits yet"),
     createFirstCommit: vscode.l10n.t("Create the first commit to start the graph."),
     noRepo: vscode.l10n.t("No Git repository found"),
-    noRepoDescription: vscode.l10n.t(
-      "Initialize a repository in this workspace, or scan again after you add one."
-    ),
     initializeRepo: vscode.l10n.t("Initialize Repository"),
-    scanAgain: vscode.l10n.t("Scan Again"),
     unableToInitializeRepo: vscode.l10n.t("Unable to initialize the repository: {0}"),
 
     // Error messages

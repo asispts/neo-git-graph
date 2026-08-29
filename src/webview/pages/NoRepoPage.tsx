@@ -43,12 +43,11 @@ export function NoRepoPage({ onRescan }: { onRescan: () => void }) {
           </svg>
         </div>
 
-        <h1 id="no-repo-title" class="mb-2 text-xl font-semibold">
+        <h1 id="no-repo-title" class="text-xl font-semibold">
           {window.l10n.noRepo}
         </h1>
-        <p class="mx-auto max-w-md text-muted">{window.l10n.noRepoDescription}</p>
 
-        <div class="mt-6 flex flex-wrap justify-center gap-3">
+        <div class="mt-6">
           <Button variant="primary" disabled={initializing} onClick={() => void initializeRepo()}>
             <Icon>
               <path
@@ -58,12 +57,6 @@ export function NoRepoPage({ onRescan }: { onRescan: () => void }) {
               />
             </Icon>
             {window.l10n.initializeRepo}
-          </Button>
-          <Button disabled={initializing} onClick={onRescan}>
-            <Icon>
-              <path d="M3 8a5 5 0 0 1 9-3h-2a.5.5 0 0 0 0 1h3a.5.5 0 0 0 .5-.5v-3a.5.5 0 0 0-1 0V3A6 6 0 1 0 14 8.5a.5.5 0 0 0-1-.1A5 5 0 1 1 3 8Z" />
-            </Icon>
-            {window.l10n.scanAgain}
           </Button>
         </div>
 
