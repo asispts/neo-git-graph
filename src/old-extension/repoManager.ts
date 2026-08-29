@@ -7,8 +7,11 @@ import type { GitRepoSet, GitRepoState } from "@/types";
 function sortRepos(repos: GitRepoSet) {
   const repoPaths = Object.keys(repos).toSorted();
   const sorted: GitRepoSet = {};
-  for (let i = 0; i < repoPaths.length; i++) {
-    sorted[repoPaths[i]] = repos[repoPaths[i]];
+  for (const repoPath of repoPaths) {
+    const repo = repos[repoPath];
+    if (repo !== undefined) {
+      sorted[repoPath] = repo;
+    }
   }
   return sorted;
 }

@@ -165,8 +165,9 @@ export async function loadCommits(
     });
   }
   for (const ref of refData.refs) {
-    if (typeof commitLookup[ref.hash] === "number") {
-      commitNodes[commitLookup[ref.hash]].refs.push(ref);
+    const commitIndex = commitLookup[ref.hash];
+    if (commitIndex !== undefined) {
+      commitNodes[commitIndex]?.refs.push(ref);
     }
   }
 
