@@ -1,18 +1,22 @@
 {
   "compilerOptions": {
-    "module": "ESNext",
+    "module": "esnext",
     "moduleResolution": "bundler",
-    "target": "es6",
-    "lib": ["es2023"],
+    "target": "esnext",
+    "lib": ["esnext"],
     "types": [],
     "noEmit": true,
     "strict": true,
-    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "skipLibCheck": true,
+    "noFallthroughCasesInSwitch": true,
+    "verbatimModuleSyntax": true,
     "isolatedModules": true,
-    "esModuleInterop": true,
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force",
+    "skipLibCheck": true,
     "paths": {
       "@/*": ["./src/*"],
       "@tests/*": ["./tests/*"]
