@@ -41,14 +41,18 @@ export function moveBoundary(
   switch (boundary) {
     case 0: {
       const width = next[0];
-      if (width === undefined) return { widths: next, moved: 0 };
+      if (width === undefined) {
+        return { widths: next, moved: 0 };
+      }
       moved = allowed(moved, MIN_COLUMN - width, description - MIN_DESCRIPTION);
       next[0] = width + moved;
       break;
     }
     case 1: {
       const width = next[1];
-      if (width === undefined) return { widths: next, moved: 0 };
+      if (width === undefined) {
+        return { widths: next, moved: 0 };
+      }
       moved = allowed(moved, MIN_DESCRIPTION - description, width - MIN_COLUMN);
       next[1] = width - moved;
       break;
@@ -56,7 +60,9 @@ export function moveBoundary(
     default: {
       const left = next[boundary - 1];
       const right = next[boundary];
-      if (left === undefined || right === undefined) return { widths: next, moved: 0 };
+      if (left === undefined || right === undefined) {
+        return { widths: next, moved: 0 };
+      }
       moved = allowed(moved, MIN_COLUMN - left, right - MIN_COLUMN);
       next[boundary - 1] = left + moved;
       next[boundary] = right - moved;
