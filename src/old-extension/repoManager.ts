@@ -1,8 +1,8 @@
 import { isGitRepository } from "@/backend/utils/git";
 import { evalPromises } from "@/backend/utils/promise";
-import { Config } from "@/old-extension/config";
+import type { Config } from "@/old-extension/config";
 import { ExtensionState } from "@/old-extension/extensionState";
-import { GitRepoSet, GitRepoState } from "@/types";
+import type { GitRepoSet, GitRepoState } from "@/types";
 
 function sortRepos(repos: GitRepoSet) {
   const repoPaths = Object.keys(repos).toSorted();

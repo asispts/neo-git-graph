@@ -2,12 +2,12 @@ import * as vscode from "vscode";
 
 import { buildExtensionUri } from "@/backend/utils/path";
 import { AvatarManager } from "@/old-extension/avatarManager";
-import { Config } from "@/old-extension/config";
+import type { Config } from "@/old-extension/config";
 import { ExtensionState } from "@/old-extension/extensionState";
 import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 
-import { RepoManager } from "./repoManager";
-import { WebviewBridge } from "./webviewBridge";
+import type { RepoManager } from "./repoManager";
+import type { WebviewBridge } from "./webviewBridge";
 import { buildWebviewHtml } from "./webviewHtml";
 
 export function createWebviewPanel(opts: {

@@ -5,7 +5,7 @@ import * as https from "node:https";
 import * as url from "node:url";
 
 import { getRemoteUrl } from "@/backend/utils/git";
-import { AvatarCache, ResponseMessage } from "@/types";
+import type { AvatarCache, ResponseMessage } from "@/types";
 
 import { ExtensionState } from "./extensionState";
 

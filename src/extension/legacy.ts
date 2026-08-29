@@ -8,7 +8,8 @@ import { ExtensionState } from "@/old-extension/extensionState";
 import { registerMessageHandlers } from "@/old-extension/messageHandler";
 import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { createRepoManager } from "@/old-extension/repoManager";
-import { WebviewBridge, webviewBridgeFactory } from "@/old-extension/webviewBridge";
+import { webviewBridgeFactory } from "@/old-extension/webviewBridge";
+import type { WebviewBridge } from "@/old-extension/webviewBridge";
 
 export function createMessageProtocol(ctx: vscode.ExtensionContext) {
   const extensionState = new ExtensionState(ctx);

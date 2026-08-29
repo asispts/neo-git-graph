@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { Config } from "./config";
+import type { Config } from "./config";
 import { EXTENSION_NAME } from "./constant/const";
 import { logger } from "./utils/logger";
 
