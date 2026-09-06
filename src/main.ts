@@ -2,7 +2,6 @@ import * as vscode from "vscode";
 
 import { EXTENSION_NAME } from "./extension/constants";
 import { createViewCommand } from "./extension/view-command";
-import { watchGitDir } from "./extension/watchers/git.watcher";
 import { logger } from "./old-extension/utils/logger";
 
 export function activate(ctx: vscode.ExtensionContext) {
@@ -10,8 +9,6 @@ export function activate(ctx: vscode.ExtensionContext) {
     return;
   }
   logger.init(ctx);
-
-  ctx.subscriptions.push(watchGitDir());
 
   const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
   statusBarItem.name = EXTENSION_NAME;
