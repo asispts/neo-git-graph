@@ -15,6 +15,7 @@ import { loadBranches } from "@/backend/queries/loadBranches";
 import { loadCommits } from "@/backend/queries/loadCommits";
 import type { GitFileChangeType } from "@/backend/types";
 import { abbrevCommit } from "@/backend/utils/string";
+import { selectWatchedRepo } from "@/extension/watchers/git-repo.watcher";
 import { AvatarManager } from "@/old-extension/avatarManager";
 import type { Config } from "@/old-extension/config";
 import { encodeDiffDocUri } from "@/old-extension/diffDocProvider";
@@ -79,6 +80,7 @@ export function registerMessageHandlers(
     currentRepo = repo;
     gitClient.setRepo(repo);
     extensionState.setLastActiveRepo(repo);
+    selectWatchedRepo(repo);
     repoFileWatcher.start(repo);
   }
 
