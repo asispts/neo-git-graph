@@ -1,20 +1,22 @@
 import "./styles.css";
 
+import { signal } from "@preact/signals";
 import { render } from "preact";
-
-import type { GitRepo } from "@/types";
+import { useEffect } from "preact/hooks";
 
 import { App } from "./App";
 import { Button } from "./components/ui/Button";
+import { selectRepo } from "./lib/actions";
 import { initDispatcher } from "./lib/dispatcher";
 import { rpc } from "./lib/rpc/rpc-client";
-import { initializeStores } from "./lib/stores";
+import { initializeStores, selectedRepo } from "./lib/stores";
 import { repoListStore } from "./lib/stores/repo-list.store";
 import { initializeWebviewConfig } from "./lib/webview-config";
 import { LoadingPage } from "./pages/LoadingPage";
 import { NoRepoPage } from "./pages/NoRepoPage";
 
 const root = document.getElementById("app")!;
+const repoListError = signal<string | undefined>(undefined);
 
 initDispatcher();
 render(<LoadingPage />, root);
@@ -34,30 +36,52 @@ async function main() {
   initializeWebviewConfig(config);
   initializeStores(config.initialLoadCommits);
 
+  render(<Root />, root);
   await loadRepoList();
 }
 
 async function loadRepoList() {
-  render(<LoadingPage />, root);
+  repoListError.value = undefined;
 
-  let repos: Array<GitRepo>;
   try {
-    repos = await repoListStore.load();
+    await repoListStore.load();
   } catch (error: unknown) {
-    render(
+    repoListError.value = error instanceof Error ? error.message : String(error);
+  }
+}
+
+function Root() {
+  const repos = repoListStore.get();
+  const error = repoListError.value;
+
+  useEffect(() => {
+    if (repos === undefined) {
+      return;
+    }
+
+    if (repos.length === 0) {
+      selectedRepo.value = undefined;
+      return;
+    }
+
+    const firstRepo = repos[0];
+    if (firstRepo !== undefined && !repos.some((repo) => repo.path === selectedRepo.value)) {
+      selectRepo(firstRepo.path);
+    }
+  }, [repos]);
+
+  if (error !== undefined) {
+    return (
       <div role="alert">
-        <p>Unable to load repositories: {error instanceof Error ? error.message : String(error)}</p>
+        <p>Unable to load repositories: {error}</p>
         <Button onClick={() => void loadRepoList()}>Retry</Button>
-      </div>,
-      root
+      </div>
     );
-    return;
   }
 
-  if (repos.length === 0) {
-    render(<NoRepoPage />, root);
-    return;
+  if (repos === undefined) {
+    return <LoadingPage />;
   }
 
-  render(<App repos={repos} />, root);
+  return repos.length === 0 ? <NoRepoPage /> : <App repos={repos} />;
 }

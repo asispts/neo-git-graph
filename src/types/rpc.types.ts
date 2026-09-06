@@ -1,5 +1,5 @@
 import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
-import type { GitRepo, WebviewConfig } from "@/types";
+import type { GitRepo, RepoChange, WebviewConfig } from "@/types";
 
 export type WebviewInitialize = {
   l10n: LocalizedStrings;
@@ -30,6 +30,22 @@ export type RpcMethodMap = {
 };
 
 export type RpcMethod = keyof RpcMethodMap;
+
+export type RpcNotificationMap = {
+  "repo.changed": RepoChange;
+};
+
+export type RpcNotificationName = keyof RpcNotificationMap;
+
+export type RpcNotification<N extends RpcNotificationName = RpcNotificationName> =
+  N extends RpcNotificationName
+    ? {
+        kind: "rpc.notify";
+        id: string;
+        name: N;
+        message: RpcNotificationMap[N];
+      }
+    : never;
 
 export type RpcRequest<M extends RpcMethod = RpcMethod> = M extends RpcMethod
   ? {

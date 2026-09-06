@@ -1,5 +1,7 @@
 import type * as vscode from "vscode";
 
+import { logger } from "@/old-extension/utils/logger";
+
 export type FsWatcherEvent = "created" | "deleted";
 
 export function createDebouncer() {
@@ -9,7 +11,7 @@ export function createDebouncer() {
     debounce(
       type: FsWatcherEvent,
       uri: vscode.Uri,
-      callback: (type: FsWatcherEvent, uri: vscode.Uri) => void
+      callback: (type: FsWatcherEvent, uri: vscode.Uri) => Promise<void>
     ): void {
       const key = `${type}:${uri.toString()}`;
       const timer = timers.get(key);
@@ -22,7 +24,9 @@ export function createDebouncer() {
         key,
         setTimeout(() => {
           timers.delete(key);
-          callback(type, uri);
+          void callback(type, uri).catch((error: unknown) => {
+            logger.log(`Unable to process repository change: ${String(error)}`);
+          });
         }, 100)
       );
     },

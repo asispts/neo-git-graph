@@ -4,6 +4,7 @@ import { extConfig } from "./config";
 import { EXTENSION_NAME } from "./constants";
 import { createWevbviewHtml } from "./html";
 import { createMessageProtocol } from "./legacy";
+import { initRpcNotify } from "./rpc/rpc-notify";
 import { createRpcServer } from "./rpc/rpc-server";
 
 export function createViewCommand(ctx: vscode.ExtensionContext) {
@@ -41,12 +42,14 @@ export function createViewCommand(ctx: vscode.ExtensionContext) {
 
     const messageProtocolAttachment = messageProtocol.attach(webPanel);
     const rpcListener = rpcServer.attach(webPanel.webview);
+    const rpcNotifier = initRpcNotify(webPanel.webview);
 
     webPanel.webview.html = createWevbviewHtml(ctx, webPanel.webview);
 
     webPanel.onDidDispose(() => {
       messageProtocolAttachment.dispose();
       rpcListener.dispose();
+      rpcNotifier.dispose();
       currentPanel = undefined;
     });
     currentPanel = webPanel;
