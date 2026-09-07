@@ -4,7 +4,7 @@ import * as vscode from "vscode";
 
 import { rpcNotify } from "@/extension/rpc/rpc-notify";
 import { createDebouncer, type FsWatcherEvent } from "@/extension/util/debounce";
-import { legacyLogger } from "@/old-extension/utils/logger";
+import { logger } from "@/extension/util/logger";
 
 export function watchGitDir(): vscode.Disposable {
   const debouncer = createDebouncer();
@@ -19,7 +19,7 @@ export function watchGitDir(): vscode.Disposable {
 }
 
 async function processGitDir(type: FsWatcherEvent, uri: vscode.Uri) {
-  legacyLogger.log(`Git directory ${type}: ${uri.fsPath}`);
+  logger.debug(`Git directory ${type}: ${uri.fsPath}`);
   const repoPath = path.dirname(uri.fsPath);
 
   if (type === "created") {

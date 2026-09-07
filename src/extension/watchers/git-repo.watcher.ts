@@ -3,7 +3,7 @@ import path from "node:path";
 import * as vscode from "vscode";
 
 import { rpcNotify } from "@/extension/rpc/rpc-notify";
-import { legacyLogger } from "@/old-extension/utils/logger";
+import { logger } from "@/extension/util/logger";
 
 const REFRESH_DELAY = 750;
 const GIT_DATA = /^(HEAD|config|index|packed-refs|refs(?:\/.*)?)$/;
@@ -48,13 +48,13 @@ export function watchGitRepo(): vscode.Disposable {
         return;
       }
 
-      legacyLogger.log(`Git repository file changed: ${uri.fsPath}`);
+      logger.debug(`Git repository file changed: ${uri.fsPath}`);
       if (refreshTimer !== undefined) {
         clearTimeout(refreshTimer);
       }
       refreshTimer = setTimeout(() => {
         refreshTimer = undefined;
-        legacyLogger.log(`Git repository changed: ${repo}`);
+        logger.debug(`Git repository changed: ${repo}`);
         void rpcNotify.notify("repo.updated", { path: repo });
       }, REFRESH_DELAY);
     };

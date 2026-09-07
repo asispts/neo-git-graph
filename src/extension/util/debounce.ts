@@ -1,6 +1,6 @@
 import type * as vscode from "vscode";
 
-import { legacyLogger } from "@/old-extension/utils/logger";
+import { logger } from "@/extension/util/logger";
 
 export type FsWatcherEvent = "created" | "deleted";
 
@@ -25,7 +25,7 @@ export function createDebouncer() {
         setTimeout(() => {
           timers.delete(key);
           void callback(type, uri).catch((error: unknown) => {
-            legacyLogger.log(`Unable to process repository change: ${String(error)}`);
+            logger.error("Unable to process repository change", error);
           });
         }, 100)
       );

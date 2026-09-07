@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-import { legacyLogger } from "@/old-extension/utils/logger";
+import { logger } from "@/extension/util/logger";
 import type { RpcNotification, RpcNotificationMap, RpcNotificationName } from "@/types";
 
 let _webview: vscode.Webview | undefined;
@@ -11,7 +11,7 @@ export const rpcNotify = {
     message: RpcNotificationMap[N]
   ): Promise<void> {
     if (_webview === undefined) {
-      legacyLogger.log(`Skip RPC notification: ${name}; webview is not initialized`);
+      logger.debug(`Skip RPC notification: ${name}; webview is not initialized`);
       return;
     }
 
@@ -22,7 +22,7 @@ export const rpcNotify = {
       message
     } as RpcNotification<N>;
 
-    legacyLogger.log(`Send RPC notification: ${name}`);
+    logger.debug(`Send RPC notification: ${name}`);
     await _webview.postMessage(payload);
   }
 };
