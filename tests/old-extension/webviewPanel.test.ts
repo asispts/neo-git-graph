@@ -32,7 +32,6 @@ describe("createWebviewPanel", () => {
       dispose: vi.fn()
     };
     const bridge = { post: vi.fn() };
-    const repoFileWatcher = { stop: vi.fn() };
     const repoManager = {
       getRepos: vi.fn(() => ({ "/repo": { columnWidths: null } }))
     };
@@ -44,8 +43,6 @@ describe("createWebviewPanel", () => {
       config: {
         tabIconColourTheme: () => "colour"
       } as unknown as import("@/old-extension/config").Config,
-      repoFileWatcher:
-        repoFileWatcher as unknown as import("@/old-extension/repoFileWatcher").RepoFileWatcher,
       extensionPath: "/extension",
       extensionState: {
         getLastActiveRepo: () => "/repo"
@@ -63,7 +60,6 @@ describe("createWebviewPanel", () => {
 
     panel.visible = false;
     viewStateHandler?.();
-    expect(repoFileWatcher.stop).toHaveBeenCalledTimes(1);
 
     panel.visible = true;
     viewStateHandler?.();

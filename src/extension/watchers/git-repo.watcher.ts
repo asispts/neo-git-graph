@@ -9,6 +9,8 @@ const REFRESH_DELAY = 750;
 const GIT_DATA = /^(HEAD|config|index|packed-refs|refs(?:\/.*)?)$/;
 
 let selectRepo: ((repo: string) => void) | undefined;
+let muteDepth = 0;
+let resumeAt = 0;
 
 export function watchGitRepo(): vscode.Disposable {
   let repoPath: string | undefined;
@@ -34,6 +36,10 @@ export function watchGitRepo(): vscode.Disposable {
     watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(repo, "**/*"));
 
     const refresh = (uri: vscode.Uri) => {
+      if (muteDepth > 0 || Date.now() < resumeAt) {
+        return;
+      }
+
       const relativePath = path.relative(repo, uri.fsPath).split(path.sep).join("/");
       if (
         relativePath.startsWith("../") ||
@@ -60,6 +66,8 @@ export function watchGitRepo(): vscode.Disposable {
 
   return new vscode.Disposable(() => {
     selectRepo = undefined;
+    muteDepth = 0;
+    resumeAt = 0;
     stop();
   });
 }
@@ -70,4 +78,19 @@ export function selectWatchedRepo(repo: string): void {
   }
 
   selectRepo(repo);
+}
+
+export function muteGitRepoWatcher(): void {
+  muteDepth++;
+}
+
+export function unmuteGitRepoWatcher(): void {
+  if (muteDepth === 0) {
+    return;
+  }
+
+  muteDepth--;
+  if (muteDepth === 0) {
+    resumeAt = Date.now() + 1500;
+  }
 }

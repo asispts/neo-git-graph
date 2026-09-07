@@ -20,7 +20,6 @@ import { AvatarManager } from "@/old-extension/avatarManager";
 import type { Config } from "@/old-extension/config";
 import { encodeDiffDocUri } from "@/old-extension/diffDocProvider";
 import { ExtensionState } from "@/old-extension/extensionState";
-import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import type { RequestMessage, ResponseMessage } from "@/types";
 
 import type { RepoManager } from "./repoManager";
@@ -66,10 +65,9 @@ export function registerMessageHandlers(
     repoManager: RepoManager;
     extensionState: ExtensionState;
     avatarManager: AvatarManager;
-    repoFileWatcher: RepoFileWatcher;
   }
 ) {
-  const { config, gitClient, repoManager, extensionState, avatarManager, repoFileWatcher } = deps;
+  const { config, gitClient, repoManager, extensionState, avatarManager } = deps;
 
   let currentRepo: string | null = null;
 
@@ -81,7 +79,6 @@ export function registerMessageHandlers(
     gitClient.setRepo(repo);
     extensionState.setLastActiveRepo(repo);
     selectWatchedRepo(repo);
-    repoFileWatcher.start(repo);
   }
 
   function registerAction<T extends RequestMessage["command"]>(

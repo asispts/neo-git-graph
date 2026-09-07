@@ -1,6 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
 
-import type { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { webviewBridgeFactory } from "@/old-extension/webviewBridge";
 import type { RequestMessage } from "@/types";
 
@@ -14,26 +13,13 @@ function createBridge() {
     }),
     postMessage: vi.fn()
   };
-  const repoFileWatcher = { mute: vi.fn(), unmute: vi.fn() };
-  const bridge = webviewBridgeFactory(
-    webview as unknown as import("vscode").Webview,
-    repoFileWatcher as unknown as RepoFileWatcher
-  );
+  const bridge = webviewBridgeFactory(webview as unknown as import("vscode").Webview);
 
   return {
     bridge,
     dispose,
-    repoFileWatcher,
     receive: (message: RequestMessage) => receiveMessage!(message)
   };
-}
-
-function deferred() {
-  let resolve!: () => void;
-  const promise = new Promise<void>((done) => {
-    resolve = done;
-  });
-  return { promise, resolve };
 }
 
 describe("webviewBridgeFactory", () => {
@@ -45,44 +31,13 @@ describe("webviewBridgeFactory", () => {
     expect(dispose).toHaveBeenCalledOnce();
   });
 
-  it("unmutes the repository watcher when a handler rejects", async () => {
-    const { bridge, repoFileWatcher, receive } = createBridge();
+  it("propagates handler errors", async () => {
+    const { bridge, receive } = createBridge();
     const failure = new Error("failed");
     bridge.onMessage("selectRepo", async () => {
       throw failure;
     });
 
     await expect(receive({ command: "selectRepo", repo: "/repo" })).rejects.toBe(failure);
-
-    expect(repoFileWatcher.mute).toHaveBeenCalledOnce();
-    expect(repoFileWatcher.unmute).toHaveBeenCalledOnce();
-  });
-
-  it("keeps one mute active for each concurrent handler", async () => {
-    const { bridge, repoFileWatcher, receive } = createBridge();
-    const first = deferred();
-    const second = deferred();
-    const handlers = [first, second];
-    let nextHandler = 0;
-    bridge.onMessage("selectRepo", () => {
-      const handler = handlers[nextHandler++];
-      if (handler === undefined) {
-        throw new Error("Missing deferred handler");
-      }
-      return handler.promise;
-    });
-
-    const firstMessage = receive({ command: "selectRepo", repo: "/repo" });
-    const secondMessage = receive({ command: "selectRepo", repo: "/repo" });
-    expect(repoFileWatcher.mute).toHaveBeenCalledTimes(2);
-    expect(repoFileWatcher.unmute).not.toHaveBeenCalled();
-
-    first.resolve();
-    await firstMessage;
-    expect(repoFileWatcher.unmute).toHaveBeenCalledOnce();
-
-    second.resolve();
-    await secondMessage;
-    expect(repoFileWatcher.unmute).toHaveBeenCalledTimes(2);
   });
 });

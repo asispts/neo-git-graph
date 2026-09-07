@@ -1,9 +1,9 @@
 import * as vscode from "vscode";
 
-import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
+import { muteGitRepoWatcher, unmuteGitRepoWatcher } from "@/extension/watchers/git-repo.watcher";
 import type { RequestMessage, ResponseMessage } from "@/types";
 
-export function webviewBridgeFactory(webview: vscode.Webview, repoFileWatcher: RepoFileWatcher) {
+export function webviewBridgeFactory(webview: vscode.Webview) {
   const handlers = new Map<string, (msg: RequestMessage) => void | Promise<void>>();
 
   const listener = webview.onDidReceiveMessage(async (msg: RequestMessage) => {
@@ -11,11 +11,11 @@ export function webviewBridgeFactory(webview: vscode.Webview, repoFileWatcher: R
     if (!handler) {
       return;
     }
-    repoFileWatcher.mute();
+    muteGitRepoWatcher();
     try {
       await handler(msg);
     } finally {
-      repoFileWatcher.unmute();
+      unmuteGitRepoWatcher();
     }
   });
 

@@ -4,7 +4,6 @@ import { buildExtensionUri } from "@/backend/utils/path";
 import { AvatarManager } from "@/old-extension/avatarManager";
 import type { Config } from "@/old-extension/config";
 import { ExtensionState } from "@/old-extension/extensionState";
-import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 
 import type { RepoManager } from "./repoManager";
 import type { WebviewBridge } from "./webviewBridge";
@@ -14,7 +13,6 @@ export function createWebviewPanel(opts: {
   panel: vscode.WebviewPanel;
   bridge: WebviewBridge;
   config: Config;
-  repoFileWatcher: RepoFileWatcher;
   extensionPath: string;
   extensionState: ExtensionState;
   avatarManager: AvatarManager;
@@ -26,7 +24,6 @@ export function createWebviewPanel(opts: {
     panel,
     bridge,
     config,
-    repoFileWatcher,
     extensionPath,
     extensionState,
     avatarManager,
@@ -50,7 +47,6 @@ export function createWebviewPanel(opts: {
     onDispose();
     panel.dispose();
     avatarManager.deregisterBridge();
-    repoFileWatcher.stop();
     while (disposables.length) {
       const x = disposables.pop();
       if (x) {
@@ -73,8 +69,6 @@ export function createWebviewPanel(opts: {
         if (panel.visible) {
           onPanelShown();
           bridge.post({ command: "refresh" });
-        } else {
-          repoFileWatcher.stop();
         }
         isPanelVisible = panel.visible;
       }

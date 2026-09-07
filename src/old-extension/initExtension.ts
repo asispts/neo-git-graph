@@ -6,6 +6,7 @@ import { gitClientFactory } from "@/backend/gitClient";
 import type { GitClient } from "@/backend/gitClient";
 import { findGitRepos } from "@/backend/queries/repoSearch";
 import { buildExtensionUri } from "@/backend/utils/path";
+import { watchGitRepo } from "@/extension/watchers/git-repo.watcher";
 import { AvatarManager } from "@/old-extension/avatarManager";
 import { config } from "@/old-extension/config";
 import { EXTENSION_NAME } from "@/old-extension/constant/const";
@@ -13,7 +14,6 @@ import { DiffDocProvider } from "@/old-extension/diffDocProvider";
 import { ExtensionState } from "@/old-extension/extensionState";
 import { createMaxDepthTracker } from "@/old-extension/maxDepthTracker";
 import { registerMessageHandlers } from "@/old-extension/messageHandler";
-import { RepoFileWatcher } from "@/old-extension/repoFileWatcher";
 import { createRepoManager } from "@/old-extension/repoManager";
 import type { RepoManager } from "@/old-extension/repoManager";
 import { StatusBarItem } from "@/old-extension/statusBarItem";
@@ -54,13 +54,8 @@ function registerViewCommand(
         }
       );
 
-      let bridge!: WebviewBridge;
-      const repoFileWatcher = new RepoFileWatcher(() => {
-        if (vsPanel.visible) {
-          bridge.post({ command: "refresh" });
-        }
-      });
-      bridge = webviewBridgeFactory(vsPanel.webview, repoFileWatcher);
+      const gitRepoWatcher = watchGitRepo();
+      const bridge: WebviewBridge = webviewBridgeFactory(vsPanel.webview);
       avatarManager.registerBridge(bridge.post.bind(bridge));
 
       const { onPanelShown } = registerMessageHandlers(bridge, {
@@ -68,20 +63,19 @@ function registerViewCommand(
         gitClient,
         repoManager,
         extensionState,
-        avatarManager,
-        repoFileWatcher
+        avatarManager
       });
 
       currentPanel = createWebviewPanel({
         panel: vsPanel,
         bridge,
         config,
-        repoFileWatcher,
         extensionPath: ctx.extensionPath,
         extensionState,
         avatarManager,
         repoManager,
         onDispose: () => {
+          gitRepoWatcher.dispose();
           currentPanel = undefined;
         },
         onPanelShown
