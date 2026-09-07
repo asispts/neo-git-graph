@@ -85,7 +85,6 @@ All settings use the `neo-git-graph` prefix.
 | `loadMoreCommits`             | `100`           | Commits to load on demand                                              |
 | `maxDepthOfRepoSearch`        | `0`             | Folder depth for repo search                                           |
 | `showCurrentBranchByDefault`  | `false`         | Show only current branch on open                                       |
-| `showStatusBarItem`           | `true`          | Show status bar button                                                 |
 | `showUncommittedChanges`      | `true`          | Show uncommitted changes node                                          |
 | `tabIconColourTheme`          | `"colour"`      | `"colour"` or `"grey"`                                                 |
 

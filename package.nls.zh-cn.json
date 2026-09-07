@@ -21,7 +21,6 @@
   "config.loadMoreCommits": "指定按下“加载更多提交”按钮时要加载的提交数量（仅在有更多提交可用时显示）。",
   "config.maxDepthOfRepoSearch": "指定在工作区中发现仓库时搜索的子文件夹最大深度。",
   "config.showCurrentBranchByDefault": "打开 Git 图形时默认显示当前分支。默认值：false（显示所有分支）",
-  "config.showStatusBarItem": "显示状态栏项，单击时打开 Git 图形。",
   "config.showUncommittedChanges": "显示未提交的更改（在大型仓库上设置为 false 以减少加载时间）。",
   "config.tabIconColourTheme": "指定 Git 图形选项卡上显示的图标的颜色主题。",
   "config.tabIconColourTheme.colour": "显示适合大多数 Visual Studio Code 颜色主题的彩色图标",

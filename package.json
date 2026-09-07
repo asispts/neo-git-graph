@@ -208,11 +208,6 @@
           "default": false,
           "description": "%config.showCurrentBranchByDefault%"
         },
-        "neo-git-graph.showStatusBarItem": {
-          "type": "boolean",
-          "default": true,
-          "description": "%config.showStatusBarItem%"
-        },
         "neo-git-graph.showUncommittedChanges": {
           "type": "boolean",
           "default": true,
