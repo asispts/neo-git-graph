@@ -33,7 +33,6 @@ export function createViewCommand(ctx: vscode.ExtensionContext) {
         ]
       }
     );
-
     webPanel.iconPath =
       extConfig.tabIconColourTheme() === "colour"
         ? vscode.Uri.joinPath(ctx.extensionUri, "resources", "webview-icon.svg")

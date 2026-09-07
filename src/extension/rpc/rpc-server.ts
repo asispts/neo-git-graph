@@ -1,5 +1,6 @@
 import * as vscode from "vscode";
 
+import { logger } from "@/extension/util/logger";
 import type { RpcMethod, RpcResponse } from "@/types";
 
 import { rpcHandlers } from "./handlers";
@@ -36,8 +37,10 @@ export function createRpcServer() {
         if (!isRpcRequest(message)) {
           return;
         }
+        logger.debug(`RPC request received: ${message.method} (${message.id})`);
 
         if (!isRpcMethod(message.method)) {
+          logger.warn(`Unknown RPC method: ${message.method}`);
           const response: RpcResponse = {
             kind: "rpc.response",
             id: message.id,
@@ -46,6 +49,7 @@ export function createRpcServer() {
           };
 
           await webview.postMessage(response);
+          logger.debug(`RPC response sent: ${message.method} (${message.id}, failure)`);
           return;
         }
 
@@ -60,7 +64,9 @@ export function createRpcServer() {
           };
 
           await webview.postMessage(response);
+          logger.debug(`RPC response sent: ${message.method} (${message.id}, success)`);
         } catch (err) {
+          logger.error(`RPC method failed: ${message.method}`, err);
           const response: RpcResponse = {
             kind: "rpc.response",
             id: message.id,

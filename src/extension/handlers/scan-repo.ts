@@ -5,11 +5,13 @@ import { simpleGit } from "simple-git";
 import * as vscode from "vscode";
 
 import { extConfig } from "@/extension/config";
+import { logger } from "@/extension/util/logger";
 import type { GitRepo, ScanRepoResult } from "@/types";
 
 export async function scanRepos(): Promise<ScanRepoResult> {
   const workspaceDirs = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
   const repos = await startScan(extConfig.gitBinary(), workspaceDirs, extConfig.maxDepth());
+  logger.info(`Repository scan completed: ${repos.length} found`);
 
   return {
     repos

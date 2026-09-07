@@ -24,4 +24,6 @@ export function activate(ctx: vscode.ExtensionContext) {
   ctx.subscriptions.push(
     vscode.commands.registerCommand("neo-git-graph.view", createViewCommand(ctx))
   );
+
+  logger.info("Extension activated");
 }

@@ -35,7 +35,7 @@ export function watchGitRepo(): vscode.Disposable {
     repoPath = repo;
     watcher = vscode.workspace.createFileSystemWatcher(new vscode.RelativePattern(repo, "**/*"));
 
-    const refresh = (uri: vscode.Uri) => {
+    const refresh = (event: "created" | "changed" | "deleted", uri: vscode.Uri) => {
       if (muteDepth > 0 || Date.now() < resumeAt) {
         return;
       }
@@ -48,20 +48,20 @@ export function watchGitRepo(): vscode.Disposable {
         return;
       }
 
-      logger.debug(`Git repository file changed: ${uri.fsPath}`);
+      logger.debug(`Repository file ${event}: ${uri.fsPath}`);
       if (refreshTimer !== undefined) {
         clearTimeout(refreshTimer);
       }
       refreshTimer = setTimeout(() => {
         refreshTimer = undefined;
-        logger.debug(`Git repository changed: ${repo}`);
+        logger.debug(`Sending repo.updated notification: ${repo}`);
         void rpcNotify.notify("repo.updated", { path: repo });
       }, REFRESH_DELAY);
     };
 
-    watcher.onDidCreate(refresh);
-    watcher.onDidChange(refresh);
-    watcher.onDidDelete(refresh);
+    watcher.onDidCreate((uri) => refresh("created", uri));
+    watcher.onDidChange((uri) => refresh("changed", uri));
+    watcher.onDidDelete((uri) => refresh("deleted", uri));
   };
 
   return new vscode.Disposable(() => {

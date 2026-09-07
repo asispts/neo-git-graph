@@ -19,7 +19,7 @@ export function watchGitDir(): vscode.Disposable {
 }
 
 async function processGitDir(type: FsWatcherEvent, uri: vscode.Uri) {
-  logger.debug(`Git directory ${type}: ${uri.fsPath}`);
+  logger.info(`Git directory ${type}: ${uri.fsPath}`);
   const repoPath = path.dirname(uri.fsPath);
 
   if (type === "created") {
