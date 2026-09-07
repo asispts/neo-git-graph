@@ -17,7 +17,7 @@ import { registerMessageHandlers } from "@/old-extension/messageHandler";
 import { createRepoManager } from "@/old-extension/repoManager";
 import type { RepoManager } from "@/old-extension/repoManager";
 import { StatusBarItem } from "@/old-extension/statusBarItem";
-import { logger } from "@/old-extension/utils/logger";
+import { legacyLogger } from "@/old-extension/utils/logger";
 import { webviewBridgeFactory } from "@/old-extension/webviewBridge";
 import type { WebviewBridge } from "@/old-extension/webviewBridge";
 import { createWebviewPanel } from "@/old-extension/webviewPanel";
@@ -90,7 +90,7 @@ export function initExtension(
   statusBarItem: StatusBarItem
 ) {
   try {
-    logger.log(`Initializing extension with ${repos.length} repo(s)`);
+    legacyLogger.log(`Initializing extension with ${repos.length} repo(s)`);
 
     const extensionState = new ExtensionState(ctx);
     const avatarManager = new AvatarManager(config.gitPath, extensionState);
@@ -178,7 +178,7 @@ export function initExtension(
       })
     );
   } catch (err) {
-    logger.log(`Error during initialization: ${err instanceof Error ? err.message : String(err)}`);
+    legacyLogger.log(`Error during initialization: ${err instanceof Error ? err.message : String(err)}`);
     throw err;
   }
 }

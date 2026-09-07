@@ -2,13 +2,13 @@ import * as vscode from "vscode";
 
 import { EXTENSION_NAME } from "./extension/constants";
 import { createViewCommand } from "./extension/view-command";
-import { logger } from "./old-extension/utils/logger";
+import { legacyLogger } from "./old-extension/utils/logger";
 
 export function activate(ctx: vscode.ExtensionContext) {
   if (!vscode.workspace.workspaceFolders || vscode.workspace.workspaceFolders.length <= 0) {
     return;
   }
-  logger.init(ctx);
+  legacyLogger.init(ctx);
 
   const statusBarItem = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left);
   statusBarItem.name = EXTENSION_NAME;

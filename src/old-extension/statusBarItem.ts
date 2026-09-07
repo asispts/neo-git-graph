@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 import type { Config } from "./config";
 import { EXTENSION_NAME } from "./constant/const";
-import { logger } from "./utils/logger";
+import { legacyLogger } from "./utils/logger";
 
 export class StatusBarItem {
   private statusBarItem: vscode.StatusBarItem;
@@ -15,13 +15,13 @@ export class StatusBarItem {
     this.statusBarItem.name = EXTENSION_NAME;
     this.statusBarItem.command = "neo-git-graph.view";
     context.subscriptions.push(this.statusBarItem);
-    logger.log(
+    legacyLogger.log(
       `StatusBarItem created (showStatusBarItem=${config.showStatusBarItem()}, numRepos=0)`
     );
   }
 
   public setNumRepos(numRepos: number) {
-    logger.log(`StatusBarItem.setNumRepos(${numRepos})`);
+    legacyLogger.log(`StatusBarItem.setNumRepos(${numRepos})`);
     this.numRepos = numRepos;
     this.refresh();
   }
@@ -29,7 +29,7 @@ export class StatusBarItem {
   public refresh() {
     const show = this.config.showStatusBarItem();
     if (show) {
-      logger.log(`StatusBarItem.show() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
+      legacyLogger.log(`StatusBarItem.show() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
       if (this.numRepos === 0) {
         this.statusBarItem.text = `$(eye) ${EXTENSION_NAME}`;
         this.statusBarItem.tooltip = vscode.l10n.t("No Git repository found — watching for one");
@@ -39,7 +39,7 @@ export class StatusBarItem {
       }
       this.statusBarItem.show();
     } else {
-      logger.log(`StatusBarItem.hide() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
+      legacyLogger.log(`StatusBarItem.hide() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
       this.statusBarItem.hide();
     }
   }

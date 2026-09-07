@@ -2,7 +2,7 @@ import * as vscode from "vscode";
 
 let _channel: vscode.OutputChannel | undefined;
 
-export const logger = {
+export const legacyLogger = {
   init: (ctx: vscode.ExtensionContext) => {
     _channel = vscode.window.createOutputChannel("Neo Git Graph");
     ctx.subscriptions.push(_channel);
