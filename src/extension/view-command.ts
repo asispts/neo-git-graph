@@ -6,6 +6,7 @@ import { createWevbviewHtml } from "./html";
 import { createMessageProtocol } from "./legacy";
 import { initRpcNotify } from "./rpc/rpc-notify";
 import { createRpcServer } from "./rpc/rpc-server";
+import { initConfigWatcher } from "./watchers/config.watcher";
 import { watchGitRepo } from "./watchers/git-repo.watcher";
 import { watchGitDir } from "./watchers/git.watcher";
 
@@ -44,6 +45,7 @@ export function createViewCommand(ctx: vscode.ExtensionContext) {
     const messageProtocolAttachment = messageProtocol.attach(webPanel);
     const rpcListener = rpcServer.attach(webPanel.webview);
     const rpcNotifier = initRpcNotify(webPanel.webview);
+    const configWatcher = initConfigWatcher();
     const gitDirWatcher = watchGitDir();
     const gitRepoWatcher = watchGitRepo();
 
@@ -53,6 +55,7 @@ export function createViewCommand(ctx: vscode.ExtensionContext) {
       messageProtocolAttachment.dispose();
       rpcListener.dispose();
       rpcNotifier.dispose();
+      configWatcher.dispose();
       gitDirWatcher.dispose();
       gitRepoWatcher.dispose();
       currentPanel = undefined;

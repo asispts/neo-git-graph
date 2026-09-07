@@ -33,6 +33,7 @@ export type RpcMethod = keyof RpcMethodMap;
 
 export type RpcNotificationMap = {
   "repo.changed": RepoChange;
+  "repo.rescan": null;
   "repo.updated": RepoUpdate;
 };
 

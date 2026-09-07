@@ -10,8 +10,9 @@ import type { GitRepo, ScanRepoResult } from "@/types";
 
 export async function scanRepos(): Promise<ScanRepoResult> {
   const workspaceDirs = (vscode.workspace.workspaceFolders ?? []).map((f) => f.uri.fsPath);
-  const repos = await startScan(extConfig.gitBinary(), workspaceDirs, extConfig.maxDepth());
-  logger.info(`Repository scan completed: ${repos.length} found`);
+  const gitBinary = extConfig.gitBinary();
+  const repos = await startScan(gitBinary, workspaceDirs, extConfig.maxDepth());
+  logger.info(`Repository scan completed: ${repos.length} found; Git binary: ${gitBinary}`);
 
   return {
     repos
@@ -32,7 +33,10 @@ async function scanDirectory(
 ): Promise<GitRepo[]> {
   const isRepo = await simpleGit({ baseDir: directory, binary: gitBinary })
     .checkIsRepo()
-    .catch(() => false);
+    .catch((error: unknown) => {
+      logger.warn(`Failed to check Git repository: ${directory}; Git binary: ${gitBinary}`, error);
+      return false;
+    });
 
   if (isRepo) {
     return [{ name: path.basename(directory), path: directory }];

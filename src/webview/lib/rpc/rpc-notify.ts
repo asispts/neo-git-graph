@@ -1,5 +1,6 @@
 import type { RpcNotification } from "@/types";
 import { refresh } from "@/webview/lib/actions";
+import { loadRepoList } from "@/webview/lib/load-repos";
 import { selectedRepo } from "@/webview/lib/stores";
 import { repoListStore } from "@/webview/lib/stores/repo-list.store";
 
@@ -12,11 +13,16 @@ export function handleRpcNotification(message: unknown): boolean {
     case "repo.changed":
       repoListStore.apply(message.message);
       return true;
+    case "repo.rescan":
+      void loadRepoList();
+      return true;
     case "repo.updated":
       if (message.message.path === selectedRepo.value) {
         refresh();
       }
       return true;
+    default:
+      return false;
   }
 }
 
@@ -29,7 +35,7 @@ function isRpcNotification(message: unknown): message is RpcNotification {
     "id" in message &&
     typeof message.id === "string" &&
     "name" in message &&
-    (message.name === "repo.changed" || message.name === "repo.updated") &&
+    typeof message.name === "string" &&
     "message" in message
   );
 }

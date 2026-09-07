@@ -1,6 +1,5 @@
 import "./styles.css";
 
-import { signal } from "@preact/signals";
 import { render } from "preact";
 import { useEffect } from "preact/hooks";
 
@@ -8,6 +7,7 @@ import { App } from "./App";
 import { Button } from "./components/ui/Button";
 import { selectRepo } from "./lib/actions";
 import { initDispatcher } from "./lib/dispatcher";
+import { loadRepoList, repoListError } from "./lib/load-repos";
 import { rpc } from "./lib/rpc/rpc-client";
 import { initializeStores, selectedRepo } from "./lib/stores";
 import { repoListStore } from "./lib/stores/repo-list.store";
@@ -16,7 +16,6 @@ import { LoadingPage } from "./pages/LoadingPage";
 import { NoRepoPage } from "./pages/NoRepoPage";
 
 const root = document.getElementById("app")!;
-const repoListError = signal<string | undefined>(undefined);
 
 initDispatcher();
 render(<LoadingPage />, root);
@@ -38,16 +37,6 @@ async function main() {
 
   render(<Root />, root);
   await loadRepoList();
-}
-
-async function loadRepoList() {
-  repoListError.value = undefined;
-
-  try {
-    await repoListStore.load();
-  } catch (error: unknown) {
-    repoListError.value = error instanceof Error ? error.message : String(error);
-  }
 }
 
 function Root() {
