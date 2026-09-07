@@ -178,7 +178,9 @@ export function initExtension(
       })
     );
   } catch (err) {
-    legacyLogger.log(`Error during initialization: ${err instanceof Error ? err.message : String(err)}`);
+    legacyLogger.log(
+      `Error during initialization: ${err instanceof Error ? err.message : String(err)}`
+    );
     throw err;
   }
 }

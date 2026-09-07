@@ -29,7 +29,9 @@ export class StatusBarItem {
   public refresh() {
     const show = this.config.showStatusBarItem();
     if (show) {
-      legacyLogger.log(`StatusBarItem.show() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
+      legacyLogger.log(
+        `StatusBarItem.show() (showStatusBarItem=${show}, numRepos=${this.numRepos})`
+      );
       if (this.numRepos === 0) {
         this.statusBarItem.text = `$(eye) ${EXTENSION_NAME}`;
         this.statusBarItem.tooltip = vscode.l10n.t("No Git repository found — watching for one");
@@ -39,7 +41,9 @@ export class StatusBarItem {
       }
       this.statusBarItem.show();
     } else {
-      legacyLogger.log(`StatusBarItem.hide() (showStatusBarItem=${show}, numRepos=${this.numRepos})`);
+      legacyLogger.log(
+        `StatusBarItem.hide() (showStatusBarItem=${show}, numRepos=${this.numRepos})`
+      );
       this.statusBarItem.hide();
     }
   }
