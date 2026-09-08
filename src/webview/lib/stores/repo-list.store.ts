@@ -11,7 +11,7 @@ export const repoListStore = {
   },
   load: async (): Promise<Array<GitRepo>> => {
     repoList.value = undefined;
-    const result = await rpc.call("repo.scan", null);
+    const result = await rpc.request("repo.scan", null);
     repoList.value = result.repos;
     return result.repos;
   },

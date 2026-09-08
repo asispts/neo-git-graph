@@ -11,7 +11,7 @@ type PendingRequest = {
 const requests = new Map<string, PendingRequest>();
 
 export const rpc = {
-  call<M extends RpcMethod>(
+  request<M extends RpcMethod>(
     method: M,
     params: RpcMethodMap[M]["params"]
   ): Promise<RpcMethodMap[M]["result"]> {

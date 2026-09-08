@@ -14,7 +14,7 @@ afterEach(() => {
 
 it("rejects a request that times out", async () => {
   vi.useFakeTimers();
-  const result = rpc.call("clipboard.copy", "commit");
+  const result = rpc.request("clipboard.copy", "commit");
   const rejection = expect(result).rejects.toThrow("RPC request timed out: clipboard.copy");
   await vi.runAllTimersAsync();
 

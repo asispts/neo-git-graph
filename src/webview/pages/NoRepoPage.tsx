@@ -13,7 +13,7 @@ export function NoRepoPage() {
     setError(undefined);
 
     try {
-      await rpc.call("git.init", null);
+      await rpc.request("git.init", null);
     } catch (reason: unknown) {
       const message = reason instanceof Error ? reason.message : String(reason);
       setError(window.l10n.unableToInitializeRepo.replace("{0}", message));

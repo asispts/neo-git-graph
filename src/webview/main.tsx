@@ -30,7 +30,7 @@ void main().catch((error: unknown) => {
 });
 
 async function main() {
-  const { l10n, config } = await rpc.call("webview.initialize", null);
+  const { l10n, config } = await rpc.request("webview.initialize", null);
   window.l10n = l10n;
   initializeWebviewConfig(config);
   initializeStores(config.initialLoadCommits);
