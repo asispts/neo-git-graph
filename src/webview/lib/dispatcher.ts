@@ -1,6 +1,4 @@
 import type { ResponseMessage } from "@/types";
-import { handleRpcResponse } from "@/webview/lib/rpc/rpc-client";
-import { handleRpcNotification } from "@/webview/lib/rpc/rpc-notify";
 
 import { handleActionResult } from "./handler/action-result";
 import { handleCommitDetails } from "./handler/commit-details";
@@ -38,14 +36,20 @@ const handlers: Handlers = {
 
 export function initDispatcher() {
   window.addEventListener("message", (e: MessageEvent<unknown>) => {
-    if (handleRpcResponse(e.data)) {
+    if (!isResponseMessage(e.data)) {
       return;
     }
-    if (handleRpcNotification(e.data)) {
-      return;
-    }
-    dispatch(e.data as ResponseMessage);
+    dispatch(e.data);
   });
+}
+
+function isResponseMessage(message: unknown): message is ResponseMessage {
+  return (
+    typeof message === "object" &&
+    message !== null &&
+    "command" in message &&
+    typeof message.command === "string"
+  );
 }
 
 function dispatch(msg: ResponseMessage): void {

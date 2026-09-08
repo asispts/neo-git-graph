@@ -1,16 +1,21 @@
-import type { RpcMethod, RpcMethodMap, RpcRequest, RpcResponse } from "@/types";
+import type { RpcMethod, RpcMethodMap, RpcRequest } from "@/types";
+import { initRpcHandler, type PendingRpcRequest } from "@/webview/lib/rpc/rpc-handler";
 import { vscode } from "@/webview/lib/vscode";
 
 const RPC_TIMEOUT_MS = 30_000;
 
-type PendingRequest = {
-  resolve: (value: unknown) => void;
-  reject: (value: unknown) => void;
-  timeout: ReturnType<typeof setTimeout>;
-};
-const requests = new Map<string, PendingRequest>();
+const requests = new Map<string, PendingRpcRequest>();
+let initialized = false;
 
-export const rpc = {
+export const rpcClient = {
+  init(): void {
+    if (initialized) {
+      return;
+    }
+
+    initialized = true;
+    initRpcHandler(requests);
+  },
   request<M extends RpcMethod>(
     method: M,
     params: RpcMethodMap[M]["params"]
@@ -47,45 +52,3 @@ export const rpc = {
     });
   }
 };
-
-export function handleRpcResponse(message: unknown): boolean {
-  if (!isRpcResponse(message)) {
-    return false;
-  }
-
-  const request = requests.get(message.id);
-  if (request === undefined) {
-    return true;
-  }
-  requests.delete(message.id);
-  clearTimeout(request.timeout);
-
-  if (message.success) {
-    request.resolve(message.result);
-  } else {
-    request.reject(new Error(message.error));
-  }
-
-  return true;
-}
-
-function isRpcResponse(message: unknown): message is RpcResponse {
-  if (
-    typeof message !== "object" ||
-    message === null ||
-    !("kind" in message) ||
-    message.kind !== "rpc.response" ||
-    !("id" in message) ||
-    typeof message.id !== "string" ||
-    !("success" in message) ||
-    typeof message.success !== "boolean"
-  ) {
-    return false;
-  }
-
-  if (message.success) {
-    return "result" in message;
-  }
-
-  return "error" in message && typeof message.error === "string";
-}

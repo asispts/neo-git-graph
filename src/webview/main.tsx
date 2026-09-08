@@ -8,7 +8,7 @@ import { Button } from "./components/ui/Button";
 import { selectRepo } from "./lib/actions";
 import { initDispatcher } from "./lib/dispatcher";
 import { loadRepoList, repoListError } from "./lib/load-repos";
-import { rpc } from "./lib/rpc/rpc-client";
+import { rpcClient } from "./lib/rpc/rpc-client";
 import { initializeStores, selectedRepo } from "./lib/stores";
 import { repoListStore } from "./lib/stores/repo-list.store";
 import { initializeWebviewConfig } from "./lib/webview-config";
@@ -17,6 +17,7 @@ import { NoRepoPage } from "./pages/NoRepoPage";
 
 const root = document.getElementById("app")!;
 
+rpcClient.init();
 initDispatcher();
 render(<LoadingPage />, root);
 
@@ -30,7 +31,7 @@ void main().catch((error: unknown) => {
 });
 
 async function main() {
-  const { l10n, config } = await rpc.request("webview.initialize", null);
+  const { l10n, config } = await rpcClient.request("webview.initialize", null);
   window.l10n = l10n;
   initializeWebviewConfig(config);
   initializeStores(config.initialLoadCommits);

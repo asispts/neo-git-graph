@@ -1,6 +1,7 @@
 import type { LocalizedStrings } from "@/old-extension/l10n/webviewL10n";
 import type { WebviewConfig } from "@/types";
 import { initDispatcher } from "@/webview/lib/dispatcher";
+import { rpcClient } from "@/webview/lib/rpc/rpc-client";
 import { initializeWebviewConfig } from "@/webview/lib/webview-config";
 
 const config: WebviewConfig = {
@@ -23,6 +24,7 @@ export function setupWebviewTest({ dispatchMessages = false } = {}) {
   });
 
   if (dispatchMessages) {
+    rpcClient.init();
     initDispatcher();
   }
 }

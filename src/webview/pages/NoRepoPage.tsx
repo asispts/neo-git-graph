@@ -2,7 +2,7 @@ import { useState } from "preact/hooks";
 
 import { Button } from "@/webview/components/ui/Button";
 import { Icon } from "@/webview/components/ui/Icons";
-import { rpc } from "@/webview/lib/rpc/rpc-client";
+import { rpcClient } from "@/webview/lib/rpc/rpc-client";
 
 export function NoRepoPage() {
   const [initializing, setInitializing] = useState(false);
@@ -13,7 +13,7 @@ export function NoRepoPage() {
     setError(undefined);
 
     try {
-      await rpc.request("git.init", null);
+      await rpcClient.request("git.init", null);
     } catch (reason: unknown) {
       const message = reason instanceof Error ? reason.message : String(reason);
       setError(window.l10n.unableToInitializeRepo.replace("{0}", message));
